@@ -1,3 +1,12 @@
+仿照postman的单页面应用，第二版/中级版，预计写超级版
+## 说明：
+1. 只能平铺式的展示文件，不能文件夹下全部导入、导出、执行等，
+2. 同一个域下，同一台电脑，能记忆（利用localstorage），所以可以共享，但是，不同电脑不可以（用户权限吧）涉及到 127.0.0.1、IP、和localhost的区别权限
+
+## 预计解决方案：
+1. 用数组存储文件夹、文件路径： ["file0", "file1", ["file0", "file1", ["file0", "file1"], "file3"], "file3"]，
+2. 把需要共享的文件夹存入storage文件夹下，每次初始化请求数据
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
