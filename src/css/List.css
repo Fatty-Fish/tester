@@ -1,0 +1,81 @@
+* {
+    list-style: none;
+    padding:0px;
+    margin: 0px;
+}
+.list {
+    position:absolute;
+    width:250px;
+    height:850px;
+    left:0px;
+    top:79px;
+    color: #fff;
+}
+.list-unstyled {
+    width:248px;
+    height:848px;
+    background-color: #a8a8a8;
+    overflow: auto;
+
+}
+.list-unstyled .outer {
+    position:relative;
+    font-size: 16px;
+    height:40px;
+    line-height:40px;
+    border-bottom:1px solid #cbcbcb;
+}
+.list-unstyled li.active {
+    background: #d4d4d4;
+}
+.list-unstyled .outer:hover {
+    background: #cbcbcb;
+}
+.outer .name {
+    position: absolute;
+    left: 0px;
+    text-align: left;
+    padding-left: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 110px;
+}
+.outer i {
+    position: absolute;
+    right:20px;
+    cursor: pointer;
+    color: #a8a8a8;
+    margin-top: 2px;
+    padding: 9px;
+    font-weight:bold;
+}
+.outer .renameInput {
+    width: 175px;
+    height: 40px;
+    float: left;
+    visibility: hidden;
+    background: #cbcbcb;
+    border: 1px solid #a8a8a8;
+    color: black;
+    padding-left: 10px;
+}
+.outer:hover i {
+    visibility: visible;
+}
+.more-window {
+    position: absolute;
+    right:48px;
+    z-index: 100;
+    visibility: hidden;
+    background: #cbcbcb;
+    padding: 5px;
+    border: 1px solid #cbcbcb;
+}
+.more-window li {
+    cursor: pointer;
+    color: #fff;
+}
+.more-window li:hover {
+    color: #737373;
+}

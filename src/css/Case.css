@@ -1,0 +1,43 @@
+.case {
+    margin-left:248px;
+}
+.top {
+    height: 80px;
+    line-height: 80px;
+    border: 1px solid #d4d4d4;
+    margin: 10px;
+}
+.top .method {
+    display: inline-block;
+    width:100px;
+}
+.top .method select {
+    height: 43px;
+}
+.top .url{
+    display: inline-block;
+    width: 60%;
+}
+.top .url input {
+    height: 43px;
+    width:100%;
+}
+.top .submit {
+    height: 43px;
+    width:8%;
+    min-width:60px;
+    vertical-align: baseline;
+}
+.table-bordered {
+    border-top-width: 0px;
+}
+.table tbody tr td {
+    padding:0px;
+}
+.panel .panel-heading {
+    text-align: left;
+    background-image: none;
+}
+.panel-title {
+    display: inline-block;
+}

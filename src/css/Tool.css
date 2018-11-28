@@ -1,0 +1,23 @@
+.tool {
+    position: absolute;
+    left:0px;
+    padding: 22px;
+    background: #d4d4d4;
+    width:248px;
+}
+.mask {
+    position: absolute;
+    z-index: 909;
+    width: 100%;
+    height:100%;
+    background: rgba(203, 203, 203, 0.7);
+}
+.inputWrapper {
+    position:absolute;
+    z-index: 1000;
+    top: 30%;
+    left:50%;
+    width: 600px;
+    background: white;
+    transform: translate(-50%, -50%);
+}

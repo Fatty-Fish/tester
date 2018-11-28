@@ -1,0 +1,62 @@
+.row{
+    margin-left:248px;
+    margin-right: 0px;
+    overflow: hidden;
+    color:white;
+}
+.row .col-md-2 {
+    height: 42px;
+    padding:10px;
+    background: #a8a8a8;
+    border:1px solid #fff;
+}
+.row div.active {
+    background: #d4d4d4;
+}
+.row .col-md-2 .name {
+    min-width:50px;
+    max-width:195px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    float: left;
+    text-align: left;
+}
+.row .col-md-2 .glyphicon-remove {
+    top:3px;
+    float:right;
+    padding: 3px;
+    margin-top: -3px;
+    cursor: pointer;
+    visibility: hidden;
+}
+.row .col-md-2:hover .glyphicon-remove {
+    visibility: visible;
+}
+.row .add {
+    padding:10px;
+    background: #a8a8a8;
+    border:1px solid #fff;
+    overflow: hidden;
+    width: 50px;
+}
+
+
+
+
+
+
+
+.row .col-md-1 .name {
+    float: left;
+}
+.row .col-md-1 .fa-close {
+    float: right;
+    cursor: pointer;
+    margin-top: -2px;
+    padding: 5px;
+    visibility: hidden;
+}
+.row .col-md-1:hover .fa-close {
+    visibility: visible;
+}
