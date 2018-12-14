@@ -7,6 +7,9 @@
     border: 1px solid #d4d4d4;
     margin: 10px;
 }
+i.glyphicon-ok, i.glyphicon-minus {
+    line-height: 30px;
+}
 .top .method {
     display: inline-block;
     width:100px;
@@ -27,6 +30,9 @@
     width:8%;
     min-width:60px;
     vertical-align: baseline;
+}
+.top .save {
+    margin-left: 10px;
 }
 .table-bordered {
     border-top-width: 0px;

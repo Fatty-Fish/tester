@@ -2,7 +2,7 @@
     margin-left:248px;
     margin-right: 0px;
     overflow: hidden;
-    color:white;
+    color: #fff;
 }
 .row .col-md-2 {
     height: 42px;
@@ -15,7 +15,7 @@
 }
 .row .col-md-2 .name {
     min-width:50px;
-    max-width:195px;
+    max-width:105px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -39,6 +39,7 @@
     border:1px solid #fff;
     overflow: hidden;
     width: 50px;
+    height: 42px;
 }
 
 

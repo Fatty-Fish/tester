@@ -27,7 +27,42 @@ class Case extends Component {
         this.changeKey = this.changeKey.bind(this);
         this.changeValue = this.changeValue.bind(this);
         this.clearRequest = this.clearRequest.bind(this);
+        this.saveChange = this.saveChange.bind(this);
     };
+    saveChange () {
+        var arr = this.props.k.split("/");
+        var auth = this.state.auth;
+        var from = arr[0];
+        if (auth) {
+            // r  no rights to save
+            if(auth === "r") {
+                alert("你没有权限保存更改")
+            }else {
+                // w
+                var obj = this.props.stateFarm(this.state);
+                axios({
+                    url: "/surechange",
+                    method: "post",
+                    data: {
+                        "newData": obj,
+                        "person": from,
+                        "tar": auth,
+                        "path": this.props.k
+                    }
+                }).then((res) => {
+                    //ol
+                });
+            }
+        }else {
+            if (from !== "newCase") {
+                this.props.savechange(this.props.k, from);
+            }else {
+                // 弹出框：保存？ 保存在哪里？
+                // console.log(this.props.k)
+                this.props.caseSave(this.props.k)
+            }
+        }
+    }
     clearRequest(arr, disArr) {
         //排disabled
         var Arr = arr.filter((ele, index)=> {
@@ -47,14 +82,14 @@ class Case extends Component {
         return obj;
     }
     submitProxy () {
-        var method = this.props.caseRender.method;
-        var url = this.props.caseRender.url;
-        var headerlist = this.props.caseRender.headersList;
-        var paramlist = this.props.caseRender.paramList;
-        var bodylist = this.props.caseRender.bodyList;
-        var head = this.clearRequest(headerlist, this.props.caseRender.disableList.header);
-        var param = this.clearRequest(paramlist,this.props.caseRender.disableList.param);
-        var body = this.clearRequest(bodylist, this.props.caseRender.disableList.body);
+        var method = this.state.method;
+        var url = this.state.url;
+        var headerlist = this.state.headersList;
+        var paramlist = this.state.paramList;
+        var bodylist = this.state.bodyList;
+        var head = this.clearRequest(headerlist, this.state.disableList.header);
+        var param = this.clearRequest(paramlist,this.state.disableList.param);
+        var body = this.clearRequest(bodylist, this.state.disableList.body);
         this.setState({
             result: "Waiting...."
         });
@@ -71,7 +106,6 @@ class Case extends Component {
                 "param": param
             }
         }).then((res)=> {
-            console.log(JSON.stringify(res.data, null, 4))
             this.setState({
                 result: JSON.stringify(res.data, null, 4)
             });
@@ -83,12 +117,19 @@ class Case extends Component {
         })
     }
     changeMethod (e) {
-        // this.setState({
-        //     method: e.target.value
-        // });
-        this.props.changeMethod(this.props.k, e.target.value)
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
+        // if (from === "newCase") {
+        //     this.setState({
+        //         method: e.target.value
+        //     });
+        // }else {
+            this.props.changeMethod(this.props.k, e.target.value);
+        // }
     }
     changeUrl (e) {
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
         var url = e.target.value;
         if (url.indexOf("?") >= 0) {
                 var reg = /(\w+):\/\/([^/:]+)?([^# ]*)/;
@@ -127,86 +168,111 @@ class Case extends Component {
             query.push({
                 "key": "",
                 "value" : ""
-            })
-            // this.setState({
-            //     paramList: query
-            // })
-            this.props.changeContent(this.props.k, "paramList", query);
-
+            });
+            // if (from === "newCase") {
+            //     this.setState({
+            //         paramList: query
+            //     });
+            // }else {
+                this.props.changeContent(this.props.k, "paramList", query);
+            // }
         }
-        // console.log(url);
-        // this.setState({
-        //     url: url
-        // });
-        this.props.changeUrl(this.props.k, url)
+        // if (from === "newCase") {
+        //     this.setState({
+        //         url: url
+        //     });
+        // }else {
+            this.props.changeUrl(this.props.k, url)
+        // }
     }
     jumpToHeaders (e) {
-        // e.preventDefault();
-        // $(".nav-tabs").find(".active").removeClass("active");
-        // $(e.target).parent().addClass("active");
-        // this.setState({
-        //     showTable: "Headers"
-        // })
-        this.props.changeShowTable(this.props.k, "Headers")
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
+        // if (from === "newCase") {
+        //     this.setState({
+        //         showTable: "Headers"
+        //     })
+        // }else {
+            this.props.changeShowTable(this.props.k, "Headers")
+        // }
     }
     jumpToBody (e) {
-        // e.preventDefault();
-        // $(".nav-tabs").find(".active").removeClass("active");
-        // $(e.target).parent().addClass("active");
-        // this.setState({
-        //     showTable: "Body"
-        // })
-        this.props.changeShowTable(this.props.k, "Body")
-
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
+        // if (from === "newCase") {
+        //     this.setState({
+        //         showTable: "Body"
+        //     })
+        // }else {
+            this.props.changeShowTable(this.props.k, "Body")
+        // }
     }
     jumpToParam (e) {
-        // e.preventDefault();
-        // $(".nav-tabs").find(".active").removeClass("active");
-        // $(e.target).parent().addClass("active");
-        // this.setState({
-        //     showTable: "Param"
-        // })
-        this.props.changeShowTable(this.props.k, "Param")
-
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
+        // if (from === "newCase") {
+        //     this.setState({
+        //         showTable: "Param"
+        //     })
+        // }else {
+            this.props.changeShowTable(this.props.k, "Param")
+        // }
     }
     addLine (e) {
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
         var type = e.target ? $(e.target).parent().parent().attr("class") : e;
         if (type === "header") {
-            var headersList = this.props.caseRender.headersList;
+            var headersList = this.state.headersList;
             headersList.push({key: "", value: ""});
-            // this.setState({
-            //     headersList: headersList
-            // });
-            this.props.changeContent(this.props.k, "headersList", headersList);
+             // if (from === "newCase") {
+             //     this.setState({
+             //         headersList: headersList
+             //     });
+             // }else {
+                 this.props.changeContent(this.props.k, "headersList", headersList);
+             // }
             return;
         }else if (type === "body") {
-            var bodyList = this.props.caseRender.bodyList;
+            var bodyList = this.state.bodyList;
             bodyList.push({key: "", value: ""});
-            // this.setState({
-            //     bodyList: bodyList
-            // });
-            this.props.changeContent(this.props.k, "bodyList", bodyList);
+             // if (from === "newCase") {
+             //     this.setState({
+             //         bodyList: bodyList
+             //     });
+             // }else {
+                 this.props.changeContent(this.props.k, "bodyList", bodyList);
+             // }
             return;
         }else if (type === "param") {
-            var paramList = this.props.caseRender.paramList;
+            var paramList = this.state.paramList;
             paramList.push({key: "", value: ""});
-            // this.setState({
-            //     paramList: paramList
-            // });
-            this.props.changeContent(this.props.k, "paramList", paramList);
+            // if (from === "newCase") {
+            //     this.setState({
+            //         paramList: paramList
+            //     });
+            // }else {
+                this.props.changeContent(this.props.k, "paramList", paramList);
+            // }
             return;
         }
     }
     addHeaders (e) {
-        var headersList = this.props.caseRender.headersList;
+        var headersList = this.state.headersList;
         headersList.push({key: "", value: ""});
-        // this.setState({
-        //     headersList: headersList,
-        // });
         this.addLine("header");
     }
     addBody (e) {
-        var bodyList = this.props.caseRender.bodyList;
+        var bodyList = this.state.bodyList;
         bodyList.push({key: "", value: ""});
         // this.setState({
         //     bodyList: bodyList
@@ -214,7 +280,7 @@ class Case extends Component {
         this.addLine("body");
     }
     addParam (e) {
-        var paramList = this.props.caseRender.paramList;
+        var paramList = this.state.paramList;
         paramList.push({key: "", value: ""});
         // this.setState({
         //     paramList: paramList
@@ -225,6 +291,8 @@ class Case extends Component {
         var type,
             index,
             flag;
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
         if (e.target.nodeName.toLowerCase() === "i") {
             type = $(e.target).parent().parent().attr("class");
             index = $(e.target).parent().parent().index();
@@ -243,14 +311,19 @@ class Case extends Component {
             flag === "i" ? $(e.target).parent().css({color: "#fff", background: "#d4d4d4"}) :  $(e.target).css({color: "#fff", background: "#d4d4d4"});
         }
         // type = param 需要修改url
-        // this.setState({
-        //     disableList: this.state.disableList
-        // })
-        this.props.changeAble(this.props.k, this.state.disableList)
+        // if (from === "newCase") {
+        //     this.setState({
+        //         disableList: this.state.disableList
+        //     })
+        // }else {
+            this.props.changeAble(this.props.k, this.state.disableList)
+        // }
     }
     delLine (e) {
         var type,
             index;
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
         if (e.target.nodeName.toLowerCase() === "i") {
             type = $(e.target).parent().parent().attr("class");
             index = $(e.target).parent().parent().index();
@@ -259,83 +332,103 @@ class Case extends Component {
             index = $(e.target).parent().index();
         }
         if (type === "header") {
-            var headersList = this.props.caseRender.headersList;
-            var disHeader = this.props.caseRender.disableList.header;
+            var headersList = this.state.headersList;
+            var disHeader = this.state.disableList.header;
             headersList.splice(index, 1);
             //如果减去的是dis的，则消除dis
             var num = disHeader.indexOf(index);
             if (num >=0) {
                 disHeader.splice(num, 1);
             }
-            var disablelist = this.props.caseRender.disableList;
+            var disablelist = this.state.disableList;
             disablelist.header = disHeader;
-            // this.setState({
-            //     headersList: headersList,
-            //     disableList: disablelist
-            // });
-            this.props.delCaseLine(this.props.k,"headersList", headersList, disablelist);
+             // if (from === "newCase") {
+             //     this.setState({
+             //         headersList: headersList,
+             //         disableList: disablelist
+             //     });
+             // }else {
+                 this.props.delCaseLine(this.props.k,"headersList", headersList, disablelist);
+             // }
             return;
         }else if (type === "body") {
-            var BodyList = this.props.caseRender.bodyList;
-            var disBody = this.props.caseRender.disableList.body;
+            var BodyList = this.state.bodyList;
+            var disBody = this.state.disableList.body;
             BodyList.splice(index, 1);
             num = disBody.indexOf(index);
             if(num >= 0) {
                 disBody.splice(num, 1);
             }
-            disablelist = this.props.caseRender.disableList;
+            disablelist = this.state.disableList;
             disablelist.body = disBody;
-            // this.setState({
-            //     bodyList: BodyList,
-            //     disableList: disablelist
-            // });
-            this.props.delCaseLine(this.props.k,"bodyList", BodyList, disablelist);
+             // if (from === "newCase") {
+             //     this.setState({
+             //         bodyList: BodyList,
+             //         disableList: disablelist
+             //     });
+             // }else {
+                 this.props.delCaseLine(this.props.k,"bodyList", BodyList, disablelist);
+             // }
             return;
         }else if (type === "param") {
-            var ParamList = this.props.caseRender.paramList;
-            var disParam = this.props.caseRender.disableList.param;
+            var ParamList = this.state.paramList;
+            var disParam = this.state.disableList.param;
             ParamList.splice(index, 1);
             num = disParam.indexOf(index);
             if (num >= 0) {
                 disParam.splice(num, 1);
             }
-            disablelist = this.props.caseRender.disableList;
+            disablelist = this.state.disableList;
             disablelist.param = disParam;
-            // this.setState({
-            //     paramList: ParamList,
-            //     disableList: disablelist
-            // });
-            this.props.delCaseLine(this.props.k,"paramList", ParamList, disablelist);
+            // if (from === "newCase") {
+            //     this.setState({
+            //         paramList: ParamList,
+            //         disableList: disablelist
+            //     });
+            // }else {
+                this.props.delCaseLine(this.props.k,"paramList", ParamList, disablelist);
+            // }
             return;
         }
     }
     changeFn (e, name) {
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
         var type = $(e.target).parent().parent().attr("class");
         var index = $(e.target).parent().parent().index();
         var val = e.target.value;
         if (type === "header") {
-            var headerList = this.props.caseRender.headersList;
+            var headerList = this.state.headersList;
             headerList[index][name] = val;
-            // this.setState({
-            //     headersList: headerList
-            // });
-            this.props.changeContent(this.props.k, "headersList", headerList);
+             // if (from === "newCase") {
+             //     this.setState({
+             //         headersList: headerList
+             //     });
+             // }else {
+                 this.props.changeContent(this.props.k, "headersList", headerList);
+             // }
             return;
         }else if (type === "body") {
-            var bodyList = this.props.caseRender.bodyList;
+            var bodyList = this.state.bodyList;
             bodyList[index][name] = val;
-            // this.setState({
-            //     bodyList: bodyList
-            // });
-            this.props.changeContent(this.props.k, "bodyList", bodyList);
+            // if (from === "newCase") {
+            //     this.setState({
+            //         bodyList: bodyList
+            //     });
+            // }else {
+                this.props.changeContent(this.props.k, "bodyList", bodyList);
+            // }
             return
         }else if (type === "param") {
-            var paramList = this.props.caseRender.paramList;
+            var paramList = this.state.paramList;
             paramList[index][name] = val;
-            // this.setState({
-            //     paramList: paramList
-            // });
-            this.props.changeContent(this.props.k, "paramList", paramList);
+            // if (from === "newCase") {
+            //     this.setState({
+            //         paramList: paramList
+            //     });
+            // }else {
+                this.props.changeContent(this.props.k, "paramList", paramList);
+            // }
             return;
         }
     }
@@ -353,169 +446,198 @@ class Case extends Component {
 
         // 提取Case后不需要了
     }
+    componentWillReceiveProps(nextProps) {
+        var plen = nextProps.caseRender.paramList.length - 1;
+        var hlen = nextProps.caseRender.headersList.length - 1;
+        var blen = nextProps.caseRender.bodyList.length - 1;
+        if(JSON.stringify(nextProps.caseRender.paramList[plen]) !== JSON.stringify({key: "", value: ""})) {
+            nextProps.caseRender.paramList.push({key: "", value: ""})
+        }
+        if(JSON.stringify(nextProps.caseRender.headersList[hlen]) !== JSON.stringify({key: "", value: ""})) {
+            nextProps.caseRender.headersList.push({key: "", value: ""})
+        }
+        if(JSON.stringify(nextProps.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
+            nextProps.caseRender.bodyList.push({key: "", value: ""})
+        }
+        this.setState({
+            ...nextProps.caseRender
+        })
+    }
     render () {
         var seen = this.props.style;
-        var method = this.props.caseRender.method;
-        var url = this.props.caseRender.url;
-        var raw = url.split("?")[0];
-        // 先排出disable
-        var disparamList = this.props.caseRender.disableList.param;
-        var paramsList = this.props.caseRender.paramList.filter((ele, index)=> {
-            return disparamList.indexOf(index) < 0;
-        });
-        paramsList = paramsList.filter((ele)=> {
+        var caseNamearr = this.props.caseName.split("/");
+        var caseName =caseNamearr[caseNamearr.length - 1];
+        if (Number(caseName) || (Number(caseName) == 0)) {
+            caseName = "newCase"
+        }else if (caseName === "r" || caseName === "w") {
+            caseNamearr.splice(caseNamearr.length - 1, 1)
+            caseName = caseNamearr.join("/")
+        }else {
+            caseName = this.props.caseName;
+        }
+        var method,url,raw,disparamList,paramsList,len,paramStr,headersShow,bodyShow,paramShow,headerFlag,disHeader,HeadersList,
+            bodyFlag,disBody,BodyList,paramFlag,disParam,ParamList;
+             method = this.props.caseRender.method;
+             url = this.props.caseRender.url;
+             raw = url.split("?")[0];
+            // 先排出disable
+             disparamList = this.props.caseRender.disableList.param;
+             paramsList = this.props.caseRender.paramList.filter((ele, index)=> {
+                return disparamList.indexOf(index) < 0;
+            });
+            paramsList = paramsList.filter((ele)=> {
                 return ele.key && ele.value
             });
-        var len = paramsList.length;
-        if (len === 0) {
-            url = raw;
-        }else {
-            var paramStr = "";
-            paramsList.forEach((ele, index)=> {
-                if (index === 0) {
-                    paramStr = "?" + ele.key + "=" + ele.value;
-                }else {
-                    paramStr += "&" + ele.key + "=" + ele.value
+             len = paramsList.length;
+            if (len === 0) {
+                url = raw;
+            }else {
+                 paramStr = "";
+                paramsList.forEach((ele, index)=> {
+                    if (index === 0) {
+                        paramStr = "?" + ele.key + "=" + ele.value;
+                    }else {
+                        paramStr += "&" + ele.key + "=" + ele.value
+                    }
+                });
+                url = raw + paramStr;
+            }
+             headersShow = this.props.caseRender.showTable === "Headers" ? true : false;
+             bodyShow = this.props.caseRender.showTable === "Body" ? true : false;
+             paramShow = this.props.caseRender.showTable === "Param" ? true : false;
+             headerFlag = this.props.caseRender.headersList.length;
+             disHeader = this.props.caseRender.disableList.header;
+             HeadersList = this.props.caseRender.headersList.map((ele, index)=> {
+                if (index === headerFlag - 1) {
+                    return (<tr className="header" key={index}>
+                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i
+                            className="glyphicon glyphicon-ok"></i></td>
+                        <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
+                                   value={ele.key}/></td>
+                        <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
+                                   value={ele.value}/></td>
+                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i
+                            className="glyphicon glyphicon-minus"></i></td>
+                    </tr>)
+                } else {
+                    if (disHeader.indexOf(index) >= 0) {
+                        return (<tr className="header" key={index}>
+                            <td className="btn" style={{
+                                width: "100%",
+                                height: "34px",
+                                color: "#fff",
+                                background: "#d4d4d4",
+                                lineHeight: "34px"
+                            }} onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
+                            <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                                       value={ele.key}/></td>
+                            <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                                       value={ele.value}/></td>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        </tr>)
+                    } else {
+                        return (<tr className="header" key={index}>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
+                            <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                                       value={ele.key}/></td>
+                            <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                                       value={ele.value}/></td>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        </tr>)
+                    }
                 }
             });
-            url = raw + paramStr;
-        }
-        var headersShow = this.props.caseRender.showTable === "Headers" ? true : false;
-        var bodyShow = this.props.caseRender.showTable === "Body" ? true : false;
-        var paramShow = this.props.caseRender.showTable === "Param" ? true : false;
-        var headerFlag = this.props.caseRender.headersList.length;
-        var disHeader = this.props.caseRender.disableList.header;
-        var HeadersList = this.props.caseRender.headersList.map((ele, index)=> {
-            if (index === headerFlag - 1) {
-                return (<tr className="header" key={index}>
-                    <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i
-                        className="glyphicon glyphicon-ok"></i></td>
-                    <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
-                               value={ele.key}/></td>
-                    <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
-                               value={ele.value}/></td>
-                    <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i
-                        className="glyphicon glyphicon-minus"></i></td>
-                </tr>)
-            } else {
-                if (disHeader.indexOf(index) >= 0) {
-                    return (<tr className="header" key={index}>
-                        <td className="btn" style={{
-                            width: "100%",
-                            height: "34px",
-                            color: "#fff",
-                            background: "#d4d4d4",
-                            lineHeight: "34px"
-                        }} onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
-                        <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
-                                   value={ele.key}/></td>
-                        <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
-                                   value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
-                    </tr>)
-                } else {
-                    return (<tr className="header" key={index}>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
-                        <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
-                                   value={ele.key}/></td>
-                        <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
-                                   value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
-                    </tr>)
-                }
-            }
-        });
 
 
-        var bodyFlag = this.props.caseRender.bodyList.length;
-        var disBody = this.props.caseRender.disableList.body;
-        var BodyList = this.props.caseRender.bodyList.map((ele, index)=> {
-            if (index === bodyFlag - 1) {
-                return (<tr className="body" key={index}>
-                    <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-ok"></i></td>
-                    <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
-                               value={ele.key}/></td>
-                    <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
-                               value={ele.value}/></td>
-                    <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-minus"></i></td>
-                </tr>)
-            } else {
-                if (disBody.indexOf(index) >= 0) {
+             bodyFlag = this.props.caseRender.bodyList.length;
+             disBody = this.props.caseRender.disableList.body;
+             BodyList = this.props.caseRender.bodyList.map((ele, index)=> {
+                if (index === bodyFlag - 1) {
                     return (<tr className="body" key={index}>
-                        <td className="btn" style={{
-                            width: "100%",
-                            height: "34px",
-                            color: "#fff",
-                            background: "#d4d4d4",
-                            lineHeight: "34px"
-                        }} onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
-                        <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-ok"></i></td>
+                        <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
                                    value={ele.key}/></td>
-                        <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                        <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
                                    value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-minus"></i></td>
                     </tr>)
                 } else {
-                    return (<tr className="body" key={index}>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
-                        <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
-                                   value={ele.key}/></td>
-                        <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
-                                   value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
-                    </tr>)
+                    if (disBody.indexOf(index) >= 0) {
+                        return (<tr className="body" key={index}>
+                            <td className="btn" style={{
+                                width: "100%",
+                                height: "34px",
+                                color: "#fff",
+                                background: "#d4d4d4",
+                                lineHeight: "34px"
+                            }} onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
+                            <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                                       value={ele.key}/></td>
+                            <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                                       value={ele.value}/></td>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        </tr>)
+                    } else {
+                        return (<tr className="body" key={index}>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
+                            <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                                       value={ele.key}/></td>
+                            <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                                       value={ele.value}/></td>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        </tr>)
+                    }
                 }
-            }
-        });
-        var paramFlag = this.props.caseRender.paramList.length;
-        var disParam = this.props.caseRender.disableList.param;
-        var ParamList = this.props.caseRender.paramList.map((ele, index)=> {
-            if (index === paramFlag - 1) {
-                return (<tr className="param" key={index}>
-                    <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-ok"></i></td>
-                    <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
-                               value={ele.key}/></td>
-                    <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
-                               value={ele.value}/></td>
-                    <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-minus"></i></td>
-                </tr>)
-            } else {
-                if (disParam.indexOf(index) >= 0) {
+            });
+             paramFlag = this.props.caseRender.paramList.length;
+             disParam = this.props.caseRender.disableList.param;
+             ParamList = this.props.caseRender.paramList.map((ele, index)=> {
+                if (index === paramFlag - 1) {
                     return (<tr className="param" key={index}>
-                        <td className="btn" style={{
-                            width: "100%",
-                            height: "34px",
-                            color: "#fff",
-                            background: "#d4d4d4",
-                            lineHeight: "34px"
-                        }} onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
-                        <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-ok"></i></td>
+                        <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
                                    value={ele.key}/></td>
-                        <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                        <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
                                    value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-minus"></i></td>
                     </tr>)
                 } else {
-                    return (<tr className="param" key={index}>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
-                        <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
-                                   value={ele.key}/></td>
-                        <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
-                                   value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
-                            onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
-                    </tr>)
+                    if (disParam.indexOf(index) >= 0) {
+                        return (<tr className="param" key={index}>
+                            <td className="btn" style={{
+                                width: "100%",
+                                height: "34px",
+                                color: "#fff",
+                                background: "#d4d4d4",
+                                lineHeight: "34px"
+                            }} onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
+                            <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                                       value={ele.key}/></td>
+                            <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                                       value={ele.value}/></td>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        </tr>)
+                    } else {
+                        return (<tr className="param" key={index}>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.disableFn}><i className="glyphicon glyphicon-ok"></i></td>
+                            <td><input className="form-control" name={ele.key} type="text" onChange={this.changeKey}
+                                       value={ele.key}/></td>
+                            <td><input className="form-control" name={ele.value} type="text" onChange={this.changeValue}
+                                       value={ele.value}/></td>
+                            <td className="btn" style={{width: "100%", height: "34px", lineHeight: "34px"}}
+                                onClick={this.delLine}><i className="glyphicon glyphicon-minus"></i></td>
+                        </tr>)
+                    }
                 }
-            }
-        });
+            });
         return (
             <div className="case" style={seen}>
                 <div className="top">
@@ -532,6 +654,7 @@ class Case extends Component {
                         <input type="text" name = "url" value={url} onChange={this.changeUrl}/>
                     </div>
                     <button className="btn submit" onClick={this.submitProxy}>提交</button>
+                    <button className="btn save" onClick={this.saveChange}>保存</button>
                 </div>
                 <div className="content">
                     <ul className="nav nav-tabs">
@@ -592,7 +715,7 @@ class Case extends Component {
 
                 <div className="panel panel-default">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Response for {this.props.caseName}</h3>
+                        <h3 className="panel-title">Response for {caseName}</h3>
                     </div>
                     <div className="panel-body" style={{textAlign: "justify"}}>
                         <pre>

@@ -6,9 +6,12 @@ const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMi
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const config = require('./webpack.config.dev');
 const paths = require('./paths');
+const findPath = require('./findState');
+const addState = require('./addState');
 const fs = require('fs');
 const axios = require("axios");
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+var person0 = require("../storage/person0.json");
 
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
@@ -88,7 +91,7 @@ module.exports = function(proxy, allowedHost) {
       after(app) {
         app.use(bodyParser());
         app.post("/", async (req, result)=> {
-            // 想在此获取页面post过来的data参数？？？---------使用body-parser
+            // 想在此获取页面post过来的data参---------使用body-parser
               await axios({
                 method: req.body.method,
                 url: req.body.url,
@@ -101,6 +104,45 @@ module.exports = function(proxy, allowedHost) {
               return result.json(err.data);
             });
         });
+        app.post("/surechange", async(req, result)=> {
+            var per = req.body.person;
+            var auth = req.body.tar;
+            var path = req.body.path;
+            var obj = req.body.newData;
+            if (auth) {
+                fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
+                    if (err) throw err;
+                    var resState = addState(data, per, path, obj);
+                    fs.writeFile("storage/" + per + ".json", JSON.stringify(resState), "utf8", (err)=> {
+                        if (err) throw err;
+                        return result.json("ok");
+                    })
+                });
+            }else {
+                fs.writeFile("storage/" + per + ".json", JSON.stringify(obj), "utf8", (err)=> {
+                    if (err) throw err;
+                    return result.json("ok");
+                })
+            }
+        });
+        // 人名变量替换
+        app.get("/new", (req,res)=> {
+          var person = req.query.person;
+          var path = req.query.path;
+          fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
+                if (err) throw err;
+                if (!path) {
+                    return res.json(data)
+                }else {
+                    var pathArr = path.split("/");
+                    var result = findPath(pathArr, data);
+                    return res.json(result);
+                }
+            });
+        });
+          app.post("/task/:id", (req, res)=>{
+
+          })
     },
     before(app, server) {
       if (fs.existsSync(paths.proxySetup)) {
@@ -108,11 +150,9 @@ module.exports = function(proxy, allowedHost) {
         require(paths.proxySetup)(app);
       }
 
-      // app.get("/", (res)=> {
-      //
-      //   return res.json()
-      // })
-
+      app.get("/person0", (req,res)=> {
+        return res.json(person0);
+      });
       // This lets us fetch source contents from webpack for the error overlay
       app.use(evalSourceMapMiddleware(server));
       // This lets us open files from the runtime error overlay.

@@ -1,81 +1,136 @@
-* {
+*{
     list-style: none;
-    padding:0px;
-    margin: 0px;
+    margin:0;
+    padding:0;
+    text-align: left;
+}
+.glyphicon {
+    display: block;
+    text-align: center;
+}
+.glyphicon-triangle-right:before {
+    margin-right: 5px;
+}
+.glyphicon-triangle-bottom:before {
+    margin-right: 10px;
+}
+.list ul {
+    padding:5px;
+    display: none;
+    cursor: pointer;
+}
+.list > ul {
+    display: block;
+}
+.list ul li {
+    padding: 5px;
+}
+.list ul ul, .list ul li {
+    margin-left: 1em;
+}
+.list ul ul ul, .list ul ul li  {
+    margin-left: 1.5em;
+}
+.list ul ul ul ul, .list ul ul ul li  {
+    margin-left: 2em;
+}
+.list ul ul ul ul ul, .list ul ul ul ul li  {
+    margin-left: 2.5em;
+}
+.list ul ul ul ul ul ul, .list ul ul ul ul li  {
+    margin-left: 3em;
 }
 .list {
-    position:absolute;
-    width:250px;
-    height:850px;
-    left:0px;
-    top:79px;
+    position: absolute;
+    display: block;
+    width: 248px;
+    height: 848px;
+    top: 79px;
     color: #fff;
-}
-.list-unstyled {
-    width:248px;
-    height:848px;
     background-color: #a8a8a8;
     overflow: auto;
-
 }
-.list-unstyled .outer {
+.list i {
+    color: rgba(115, 115, 115, 0.82);
+}
+div.glyphicon {
+    width: 100%;
+    text-align: left;
+    display: inline-block;
+    margin-left: 0em;
+    height: 40px;
+    cursor: pointer;
+    line-height: 40px;
+    border-bottom: 1px solid #cbcbcb;
+}
+.list > ul .outer {
     position:relative;
-    font-size: 16px;
+    display: none;
     height:40px;
     line-height:40px;
     border-bottom:1px solid #cbcbcb;
 }
-.list-unstyled li.active {
+.list > ul .active {
+    display: inline-block;
     background: #d4d4d4;
 }
-.list-unstyled .outer:hover {
+.list > ul .outer:hover {
     background: #cbcbcb;
 }
-.outer .name {
+ul .dirInput {
     position: absolute;
+    width: 90px;
+    left: 12px;
+    top: 1px;
+    text-align: left;
+    padding-left: 5px;
+    height: 37px;
+    visibility: hidden;
+    background: #cbcbcb;
+    border: none;
+    color: black;
+}
+.glyphicon-download-alt {
+    position: absolute;
+    right: 0px;
+    top: 4px;
+    line-height: 40px;
+}
+.glyphicon-trash {
+    position: absolute;
+    right: 25px;
+    top:5px;
+    line-height: 40px;
+}
+.glyphicon-download-alt:hover {
+    color: #000;
+}
+.glyphicon-trash:hover {
+    color: #000;
+}
+.outer .content, .list div .content {
+    position: absolute;
+    width: 90px;
     left: 0px;
     text-align: left;
     padding-left: 5px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 110px;
 }
-.outer i {
+.list div .content ,.list  ul div input.dirInput{
+    left: 15px;
+}
+.outer .renameInput , ul div input.dirInput{
     position: absolute;
-    right:20px;
-    cursor: pointer;
-    color: #a8a8a8;
-    margin-top: 2px;
-    padding: 9px;
-    font-weight:bold;
-}
-.outer .renameInput {
-    width: 175px;
-    height: 40px;
-    float: left;
+    width: 90px;
+    left: 0px;
+    top: 1px;
+    text-align: left;
+    padding-left: 5px;
+    height: 37px;
     visibility: hidden;
     background: #cbcbcb;
-    border: 1px solid #a8a8a8;
+    border: none;
     color: black;
-    padding-left: 10px;
-}
-.outer:hover i {
-    visibility: visible;
-}
-.more-window {
-    position: absolute;
-    right:48px;
-    z-index: 100;
-    visibility: hidden;
-    background: #cbcbcb;
-    padding: 5px;
-    border: 1px solid #cbcbcb;
-}
-.more-window li {
-    cursor: pointer;
-    color: #fff;
-}
-.more-window li:hover {
-    color: #737373;
 }

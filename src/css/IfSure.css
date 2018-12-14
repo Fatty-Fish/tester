@@ -1,0 +1,42 @@
+.ifsure {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    overflow: hidden;
+    height: 300px;
+    transform: translate(-50%, -50%);
+    border: 1px solid #4b4b4b;
+}
+.ifsure .nav {
+    border: 1px solid #4b4b4b;
+    background: #4b4b4b;
+    color: white;
+    font-size: 18px;
+    padding: 15px;
+}
+.ifsure .nav::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+.nav .glyphicon-remove-circle {
+    display: inline-block;
+    float: right;
+}
+.nav p {
+    float: left;
+}
+.ifsure .desc {
+    margin-top: 20px;
+    font-size: 16px;
+    padding: 20px;
+}
+.btn-wrapper {
+    display: flex;
+}
+.btn-wrapper .btn {
+    flex: 1;
+    flex-basis: 100px;
+    margin: 50px 50px 0px;
+}

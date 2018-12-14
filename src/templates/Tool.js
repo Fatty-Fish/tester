@@ -79,29 +79,40 @@ class Tool extends Component {
         $("#myFile").click()
     }
     reader () {
-        var trueFile=document.getElementById("myFile").files[0];
-        if(trueFile || trueFile.type === "application/json") {
-            var fr=new FileReader();
-            var that = this
-;            fr.readAsText(trueFile);
-            fr.onload=function(){
-                var obj = JSON.parse(this.result);
-                obj = obj.item[0];
-                var name, bodyList,headerList,method,url,paramList;
-                            var query = obj.request.url.query;
-                            name = obj.name;
-                            bodyList= obj.request.body.formdata;
-                            headerList = obj.request.header;
-                            method = obj.request.method;
-                            url = "http://" + obj.request.url.raw;
-                            paramList = query ? query : [];
-                            that.addCaseState(name, bodyList,headerList,method,url,paramList);
-            }
-            document.getElementById("myFile").value = "";
-        }else {
-            // alert("file type not match")
+        var Files = document.getElementById("myFile").files;
+        var trueFiles = Array.prototype.slice.call(Files);
+        trueFiles.forEach((trueFile, index)=> {
+            if(trueFile && trueFile.type === "application/json") {
+                var fr=new FileReader();
+                var that = this;
+                fr.readAsText(trueFile);
+                fr.onload=function(){
+                    var obj = JSON.parse(this.result);
+                    // console.log(obj)
 
-        }
+                    that.props.addState(obj);
+
+                    // if(obj) {
+                    //     obj = obj.item[0];
+                    //     var name, bodyList,headerList,method,url,paramList,query;
+                    //     name = obj.name;
+                    //     if(name) {
+                    //         query = obj.request.url.query;
+                    //         bodyList= obj.request.body.formdata || [{key: "", value: ""}];
+                    //         headerList = obj.request.header || [{key: "", value: ""}];
+                    //         method = obj.request.method || "GET";
+                    //         url = obj.request.url.raw ? "http://" + obj.request.url.raw : "";
+                    //         paramList = query ? query : [{key: "", value: ""}];
+                    //     }
+                    //     that.addCaseState(name, bodyList,headerList,method,url,paramList);
+                    // }
+                };
+                document.getElementById("myFile").value = "";
+            }else {
+                alert("file type not match")
+
+            }
+        })
     }
     render () {
         return(
