@@ -31,7 +31,9 @@ class WillSave extends Component {
         })
     }
     cancelSave () {
-        this.props.cancelSave();
+        if (! this.props.fromTool) {
+            this.props.cancelSave();
+        }
     }
     saveAs () {
         if (this.state.str) {
@@ -42,6 +44,7 @@ class WillSave extends Component {
         }
     }
     render () {
+        console.log(this.props.caseList)
         if (this.state.str) {
             var arr = this.state.str.split("/");
             arr.splice(0,1 );
@@ -51,7 +54,7 @@ class WillSave extends Component {
         return(
             <div className="willsave">
                 <div className="save-wrapper">
-                    <i className="glyphicon glyphicon-remove-circle" onClick={this.cancelSave}></i>
+                    {this.props.fromTool ? "" : (<i className="glyphicon glyphicon-remove-circle" onClick={this.cancelSave}></i>)}
                     <div className="name">
                         <span className="name-desc">Request name:</span>
                         <input type="text" className="name-input" value={this.state.initName} onChange={this.requestName}/>
@@ -61,7 +64,7 @@ class WillSave extends Component {
                         <List activeDir={this.activeDir} fromSave="fromSave" caseList={this.props.caseList}></List>
                     </div>
                     <div className="button">
-                        <button className="btn" onClick={this.cancelSave}>取消</button>
+                        {this.props.fromTool ? "" : (<button className="btn" onClick={this.cancelSave}>取消</button>)}
                         <button className="btn" onClick={this.saveAs}>{"储存到" + (newStr ? newStr : "哪里？")}</button>
                     </div>
                 </div>

@@ -90,9 +90,9 @@ module.exports = function(proxy, allowedHost) {
     proxy,
       after(app) {
         app.use(bodyParser());
-        app.post("/", async (req, result)=> {
+        app.post("/", (req, result)=> {
             // 想在此获取页面post过来的data参---------使用body-parser
-              await axios({
+            axios({
                 method: req.body.method,
                 url: req.body.url,
                 headers: req.body.headers,
@@ -104,7 +104,7 @@ module.exports = function(proxy, allowedHost) {
               return result.json(err.data);
             });
         });
-        app.post("/surechange", async(req, result)=> {
+        app.post("/surechange",(req, result)=> {
             var per = req.body.person;
             var auth = req.body.tar;
             var path = req.body.path;
@@ -124,6 +124,36 @@ module.exports = function(proxy, allowedHost) {
                     return result.json("ok");
                 })
             }
+        });
+        app.post("/sureShare", (req, res)=> {
+            fs.readFile("storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
+                if(err) throw err;
+                var dataobj = JSON.parse(data);
+                var shareArr = dataobj.shared;
+                var len = shareArr.length;
+                var arr = [];
+                var rarr = req.body.r;
+                var warr = req.body.w;
+                rarr.forEach((ele, index)=> {
+                    arr.push({"path": ele, "auth": "r"});
+                });
+                warr.forEach((ele, index)=> {
+                    arr.push({"path": ele, "auth": "w"});
+                });
+                for (var i = 0; i< len; i++) {
+                    if (shareArr[i].name === req.body.host) {
+                        shareArr[i].item = arr
+                    }
+                };
+                var obj = {
+                    ...dataobj,
+                    shared: shareArr
+                };
+                fs.writeFile("storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
+                    if (err) throw err;
+                    return result.json("ok");
+                })
+            });
         });
         // 人名变量替换
         app.get("/new", (req,res)=> {

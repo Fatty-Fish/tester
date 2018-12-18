@@ -74,7 +74,7 @@ div.glyphicon {
     display: inline-block;
     background: #d4d4d4;
 }
-.list > ul .outer:hover {
+.cover > .list > ul .outer:hover {
     background: #cbcbcb;
 }
 ul .dirInput {

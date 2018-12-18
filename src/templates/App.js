@@ -80,6 +80,9 @@ class App extends Component {
       this.cancelSave = this.cancelSave.bind(this);
       this.caseSave = this.caseSave.bind(this);
       this.receiveShare = this.receiveShare.bind(this);
+      this.sharechange = this.sharechange.bind(this);
+      this.importCase = this.importCase.bind(this);
+      this.importCaseFn = this.importCaseFn.bind(this);
   }
     caseSave(acName) {
       // acName  newCase/0
@@ -1247,6 +1250,31 @@ class App extends Component {
             caseStore: caseObj
         })
     }
+    sharechange (shareitem, shareTo) {
+        // 改变自己state,并上传
+        var caseList = this.state.caseList;
+        var len = caseList.share.length;
+        for (var i = 0; i <len; i++) {
+            if (caseList.share[i].name === shareTo) {
+                caseList.share[i].item = shareitem
+            }
+        }
+        this.setState({
+            caseList: caseList
+        });
+        axios({
+            url: "/surechange",
+            method: "post",
+            data: {
+                "newData": caseList,
+                "person": "person0"
+            }
+        }).then((res) => {
+            if (res) {
+                //
+            }
+        });
+    }
     refresh (arr) {
       var newObj = {};
       for(var prop in arr) {
@@ -1289,12 +1317,54 @@ class App extends Component {
       var newCase = this.state.caseStore.newCase || {};
 
       this.setState({
+            person: "person0",
             caseList: arr,
             caseStore: {
                 newCase: newCase,
                 ...newObj
             },
         })
+    }
+    importCaseFn (item, arr, obj) {
+      arr.shift();
+      var len = item.length;
+      for (var i = 0; i < len; i++) {
+          if (item[i].name === arr[0]) {
+              if (arr.length === 1) {
+                  item[i].item.push(obj);
+              }else if (item[i].item) {
+                  item[i].item = this.importCaseFn(item[i].item, arr, obj)
+              }
+              return item;
+          }
+      }
+    }
+
+    importCase (obj, from) {
+        var caseList = this.state.caseList;
+        var fromArr = from.split("/");
+        console.log(fromArr)
+        // 保存到根：
+        if (fromArr.length === 1) {
+            caseList[fromArr[0]].item.push(obj);
+        }else {
+            caseList[fromArr[0]].item = this.importCaseFn(caseList[fromArr[0]].item, fromArr, obj);
+        }
+        this.setState({
+            caseList: caseList
+        });
+        axios({
+            url: "/surechange",
+            method: "post",
+            data: {
+                "newData": caseList,
+                "person": "person0"
+            }
+        }).then((res) => {
+            if (res) {
+                //
+            }
+        });
     }
     componentWillMount() {
         axios({
@@ -1333,7 +1403,7 @@ class App extends Component {
             return (
                 <div className="App">
                     <div className="cover">
-                        <Tool addState = {this.addCase}></Tool>
+                        <Tool importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
                         <Nav activeCase = {this.state.activeIndex} acCaseFn = {this.acCaseFn} addFn = {this.addFile} delFn = {this.delFn} caseList={this.state.activeCase}></Nav>
                         {this.state.saveFlag >= 0 ? (<WillSave cancelSave={this.cancelSave} saveAs={this.saveAs} caseList={this.state.caseList}></WillSave>) : ""}
                         {this.state.sureFlag >= 0 ? (<IfSure saveFn={this.saveFn} cancelFn={this.cancelFn} loseFn={this.loseFn}></IfSure>) : ""}
