@@ -1,5 +1,5 @@
 {
-  "join-test": {
+  "hahaha-test": {
     "cont": [{
       "key": "app",
       "value": "dsdjz"
@@ -14,14 +14,14 @@
       },
       {
         "key": "url",
-        "value": "test-activity.changyou.com"
+        "value": "test-activity.reactapp.com"
       }],
     "from": "_self"
   },
   "baas-test": {
     "cont": [{
       "key": "url",
-      "value": "http://tbaas.changyou.com"
+      "value": "http://tbaas.reactapp.com"
     },{
       "key": "appId",
       "value": "act_operation"
@@ -33,6 +33,6 @@
   },
   "Global": [{
     "key": "userType",
-    "value": "changyou"
+    "value": "reactapp"
   }]
 }
