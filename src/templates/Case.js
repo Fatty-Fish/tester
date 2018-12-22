@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import $ from "jquery";
+import  VarSet from "./VarSet";
 import axios from "axios";
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -28,7 +29,37 @@ class Case extends Component {
         this.changeValue = this.changeValue.bind(this);
         this.clearRequest = this.clearRequest.bind(this);
         this.saveChange = this.saveChange.bind(this);
+        this.setVariable = this.setVariable.bind(this);
+        this.varSetHide = this.varSetHide.bind(this);
+        this.removeVar = this.removeVar.bind(this);
+        this.importVar = this.importVar.bind(this);
+        this.changeVarName = this.changeVarName.bind(this);
+        this.findVarIndex = this.findVarIndex.bind(this);
+        this.disableVar = this.disableVar.bind(this);
     };
+    varSetHide () {
+        this.setState({
+            varSet: false
+        })
+    }
+    setVariable (e) {
+        e.stopPropagation();
+        // axios({
+        //     method: "get",
+        //     url: "/new",
+        //     params: {
+        //         person: "person0"
+        //     },
+        //     contentType:"application/json",
+        // }).then((res)=> {
+        //     var caseList = JSON.parse(res.data);
+        //     // console.log(caseList.variable)
+            this.setState({
+                varSet: true,
+                // varList: caseList.variable
+            })
+        // });
+    }
     saveChange () {
         var arr = this.props.k.split("/");
         var auth = this.state.auth;
@@ -438,6 +469,89 @@ class Case extends Component {
     changeValue (e) {
         this.changeFn(e, "value");
     }
+    findVarIndex(varNm) {
+        var varList = this.state.varList;
+        var len = varList.length;
+        for (var i = 0; i < len; i++) {
+            if (varList[i].name === varNm) {
+                return i;
+            }
+        }
+    }
+    removeVar (index) {
+        var varList = this.state.varList;
+        varList.splice(index, 1);
+        this.setState({
+            varList: varList
+        });
+        axios({
+            url: "/changeSelfVar",
+            method: "post",
+            data: {
+                varList: varList,
+                self: "person0"
+            }
+        }).then((res)=> {
+            //
+        })
+    };
+    importVar (newVar) {
+        var varList = this.state.varList;
+        var index = this.findVarIndex(newVar.name);
+        newVar.from = "self-import";
+        console.log(varList);
+        console.log(newVar.name);
+        if (index >= 0) {
+            var sure = window.confirm(newVar.name + "已经存在，替换？");
+            if (sure) {
+                varList[index] = newVar;
+                this.setState({
+                    varList: varList
+                });
+                axios({
+                    url: "/changeSelfVar",
+                    method: "post",
+                    data: {
+                        varList: varList,
+                        self: "person0"
+                    }
+                }).then((res)=> {
+                    //
+                })
+            }
+        }else {
+            varList.push(newVar);
+            this.setState({
+                varList: varList
+            });
+            axios({
+                url: "/changeSelfVar",
+                method: "post",
+                data: {
+                    varList: varList,
+                    self: "person0"
+                }
+            }).then((res)=> {
+                //
+            })
+        }
+    };
+    changeVarName (varlist) {
+        // var varList = this.state.varList;
+        this.setState({
+            varList: varlist
+        });
+        axios({
+            url: "/changeSelfVar",
+            method: "post",
+            data: {
+                varList: varlist,
+                self: "person0"
+            }
+        }).then((res)=> {
+            //
+        });
+    }
     componentDidUpdate () {
         // 把case组件里最新的state更新到父级APP组件的state里（为了保证父组件export时，是最新的method，URL，header等，且case组件能自由监听变化method，URL。。。）
         // var key = this.props.k;
@@ -463,14 +577,42 @@ class Case extends Component {
             ...nextProps.caseRender
         })
     }
+    disableVar(newList) {
+        this.setState({
+            varList: newList
+        });
+    }
+    componentWillMount() {
+        axios({
+            method: "get",
+            url: "/new",
+            params: {
+                person: "person0"
+            },
+            contentType:"application/json",
+        }).then((res)=> {
+            var caseList = JSON.parse(res.data);
+            // console.log(caseList.variable)
+            this.setState({
+                // varSet: true,
+                varList: caseList.variable
+            })
+        });
+    }
+
     render () {
+        var varList = this.state.varList;
+        console.log(varList);
+        // var varOptions = varList.map((ele, index)=> {
+        //    return (<option key={index} value={ele.name}>{ele.name}</option>)
+        // });
         var seen = this.props.style;
         var caseNamearr = this.props.caseName.split("/");
         var caseName =caseNamearr[caseNamearr.length - 1];
         if (Number(caseName) || (Number(caseName) == 0)) {
             caseName = "newCase"
         }else if (caseName === "r" || caseName === "w") {
-            caseNamearr.splice(caseNamearr.length - 1, 1)
+            caseNamearr.splice(caseNamearr.length - 1, 1);
             caseName = caseNamearr.join("/")
         }else {
             caseName = this.props.caseName;
@@ -655,6 +797,7 @@ class Case extends Component {
                     </div>
                     <button className="btn submit" onClick={this.submitProxy}>提交</button>
                     <button className="btn save" onClick={this.saveChange}>保存</button>
+                    <button className="btn setting" onClick={this.setVariable}><i className="glyphicon glyphicon-cog"></i></button>
                 </div>
                 <div className="content">
                     <ul className="nav nav-tabs">
@@ -709,10 +852,6 @@ class Case extends Component {
                         </tbody>
                     </table>
                 </div>
-
-
-
-
                 <div className="panel panel-default">
                     <div className="panel-heading">
                         <h3 className="panel-title">Response for {caseName}</h3>
@@ -725,6 +864,10 @@ class Case extends Component {
                         </pre>
                     </div>
                 </div>
+                {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={this.state.varList}></VarSet>) : ""}
+                <select className="form-control">
+                    {/*{varOptions}*/}
+                </select>
             </div>
         )
     }

@@ -83,6 +83,7 @@ class App extends Component {
       this.sharechange = this.sharechange.bind(this);
       this.importCase = this.importCase.bind(this);
       this.importCaseFn = this.importCaseFn.bind(this);
+      // this.varChangeNm = this.varChangeNm.bind(this);
   }
     caseSave(acName) {
       // acName  newCase/0
@@ -680,48 +681,6 @@ class App extends Component {
       }
       return arr
     }
-    // renameFn (name, newName, from) {
-    //     var store = this.state.caseStore;
-    //     var caseStore = store[from];
-    //     var caseCont = caseStore[name];
-    //     delete caseStore[name];
-    //     caseStore[newName] = caseCont;
-    //     store[from] = caseStore;
-    //     // caseStore -- {from:
-    //     // 占位
-    //     this.changeFarm(this.state.caseList[from], "/", from);
-    //     var caseList = this.state.caseList[from];
-    //     var newCaseItem = this.renameCase(caseList.item, name, newName);
-    //     var newCaseList = {
-    //         info: {
-    //             ...caseList.info
-    //         },
-    //         item: newCaseItem
-    //     };
-    //     var caselist = this.state.caseList;
-    //     caselist[from] = newCaseList;
-    //     axios({
-    //         url: "/surechange",
-    //         method: "post",
-    //         data: {
-    //             "newData": caselist,
-    //             "person": "person0"
-    //         }
-    //     }).then((res) => {
-    //         if (res) {
-    //             //
-    //         }
-    //     });
-    //     // activeCase 也被更改
-    //     var activeCase = this.state.activeCase;
-    //     var acIndex = this.state.activeIndex;
-    //     activeCase[acIndex] = from + "/" +newName;
-    //     this.setState({
-    //         caseStore: store,
-    //         caseList: caselist,
-    //         activeCase: activeCase
-    //     })
-    // }
     renameFn (name, newName, from) {
       // console.log(name, newName, from)   quasnssssaaaszz quas s nssssaaaszz tl线上/库/quasnssssaaaszz
         var store = this.state.caseStore;
@@ -1308,14 +1267,15 @@ class App extends Component {
                       // }
                         // });
           }
-          if (prop !== "shared" && prop !== "share") {
+          if (prop !== "shared" && prop !== "share" && prop !== "variable") {
               var obj = {};
               this.storeChange(arr[prop], obj, prop);
               newObj[arr[prop].info.name] = obj
           }
       }
       var newCase = this.state.caseStore.newCase || {};
-
+      // var newArr = arr.variable;
+      delete arr.variable;
       this.setState({
             person: "person0",
             caseList: arr,
@@ -1323,6 +1283,7 @@ class App extends Component {
                 newCase: newCase,
                 ...newObj
             },
+          // variable: newArr
         })
     }
     importCaseFn (item, arr, obj) {
@@ -1339,7 +1300,12 @@ class App extends Component {
           }
       }
     }
-
+    // varChangeNm(varList) {
+    //   console.log(varList)
+    //   this.setState({
+    //       variable: varList
+    //   })
+    // }
     importCase (obj, from) {
         var caseList = this.state.caseList;
         var fromArr = from.split("/");
@@ -1380,7 +1346,7 @@ class App extends Component {
     }
 
     render() {
-      console.log(this.state.caseList);
+      console.log(this.state);
       console.log(this.state.caseStore);
         if (JSON.stringify(this.state.caseList) === "{}") {
             return (<h3>nothing here...</h3>)

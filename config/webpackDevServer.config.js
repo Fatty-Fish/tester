@@ -155,6 +155,50 @@ module.exports = function(proxy, allowedHost) {
                 })
             });
         });
+        app.post("/changeOthersVar", (req, result)=> {
+            var person = req.body.person;
+            var addVar = req.body.variable;
+            console.log(person);
+            console.log(addVar);
+            fs.readFile("storage/" + person + ".json", "utf8", (err, data)=> {
+                if (err) throw err;
+                var newData = JSON.parse(data);
+                newData.variable.push(addVar);
+                console.log(888888)
+                console.log(JSON.stringify(newData.variable))
+                fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
+                    if (err) throw err;
+                    return result.json("ok");
+                })
+            })
+        });
+        app.post("/changeSingleSelfVar", (req, result)=> {
+            var variable = req.body.variable;
+            var person = req.body.self;
+            var index = req.body.index;
+            fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
+                if (err) throw err;
+                var newData = JSON.parse(data);
+                newData.variable[index] = variable;
+                fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
+                    if (err) throw  err;
+                    return result.json("ok");
+                })
+            })
+        });
+        app.post("/changeSelfVar", (req, result)=> {
+            var varList = req.body.varList;
+            var person = req.body.self;
+           fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
+               if (err) throw err;
+                var newData = JSON.parse(data);
+                newData.variable = varList;
+                fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
+                    if (err) throw  err;
+                    return result.json("ok");
+                })
+           })
+        });
         // 人名变量替换
         app.get("/new", (req,res)=> {
           var person = req.query.person;
