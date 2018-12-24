@@ -155,7 +155,12 @@ class VarSet extends Component {
     }
     removeVar (e) {
         var varNm = $(e.target).parent().attr("varName");
-        this.props.removeVar(this.findVarIndex(varNm));
+        var index = this.findVarIndex(varNm);
+        this.props.removeVar(index);
+        var varSet = this.props.varList;
+        this.setState({
+            varName: varSet[0].name
+        })
     }
     ImportBtn (e) {
         $("#varFile").click()
@@ -359,10 +364,10 @@ class VarSet extends Component {
             }
             var varTrCont = varTr.map((ele, index)=> {
                 return (<tr key={index} var={index}>
-                    <td className="btn"><i className="glyphicon glyphicon-ok" style={{color: ele.enabled ? "white" : "#767676"}} onClick={this.disableVar}></i></td>
+                    <td className="btn"><i className="glyphicon glyphicon-ok" style={{color: ele.enabled || ele.enable? "white" : "#767676"}} onClick={this.disableVar}></i></td>
                     <td><input className="form-control" type="text" onChange={this.changeVarKey} value={ele.key}/></td>
                     <td><input className="form-control" type="text" onChange={this.changeVarValue} value={ele.value}/></td>
-                    <td className="btn"><i className="glyphicon glyphicon-minus" style={{color: ele.enabled ? "white" : "#767676"}} onClick={this.minVarLine}></i></td>
+                    <td className="btn"><i className="glyphicon glyphicon-minus" style={{color: ele.enabled || ele.enable? "white" : "#767676"}} onClick={this.minVarLine}></i></td>
                 </tr>)
             })
         }
@@ -376,13 +381,13 @@ class VarSet extends Component {
             newVariable = newVariable.values.map((ele, index) => {
                 return (<tr key={index} var={index}>
                     <td className="btn"><i className="glyphicon glyphicon-ok"
-                                           style={{color: ele.enabled ? "white" : "#767676"}}
+                                           style={{color: ele.enabled || ele.enable ? "white" : "#767676"}}
                                            onClick={this.disableaddVar}></i></td>
                     <td><input className="form-control" type="text" onChange={this.changeaddVarKey} value={ele.key}/></td>
                     <td><input className="form-control" type="text" onChange={this.changeaddVarValue} value={ele.value}/>
                     </td>
                     <td className="btn"><i className="glyphicon glyphicon-minus"
-                                           style={{color: ele.enabled ? "white" : "#767676"}}
+                                           style={{color: ele.enabled || ele.enable ? "white" : "#767676"}}
                                            onClick={this.minaddVarLine}></i></td>
                 </tr>)
             });

@@ -36,7 +36,27 @@ class Case extends Component {
         this.changeVarName = this.changeVarName.bind(this);
         this.findVarIndex = this.findVarIndex.bind(this);
         this.disableVar = this.disableVar.bind(this);
+        this.changeVarSelect = this.changeVarSelect.bind(this);
+        this.replaceReg = this.replaceReg.bind(this);
     };
+    changeVarSelect (e) {
+        var selectName = $(e.target).val();
+        var varList = this.state.varList;
+        var len = varList.length;
+        var global = this.state.global;
+        for (var i = 0; i < len; i++) {
+            if (varList[i].name === selectName) {
+                this.setState({
+                    varSelect: i,
+                    varContent: [
+                        ...varList[i].values,
+                        ...varList[global].values
+                    ]
+                });
+                break;
+            }
+        }
+    }
     varSetHide () {
         this.setState({
             varSet: false
@@ -98,7 +118,7 @@ class Case extends Component {
         //排disabled
         var Arr = arr.filter((ele, index)=> {
             return disArr.indexOf(index) < 0
-        })
+        });
         // disArr.forEach((ele)=> {
         //     arr.splice(ele, 1);
         // }); 会修改整个state不好
@@ -106,11 +126,43 @@ class Case extends Component {
         var newArr = Arr.filter((ele)=> {
             return ele.key && ele.value;
         });
+        console.log(newArr);
+        // 替换变量
+        var varContent = this.state.varContent;
+        // 找出enable
+        varContent = varContent.filter((ele, index) => {
+           return ele.enable || ele.enabled
+        });
+        var varContents = {};
+        varContent.forEach((ele, index)=> {
+            varContents["{{" + ele.key + "}}"] =  ele.value
+        });
+        console.log(varContents);
+        newArr = newArr.map((ele, index)=> {
+            if (varContents.hasOwnProperty(ele.value)) {
+                ele.value = varContents[ele.value];
+            }
+            return ele
+        });
+        // console.log(newArr)
         var obj = {};
         newArr.forEach((ele)=> {
             obj[ele.key] = ele.value;
-        })
+        });
         return obj;
+    }
+    replaceReg (str,varContent, len, index) {
+        if (varContent[index].enabled || varContent[index].enable) {
+            var re = new RegExp("{{" + varContent[index].key + "}}", "igm");
+            var tar = varContent[index].value;
+            str = str.replace(re, tar);
+            if (len !== 1) {
+                str = this.replaceReg(str, varContent, len - 1, index + 1);
+                return str;
+            }else {
+                return str;
+            }
+        }
     }
     submitProxy () {
         var method = this.state.method;
@@ -124,6 +176,11 @@ class Case extends Component {
         this.setState({
             result: "Waiting...."
         });
+        var varContent = this.state.varContent;
+        if (url.indexOf("{{") >= 0) {
+            var len = varContent.length;
+            url = this.replaceReg(url,varContent, len, 0);
+        }
         axios({
             method: "post",
             url: "/",
@@ -592,20 +649,37 @@ class Case extends Component {
             contentType:"application/json",
         }).then((res)=> {
             var caseList = JSON.parse(res.data);
-            // console.log(caseList.variable)
+            var variable = caseList.variable;
+            var len = variable.length;
+            var index;
+            for (var i = 0; i < len; i ++) {
+                if (variable[i].name === "Global") {
+                    index = i;
+                    break;
+                }
+            }
             this.setState({
-                // varSet: true,
-                varList: caseList.variable
-            })
+                varList: variable,
+                varSelect: 0,
+                global: index,
+                varContent: [
+                    ...variable[0].values,
+                    ...variable[index].values
+                ]
+            });
         });
     }
 
     render () {
-        var varList = this.state.varList;
-        console.log(varList);
-        // var varOptions = varList.map((ele, index)=> {
-        //    return (<option key={index} value={ele.name}>{ele.name}</option>)
-        // });
+        var varSelect = this.state.varList;
+        var varIndex = this.state.varSelect;
+        console.log(varIndex)
+        if (varIndex >= 0) {
+            var selectVar = varSelect[this.state.varSelect].name;
+            var varOptions = varSelect.map((ele, index)=> {
+                return (<option key={index} value={ele.name}>{ele.name}</option>)
+            });
+        }
         var seen = this.props.style;
         var caseNamearr = this.props.caseName.split("/");
         var caseName =caseNamearr[caseNamearr.length - 1];
@@ -798,6 +872,9 @@ class Case extends Component {
                     <button className="btn submit" onClick={this.submitProxy}>提交</button>
                     <button className="btn save" onClick={this.saveChange}>保存</button>
                     <button className="btn setting" onClick={this.setVariable}><i className="glyphicon glyphicon-cog"></i></button>
+                    <select value={selectVar} onChange={this.changeVarSelect} className="form-control">
+                        {varOptions ? varOptions : ""}
+                    </select>
                 </div>
                 <div className="content">
                     <ul className="nav nav-tabs">
@@ -865,9 +942,6 @@ class Case extends Component {
                     </div>
                 </div>
                 {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={this.state.varList}></VarSet>) : ""}
-                <select className="form-control">
-                    {/*{varOptions}*/}
-                </select>
             </div>
         )
     }

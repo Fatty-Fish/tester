@@ -105,27 +105,39 @@ module.exports = function(proxy, allowedHost) {
             });
         });
         app.post("/surechange",(req, result)=> {
+            console.log("surechange")
             var per = req.body.person;
             var auth = req.body.tar;
             var path = req.body.path;
             var obj = req.body.newData;
-            if (auth) {
-                fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
-                    if (err) throw err;
+            fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
+                if (err) throw err;
+                if (auth) {
                     var resState = addState(data, per, path, obj);
                     fs.writeFile("storage/" + per + ".json", JSON.stringify(resState), "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
                     })
-                });
-            }else {
-                fs.writeFile("storage/" + per + ".json", JSON.stringify(obj), "utf8", (err)=> {
-                    if (err) throw err;
-                    return result.json("ok");
-                })
-            }
+                }else {
+                    var objdata = JSON.parse(data);
+                    var variable = objdata.variable;
+                    objdata = {
+                        ...obj,
+                        variable: [
+                            ...variable
+                        ]
+                    };
+                    fs.writeFile("storage/" + per + ".json", JSON.stringify(objdata), "utf8", (err)=> {
+                        if (err) throw err;
+                        return result.json("ok");
+                    })
+                }
+            });
+
         });
         app.post("/sureShare", (req, res)=> {
+            console.log("sureshare")
+
             fs.readFile("storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
                 if(err) throw err;
                 var dataobj = JSON.parse(data);
@@ -158,14 +170,10 @@ module.exports = function(proxy, allowedHost) {
         app.post("/changeOthersVar", (req, result)=> {
             var person = req.body.person;
             var addVar = req.body.variable;
-            console.log(person);
-            console.log(addVar);
             fs.readFile("storage/" + person + ".json", "utf8", (err, data)=> {
                 if (err) throw err;
                 var newData = JSON.parse(data);
                 newData.variable.push(addVar);
-                console.log(888888)
-                console.log(JSON.stringify(newData.variable))
                 fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
                     if (err) throw err;
                     return result.json("ok");
@@ -201,7 +209,8 @@ module.exports = function(proxy, allowedHost) {
         });
         // 人名变量替换
         app.get("/new", (req,res)=> {
-          var person = req.query.person;
+            console.log("new")
+            var person = req.query.person;
           var path = req.query.path;
           fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
                 if (err) throw err;

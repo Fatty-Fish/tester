@@ -72,10 +72,17 @@ function caseFn (caseState) {
 function addState (data, person, path, caseState) {
     var arr = path.split("/");
     var obj = JSON.parse(data);
+    var variable = obj.variable;
     var state = arr[1];
     var newArr = arr.slice(2, arr.length - 1);
     var caseobj = caseFn(caseState);
     obj[state].item = findState(obj[state].item, newArr, caseobj);
+    obj = {
+        ...obj,
+        variable: [
+            ...variable
+        ]
+    };
     return obj;
 }
 module.exports = addState;

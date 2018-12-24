@@ -1,1 +1,1351 @@
-{"join":{"info":{"_postman_id":"1cc76b57-abb3-44b6-870f-0504e56d56f0","name":"join","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"activitys","item":[{"name":"third","item":[{"name":"filter例外测试--q奖","request":{"method":"GET","header":[{"key":"Content-Type","value":"application/json; charset=UTF-8","disabled":true},{"key":"APP","value":"dsdjz"},{"key":"ACTIVITY","value":"test"},{"key":"VERSION","value":"20180521"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/changyou/test/get","host":["{{url}}"],"path":["changyou","test","get"]}},"response":[]},{"name":"qiandao","item":[{"name":"签到","request":{"method":"POST","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"},{"key":"Authorization","value":"{{auth}}"}],"body":{"mode":"formdata","formdata":[]},"url":{"raw":"test-activity.changyou.com/{{userType}}/sign","host":["test-activity.changyou.com"],"path":["{{userType}}","sign"]}},"response":[]}]}],"_postman_isSubFolder":true},{"name":"签到","item":[{"name":"签到","request":{"method":"POST","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"},{"key":"Authorization","value":"{{auth}}"}],"body":{"mode":"formdata","formdata":[]},"url":{"raw":"test-activity.changyou.com/{{userType}}/sign","host":["test-activity.changyou.com"],"path":["{{userType}}","sign"]}},"response":[]}]}]},{"name":"畅游公众号","item":[{"name":"appFind","request":{"method":"GET","header":[{"key":"ACTIVITY","value":"platform-wx"},{"key":"VERSION","value":"2018"}],"body":{"formdata":[]},"url":{"raw":"http://join-activity.changyou.com/wechat/cyapp/find?code=2","protocol":"http","host":["join-activity","changyou","com"],"path":["wechat","cyapp","find"],"query":[{"key":"code","value":"2"}]}},"response":[]},{"name":"appFind2","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://join-activity.changyou.com/wx/cyapp/find2?id=2","protocol":"http","host":["join-activity","changyou","com"],"path":["wx","cyapp","find2"],"query":[{"key":"id","value":"2"}]}},"response":[]},{"name":"appFind3","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://join-activity.changyou.com/wx/cyapp/find3?id=2","protocol":"http","host":["join-activity","changyou","com"],"path":["wx","cyapp","find3"],"query":[{"key":"id","value":"2"}]}},"response":[]},{"name":"attend","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json; charset=UTF-8","disabled":true}],"body":{"mode":"formdata","formdata":[{"key":"userId","value":"ed7b55879f894d0d9067e48fabfe0af4","type":"text"},{"key":"appCode","value":"tl","type":"text"}]},"url":{"raw":"http://local-activity.changyou.com/wechat/cyapp/attend","protocol":"http","host":["local-activity","changyou","com"],"path":["wechat","cyapp","attend"]}},"response":[]}]},{"name":"lot","item":[{"name":"抽奖","request":{"method":"POST","header":[{"key":"Authorization","value":"eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiJmODUxM2IwY2YwNmQ0ZGJjOTc1NzgxMTk5MWU4NDgzZSJ9.8z155e-nP5qnHyNZjpXIDYHK1S1mphRNtUgMmyYTDKJBY1HV1ALMNISBgOg8WjVMYmD4h--tXKHnZglq48aVgw","disabled":true},{"key":"Authorization","value":"{{auth}}"},{"key":"JOIN_LOGINaaaa","value":"{{iptoken}}aaaa"}],"body":{"formdata":[{"key":"openId","value":"11","type":"text"}]},"url":{"raw":"{{url}}/{{userType}}/lottery","host":["{{url}}"],"path":["{{userType}}","lottery"],"query":[]}},"response":[]},{"name":"中奖日志","event":[{"listen":"prerequest","script":{"id":"377662c8-63f0-4800-90b2-36ac6f7eae34","type":"text/javascript","exec":[""]}},{"listen":"test","script":{"id":"cd6c77b3-906b-4424-98ff-4c44c2f060f8","type":"text/javascript","exec":["tests[\"status code is 200\"] = responseCode.code === 200;","var data = JSON.parse(responseBody);","tests[\"data list length is 4\"] = data.data.list.length === 3;"]}}],"request":{"method":"GET","header":[{"key":"Authorization","value":"{{auth}}"},{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSIONCODE","value":"{{version}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/{{userType}}/lottery","host":["{{url}}"],"path":["{{userType}}","lottery"]}},"response":[]}]},{"name":"operation","item":[{"name":"join","request":{"method":"POST","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"},{"key":"Content-Type","value":"application/x-www-form-urlencoded","disabled":true},{"key":"Authorization","value":"{{auth}}"}],"body":{"mode":"formdata","formdata":[{"key":"evtType","value":"1","type":"text"}]},"url":{"raw":"{{url}}/changyou/join","host":["{{url}}"],"path":["changyou","join"]}},"response":[]},{"name":"getJoinUserInfo","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSIONCODE","value":"{{version}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/changyou/join/info/1/2","host":["{{url}}"],"path":["changyou","join","info","1","2"]}},"response":[]},{"name":"getJoinUserInfo-测试","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSIONCODE","value":"{{version}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/changyou/join/info/5717187512085310/2","host":["{{url}}"],"path":["changyou","join","info","5717187512085310","2"]}},"response":[]},{"name":"getJoinUserPage-测试","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSIONCODE","value":"{{version}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/changyou/test/querybind","host":["{{url}}"],"path":["changyou","test","querybind"]}},"response":[]}]},{"name":"test","item":[{"name":"testToken","request":{"method":"GET","header":[{"key":"Content-Type","value":"application/json; charset=UTF-8","disabled":true},{"key":"ACTIVITY","value":"test"},{"key":"VERSIONCODE","value":"20180521"}],"body":{"formdata":[]},"url":{"raw":"{{url}}/test/token?guid=1","host":["{{url}}"],"path":["test","token"],"query":[{"key":"guid","value":"1"}]}},"response":[]},{"name":"activitys-test","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/activitys/platform/test","host":["{{url}}"],"path":["activitys","platform","test"]}},"response":[]},{"name":"iptoken","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/test/token2?guid=1","host":["{{url}}"],"path":["test","token2"],"query":[{"key":"guid","value":"1"}]}},"response":[]}]},{"name":"服务","item":[{"name":"operation","item":[{"name":"签到","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/op/sign/{{userId}}/{{userType}}","host":["{{url}}"],"path":["op","sign","{{userId}}","{{userType}}"]}},"response":[]}],"_postman_isSubFolder":true},{"name":"baidu","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://www.baidu.com","query":[{"key":"wwww","value":""}]}},"response":[]}],"description":"服务内部测试"},{"name":"积分","item":[{"name":"签到","request":{"method":"POST","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"},{"key":"Authorization","value":"{{auth}}"},{"key":"","value":""}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/{{userType}}/sign","host":["{{url}}"],"path":["{{userType}}","sign"]}},"response":[]},{"name":"签到日志","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"},{"key":"Authorization","value":"{{auth}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/{{userType}}/sign/logs","host":["{{url}}"],"path":["{{userType}}","sign","logs"]}},"response":[]}]}]},"tl线上":{"info":{"_postman_id":"90898f22-b6ac-4e04-a81d-f7dcfb248d7b","name":"tl线上","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"库","item":[{"name":"9-66","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.9.66:8080/kankan//xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","9","66"],"port":"8080","path":["kankan","","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]},{"name":"9-67","request":{"method":"GET","header":[{"key":"","value":""}],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.9.67:8080/kankan//xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","9","67"],"port":"8080","path":["kankan","","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"},{"key":"","value":""}]}},"response":[]},{"name":"141-66","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.141.66:8080/kankan/xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","141","66"],"port":"8080","path":["kankan","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]},{"name":"141-67","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.141.67:8080/kankan/xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","141","67"],"port":"8080","path":["kankan","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]},{"name":"8-3","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.8.3:8080/kankan/xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","8","3"],"port":"8080","path":["kankan","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]},{"name":"8-4","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.8.4:8080/kankan/xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","8","4"],"port":"8080","path":["kankan","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]},{"name":"8-5","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.8.5:8080/kankan/xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","8","5"],"port":"8080","path":["kankan","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]},{"name":"8-6","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://10.127.8.6:8080/kankan/xtl/jiankong123?alias=tlbiling_bak&tab=snapshot","protocol":"http","host":["10","127","8","6"],"port":"8080","path":["kankan","xtl","jiankong123"],"query":[{"key":"alias","value":"tlbiling_bak"},{"key":"tab","value":"snapshot"}]}},"response":[]}]}]},"shared":[{"name":"person1","item":[{"path":"dj线上/库/9-k","auth":"r"},{"path":"dj线上/库/9-67","auth":"w"}]}],"share":[{"name":"person1","item":[{"r":["join/activitys/third/filter例外测试--q奖","join/activitys","tl线上"]},{"w":["tl线上/库/141-67","tl线上/库/8-3"]}]}],"畅游公众号":{"info":{"_postman_id":"1cc76b57-abb3-44b6-870f-0504e56d56f0","name":"畅游公众号","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"appFind","request":{"method":"GET","header":[{"key":"ACTIVITY","value":"platform-wx"},{"key":"VERSION","value":"2018"}],"body":{"formdata":[]},"url":{"raw":"http://join-activity.changyou.com/wechat/cyapp/find?code=2","protocol":"http","host":["join-activity","changyou","com"],"path":["wechat","cyapp","find"],"query":[{"key":"code","value":"2"}]}},"response":[]},{"name":"appFind2","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://join-activity.changyou.com/wx/cyapp/find2?id=2","protocol":"http","host":["join-activity","changyou","com"],"path":["wx","cyapp","find2"],"query":[{"key":"id","value":"2"}]}},"response":[]},{"name":"appFind3","request":{"method":"GET","header":[],"body":{"mode":"raw","raw":""},"url":{"raw":"http://join-activity.changyou.com/wx/cyapp/find3?id=2","protocol":"http","host":["join-activity","changyou","com"],"path":["wx","cyapp","find3"],"query":[{"key":"id","value":"2"}]}},"response":[]},{"name":"attend","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json; charset=UTF-8","disabled":true}],"body":{"mode":"formdata","formdata":[{"key":"userId","value":"ed7b55879f894d0d9067e48fabfe0af4","type":"text"},{"key":"appCode","value":"tl","type":"text"}]},"url":{"raw":"http://local-activity.changyou.com/wechat/cyapp/attend","protocol":"http","host":["local-activity","changyou","com"],"path":["wechat","cyapp","attend"]}},"response":[]},{"name":"qqqqq","request":{"method":"put","header":[{"key":"qqq","value":"111111"}],"body":{"formdata":[]},"url":{"raw":"test-activity.changyou.com/test/token2?guid=1/test/token2","host":["test-activity.changyou.com"],"path":["test","token2"],"query":[{"key":"guid","value":"1"}]}},"response":[]}]},"服务":{"info":{"_postman_id":"1cc76b57-abb3-44b6-870f-0504e56d56f0","name":"服务","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"operation","item":[{"name":"签到","request":{"method":"GET","header":[{"key":"APP","value":"{{app}}"},{"key":"ACTIVITY","value":"{{activity}}"},{"key":"VERSION","value":"{{version}}"}],"body":{"mode":"raw","raw":""},"url":{"raw":"{{url}}/op/sign/{{userId}}/{{userType}}","host":["{{url}}"],"path":["op","sign","{{userId}}","{{userType}}"]}},"response":[]}],"_postman_isSubFolder":true}]},"variable":[{"id":"ae2643de-5294-428e-adbb-0eda58e175da","name":"join-test2333333","values":[{"key":"url","value":"test-activity.changyou.com","enabled":true},{"key":"app","value":"dsdjz","enabled":true},{"key":"activity","value":"test","enabled":true},{"key":"version","value":"20180521","enabled":true},{"key":"auth","value":"eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw","enabled":true},{"key":"iptoken","value":"0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C","description":{"content":"","type":"text/plain"},"enabled":true},{"key":"variable_key","value":"variable_value","enabled":true},{"key":"sign","value":"fdbf4415cd0ad6d3f547152ba5515a90","enabled":true}],"_postman_variable_scope":"environment","_postman_exported_at":"2018-12-19T06:02:07.185Z","_postman_exported_using":"Postman/6.6.0","from":"self-import"},{"id":"ae2643de-5294-428e-adbb-0eda58e175da","name":"join-test333333","values":[{"key":"url","value":"test-activity.changyou.com","enabled":true},{"key":"app","value":"dsdjz","enabled":true},{"key":"activity","value":"test","enabled":true},{"key":"version","value":"20180521","enabled":true},{"key":"auth","value":"eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw","enabled":true},{"key":"iptoken","value":"0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C","description":{"content":"","type":"text/plain"},"enabled":true},{"key":"variable_key","value":"variable_value","enabled":true},{"key":"sign","value":"fdbf4415cd0ad6d3f547152ba5515a90","enabled":true}],"_postman_variable_scope":"environment","_postman_exported_at":"2018-12-19T06:02:07.185Z","_postman_exported_using":"Postman/6.6.0","from":"self-import"},{"id":"ae2643de-5294-428e-adbb-0eda58e175da","name":"join-test44444","values":[{"key":"url","value":"test-activity.changyou.com","enabled":true},{"key":"app","value":"dsdjz","enabled":true},{"key":"activity","value":"test","enabled":true},{"key":"version","value":"20180521","enabled":true},{"key":"auth","value":"eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw","enabled":true},{"key":"iptoken","value":"0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C","description":{"content":"","type":"text/plain"},"enabled":true},{"key":"variable_key","value":"variable_value","enabled":true},{"key":"sign","value":"fdbf4415cd0ad6d3f547152ba5515a90","enabled":true}],"_postman_variable_scope":"environment","_postman_exported_at":"2018-12-19T06:02:07.185Z","_postman_exported_using":"Postman/6.6.0","from":"self-import"},{"id":"ae2643de-5294-428e-adbb-0eda58e175da","name":"join-test111","values":[{"key":"url","value":"test-activity.changyou.com","enabled":true},{"key":"app","value":"dsdjz","enabled":true},{"key":"activity","value":"test","enabled":true},{"key":"version","value":"20180521","enabled":true},{"key":"auth","value":"eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw","enabled":true},{"key":"iptoken","value":"0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C","description":{"content":"","type":"text/plain"},"enabled":true},{"key":"variable_key","value":"variable_value","enabled":true},{"key":"sign","value":"fdbf4415cd0ad6d3f547152ba5515a90","enabled":true}],"_postman_variable_scope":"environment","_postman_exported_at":"2018-12-19T06:02:07.185Z","_postman_exported_using":"Postman/6.6.0","from":"self-import"},{"name":"wwwsssaaaaaaa","values":[{"key":"wwww","value":"wwwww","enabled":true},{"key":"ttttt","value":"ttttttt","enabled":true},{"key":"eee","value":"eeeee","enabled":true},{"key":"12121212","value":"333333","enabled":true}],"from":"self-added"},{"name":"wwwsss","values":[{"key":"wwww","value":"wwwww","enabled":true},{"key":"ttttt","value":"ttttttt","enabled":true},{"key":"eee","value":"eeeee","enabled":true},{"key":"mmmm","value":"mmmmm","enabled":true}],"from":"self-import"},{"name":"ggg","values":[{"key":"444","value":"4444","enabled":true}],"from":"self-added"},{"name":"person0baas-test","values":[{"key":"url","value":"http://tbaas.changyou.com","enable":true,"enabled":true},{"key":"appId","value":"act_operation","enable":true,"enabled":true},{"key":"appKey","value":"b720daf0bfde4bf48b652c19c68513d0","enable":true,"enabled":true}],"from":"self-import"}]}
+﻿{
+  "join": {
+    "info": {
+      "_postman_id": "1cc76b57-abb3-44b6-870f-0504e56d56f0",
+      "name": "join",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+      "name": "activitys",
+      "item": [{
+        "name": "third",
+        "item": [{
+          "name": "filter例外测试--q奖",
+          "request": {
+            "method": "GET",
+            "header": [{
+              "key": "Content-Type",
+              "value": "application/json; charset=UTF-8",
+              "disabled": true
+            },
+              {
+                "key": "react",
+                "value": "dsmvvmz"
+              },
+              {
+                "key": "ACTIVITY",
+                "value": "test"
+              },
+              {
+                "key": "VERSION",
+                "value": "20180521"
+              }],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/reactapp/test/get",
+              "host": ["{{url}}"],
+              "path": ["reactapp", "test", "get"]
+            }
+          },
+          "response": []
+        },
+          {
+            "name": "qiandao",
+            "item": [{
+              "name": "签到",
+              "request": {
+                "method": "POST",
+                "header": [{
+                  "key": "react",
+                  "value": "{{react}}"
+                },
+                  {
+                    "key": "ACTIVITY",
+                    "value": "{{activity}}"
+                  },
+                  {
+                    "key": "VERSION",
+                    "value": "{{version}}"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth}}"
+                  }],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "test-activity.reactapp.com/{{userType}}/sign",
+                  "host": ["test-activity.reactapp.com"],
+                  "path": ["{{userType}}", "sign"]
+                }
+              },
+              "response": []
+            }]
+          }],
+        "_postman_isSubFolder": true
+      },
+        {
+          "name": "签到",
+          "item": [{
+            "name": "签到",
+            "request": {
+              "method": "POST",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSION",
+                  "value": "{{version}}"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "{{auth}}"
+                }],
+              "body": {
+                "mode": "formdata",
+                "formdata": []
+              },
+              "url": {
+                "raw": "test-activity.reactapp.com/{{userType}}/sign",
+                "host": ["test-activity.reactapp.com"],
+                "path": ["{{userType}}", "sign"]
+              }
+            },
+            "response": []
+          }]
+        }]
+    },
+      {
+        "name": "React公众号",
+        "item": [{
+          "name": "reactFind",
+          "request": {
+            "method": "GET",
+            "header": [{
+              "key": "ACTIVITY",
+              "value": "platform-wx"
+            },
+              {
+                "key": "VERSION",
+                "value": "2018"
+              }],
+            "body": {
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://join-activity.reactapp.com/wechat/react/find?code=2",
+              "protocol": "http",
+              "host": ["join-activity", "reactapp", "com"],
+              "path": ["wechat", "react", "find"],
+              "query": [{
+                "key": "code",
+                "value": "2"
+              }]
+            }
+          },
+          "response": []
+        },
+          {
+            "name": "reactFind2",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "http://join-activity.reactapp.com/wx/react/find2?id=2",
+                "protocol": "http",
+                "host": ["join-activity", "reactapp", "com"],
+                "path": ["wx", "react", "find2"],
+                "query": [{
+                  "key": "id",
+                  "value": "2"
+                }]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "reactFind3",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "http://join-activity.reactapp.com/wx/react/find3?id=2",
+                "protocol": "http",
+                "host": ["join-activity", "reactapp", "com"],
+                "path": ["wx", "react", "find3"],
+                "query": [{
+                  "key": "id",
+                  "value": "2"
+                }]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "attend",
+            "request": {
+              "method": "POST",
+              "header": [{
+                "key": "Content-Type",
+                "value": "application/json; charset=UTF-8",
+                "disabled": true
+              }],
+              "body": {
+                "mode": "formdata",
+                "formdata": [{
+                  "key": "userId",
+                  "value": "ed7b55879f894d0d9067e48fabfe0af4",
+                  "type": "text"
+                },
+                  {
+                    "key": "reactCode",
+                    "value": "kj",
+                    "type": "text"
+                  }]
+              },
+              "url": {
+                "raw": "http://local-activity.reactapp.com/wechat/react/attend",
+                "protocol": "http",
+                "host": ["local-activity", "reactapp", "com"],
+                "path": ["wechat", "react", "attend"]
+              }
+            },
+            "response": []
+          }]
+      },
+      {
+        "name": "lot",
+        "item": [{
+          "name": "抽奖",
+          "request": {
+            "method": "POST",
+            "header": [{
+              "key": "Authorization",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiJmODUxM2IwY2YwNmQ0ZGJjOTc1NzgxMTk5MWU4NDgzZSJ9.8z155e-nP5qnHyNZjpXIDYHK1S1mphRNtUgMmyYTDKJBY1HV1ALMNISBgOg8WjVMYmD4h--tXKHnZglq48aVgw",
+              "disabled": true
+            },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+              {
+                "key": "JOIN_LOGINaaaa",
+                "value": "{{iptoken}}aaaa"
+              }],
+            "body": {
+              "formdata": [{
+                "key": "openId",
+                "value": "11",
+                "type": "text"
+              }]
+            },
+            "url": {
+              "raw": "{{url}}/{{userType}}/lottery",
+              "host": ["{{url}}"],
+              "path": ["{{userType}}", "lottery"],
+              "query": []
+            }
+          },
+          "response": []
+        },
+          {
+            "name": "中奖日志",
+            "event": [{
+              "listen": "prerequest",
+              "script": {
+                "id": "377662c8-63f0-4800-90b2-36ac6f7eae34",
+                "type": "text/javascript",
+                "exec": [""]
+              }
+            },
+              {
+                "listen": "test",
+                "script": {
+                  "id": "cd6c77b3-906b-4424-98ff-4c44c2f060f8",
+                  "type": "text/javascript",
+                  "exec": ["tests[\"status code is 200\"] = responseCode.code === 200;", "var data = JSON.parse(responseBody);", "tests[\"data list length is 4\"] = data.data.list.length === 3;"]
+                }
+              }],
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+                {
+                  "key": "react",
+                  "value": "{{react}}"
+                },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSIONCODE",
+                  "value": "{{version}}"
+                }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/{{userType}}/lottery",
+                "host": ["{{url}}"],
+                "path": ["{{userType}}", "lottery"]
+              }
+            },
+            "response": []
+          }]
+      },
+      {
+        "name": "operation",
+        "item": [{
+          "name": "join",
+          "request": {
+            "method": "POST",
+            "header": [{
+              "key": "react",
+              "value": "{{react}}"
+            },
+              {
+                "key": "ACTIVITY",
+                "value": "{{activity}}"
+              },
+              {
+                "key": "VERSION",
+                "value": "{{version}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{
+                "key": "evtType",
+                "value": "1",
+                "type": "text"
+              }]
+            },
+            "url": {
+              "raw": "{{url}}/reactapp/join",
+              "host": ["{{url}}"],
+              "path": ["reactapp", "join"]
+            }
+          },
+          "response": []
+        },
+          {
+            "name": "getJoinUserInfo",
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSIONCODE",
+                  "value": "{{version}}"
+                }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/reactapp/join/info/1/2",
+                "host": ["{{url}}"],
+                "path": ["reactapp", "join", "info", "1", "2"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "getJoinUserInfo-测试",
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSIONCODE",
+                  "value": "{{version}}"
+                }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/reactapp/join/info/5717187512085310/2",
+                "host": ["{{url}}"],
+                "path": ["reactapp", "join", "info", "5717187512085310", "2"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "getJoinUserPage-测试",
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSIONCODE",
+                  "value": "{{version}}"
+                }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/reactapp/test/querybind",
+                "host": ["{{url}}"],
+                "path": ["reactapp", "test", "querybind"]
+              }
+            },
+            "response": []
+          }]
+      },
+      {
+        "name": "test",
+        "item": [{
+          "name": "testToken",
+          "request": {
+            "method": "GET",
+            "header": [{
+              "key": "Content-Type",
+              "value": "application/json; charset=UTF-8",
+              "disabled": true
+            },
+              {
+                "key": "ACTIVITY",
+                "value": "test"
+              },
+              {
+                "key": "VERSIONCODE",
+                "value": "20180521"
+              }],
+            "body": {
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{url}}/test/token?guid=1",
+              "host": ["{{url}}"],
+              "path": ["test", "token"],
+              "query": [{
+                "key": "guid",
+                "value": "1"
+              }]
+            }
+          },
+          "response": []
+        },
+          {
+            "name": "activitys-test",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/activitys/platform/test",
+                "host": ["{{url}}"],
+                "path": ["activitys", "platform", "test"]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "iptoken",
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/test/token2?guid=1",
+                "host": ["{{url}}"],
+                "path": ["test", "token2"],
+                "query": [{
+                  "key": "guid",
+                  "value": "1"
+                }]
+              }
+            },
+            "response": []
+          }]
+      },
+      {
+        "name": "服务",
+        "item": [{
+          "name": "operation",
+          "item": [{
+            "name": "签到",
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSION",
+                  "value": "{{version}}"
+                }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/op/sign/{{userId}}/{{userType}}",
+                "host": ["{{url}}"],
+                "path": ["op", "sign", "{{userId}}", "{{userType}}"]
+              }
+            },
+            "response": []
+          }],
+          "_postman_isSubFolder": true
+        },
+          {
+            "name": "baidu",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "http://www.baidu.com",
+                "query": [{
+                  "key": "wwww",
+                  "value": ""
+                }]
+              }
+            },
+            "response": []
+          }],
+        "description": "服务内部测试"
+      },
+      {
+        "name": "积分",
+        "item": [{
+          "name": "签到",
+          "request": {
+            "method": "POST",
+            "header": [{
+              "key": "react",
+              "value": "{{react}}"
+            },
+              {
+                "key": "ACTIVITY",
+                "value": "{{activity}}"
+              },
+              {
+                "key": "VERSION",
+                "value": "{{version}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+              {
+                "key": "",
+                "value": ""
+              }],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/{{userType}}/sign",
+              "host": ["{{url}}"],
+              "path": ["{{userType}}", "sign"]
+            }
+          },
+          "response": []
+        },
+          {
+            "name": "签到日志",
+            "request": {
+              "method": "GET",
+              "header": [{
+                "key": "react",
+                "value": "{{react}}"
+              },
+                {
+                  "key": "ACTIVITY",
+                  "value": "{{activity}}"
+                },
+                {
+                  "key": "VERSION",
+                  "value": "{{version}}"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "{{auth}}"
+                }],
+              "body": {
+                "mode": "raw",
+                "raw": ""
+              },
+              "url": {
+                "raw": "{{url}}/{{userType}}/sign/logs",
+                "host": ["{{url}}"],
+                "path": ["{{userType}}", "sign", "logs"]
+              }
+            },
+            "response": []
+          }]
+      }]
+  },
+  "kj线上": {
+    "info": {
+      "_postman_id": "90898f22-b6ac-4e04-a81d-f7dcfb248d7b",
+      "name": "kj线上",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+      "name": "库",
+      "item": [{
+        "name": "9-66",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": ""
+          },
+          "url": {
+            "raw": "http://10.127.9.66:8080/kankan//xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+            "protocol": "http",
+            "host": ["10", "127", "9", "66"],
+            "port": "8080",
+            "path": ["kankan", "", "xkj", "jiankong123"],
+            "query": [{
+              "key": "alias",
+              "value": "kjbiling_bak"
+            },
+              {
+                "key": "tab",
+                "value": "snapshot"
+              }]
+          }
+        },
+        "response": []
+      },
+        {
+          "name": "9-67",
+          "request": {
+            "method": "GET",
+            "header": [{
+              "key": "",
+              "value": ""
+            }],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.9.67:8080/kankan//xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "9", "67"],
+              "port": "8080",
+              "path": ["kankan", "", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                },
+                {
+                  "key": "",
+                  "value": ""
+                }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "141-66",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.141.66:8080/kankan/xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "141", "66"],
+              "port": "8080",
+              "path": ["kankan", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "141-67",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.141.67:8080/kankan/xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "141", "67"],
+              "port": "8080",
+              "path": ["kankan", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "8-3",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.8.3:8080/kankan/xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "8", "3"],
+              "port": "8080",
+              "path": ["kankan", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "8-4",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.8.4:8080/kankan/xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "8", "4"],
+              "port": "8080",
+              "path": ["kankan", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "8-5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.8.5:8080/kankan/xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "8", "5"],
+              "port": "8080",
+              "path": ["kankan", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "8-6",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://10.127.8.6:8080/kankan/xkj/jiankong123?alias=kjbiling_bak&tab=snapshot",
+              "protocol": "http",
+              "host": ["10", "127", "8", "6"],
+              "port": "8080",
+              "path": ["kankan", "xkj", "jiankong123"],
+              "query": [{
+                "key": "alias",
+                "value": "kjbiling_bak"
+              },
+                {
+                  "key": "tab",
+                  "value": "snapshot"
+                }]
+            }
+          },
+          "response": []
+        }]
+    }]
+  },
+  "shared": [{
+    "name": "person1",
+    "item": [{
+      "path": "mvvm线上/库/9-k",
+      "auth": "r"
+    },
+      {
+        "path": "mvvm线上/库/9-67",
+        "auth": "w"
+      }]
+  }],
+  "share": [{
+    "name": "person1",
+    "item": [{
+      "r": ["join/activitys/third/filter例外测试--q奖", "join/activitys", "kj线上"]
+    },
+      {
+        "w": ["kj线上/库/141-67", "kj线上/库/8-3"]
+      }]
+  }],
+  "React公众号": {
+    "info": {
+      "_postman_id": "1cc76b57-abb3-44b6-870f-0504e56d56f0",
+      "name": "React公众号",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+      "name": "reactFind",
+      "request": {
+        "method": "GET",
+        "header": [{
+          "key": "ACTIVITY",
+          "value": "platform-wx"
+        },
+          {
+            "key": "VERSION",
+            "value": "2018"
+          }],
+        "body": {
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://join-activity.reactapp.com/wechat/react/find?code=2",
+          "protocol": "http",
+          "host": ["join-activity", "reactapp", "com"],
+          "path": ["wechat", "react", "find"],
+          "query": [{
+            "key": "code",
+            "value": "2"
+          }]
+        }
+      },
+      "response": []
+    },
+      {
+        "name": "reactFind2",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": ""
+          },
+          "url": {
+            "raw": "http://join-activity.reactapp.com/wx/react/find2?id=2",
+            "protocol": "http",
+            "host": ["join-activity", "reactapp", "com"],
+            "path": ["wx", "react", "find2"],
+            "query": [{
+              "key": "id",
+              "value": "2"
+            }]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "reactFind3",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": ""
+          },
+          "url": {
+            "raw": "http://join-activity.reactapp.com/wx/react/find3?id=2",
+            "protocol": "http",
+            "host": ["join-activity", "reactapp", "com"],
+            "path": ["wx", "react", "find3"],
+            "query": [{
+              "key": "id",
+              "value": "2"
+            }]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "attend",
+        "request": {
+          "method": "POST",
+          "header": [{
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8",
+            "disabled": true
+          }],
+          "body": {
+            "mode": "formdata",
+            "formdata": [{
+              "key": "userId",
+              "value": "ed7b55879f894d0d9067e48fabfe0af4",
+              "type": "text"
+            },
+              {
+                "key": "reactCode",
+                "value": "kj",
+                "type": "text"
+              }]
+          },
+          "url": {
+            "raw": "http://local-activity.reactapp.com/wechat/react/attend",
+            "protocol": "http",
+            "host": ["local-activity", "reactapp", "com"],
+            "path": ["wechat", "react", "attend"]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "qqqqq",
+        "request": {
+          "method": "put",
+          "header": [{
+            "key": "qqq",
+            "value": "111111"
+          }],
+          "body": {
+            "formdata": []
+          },
+          "url": {
+            "raw": "test-activity.reactapp.com/test/token2?guid=1/test/token2",
+            "host": ["test-activity.reactapp.com"],
+            "path": ["test", "token2"],
+            "query": [{
+              "key": "guid",
+              "value": "1"
+            }]
+          }
+        },
+        "response": []
+      }]
+  },
+  "服务": {
+    "info": {
+      "_postman_id": "1cc76b57-abb3-44b6-870f-0504e56d56f0",
+      "name": "服务",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+      "name": "operation",
+      "item": [{
+        "name": "签到",
+        "request": {
+          "method": "GET",
+          "header": [{
+            "key": "react",
+            "value": "{{react}}"
+          },
+            {
+              "key": "ACTIVITY",
+              "value": "{{activity}}"
+            },
+            {
+              "key": "VERSION",
+              "value": "{{version}}"
+            }],
+          "body": {
+            "mode": "raw",
+            "raw": ""
+          },
+          "url": {
+            "raw": "{{url}}/op/sign/{{userId}}/{{userType}}",
+            "host": ["{{url}}"],
+            "path": ["op", "sign", "{{userId}}", "{{userType}}"]
+          }
+        },
+        "response": []
+      }],
+      "_postman_isSubFolder": true
+    }]
+  },
+  "variable": [{
+    "id": "ae2643de-5294-428e-adbb-0eda58e175da",
+    "name": "join-test2333333",
+    "values": [{
+      "key": "url",
+      "value": "test-activity.reactapp.com",
+      "enabled": true
+    },
+      {
+        "key": "react",
+        "value": "dsmvvmz",
+        "enabled": true
+      },
+      {
+        "key": "activity",
+        "value": "test",
+        "enabled": true
+      },
+      {
+        "key": "version",
+        "value": "20180521",
+        "enabled": true
+      },
+      {
+        "key": "auth",
+        "value": "eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw",
+        "enabled": true
+      },
+      {
+        "key": "iptoken",
+        "value": "0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C",
+        "description": {
+          "content": "",
+          "type": "text/plain"
+        },
+        "enabled": true
+      },
+      {
+        "key": "variable_key",
+        "value": "variable_value",
+        "enabled": true
+      },
+      {
+        "key": "sign",
+        "value": "fdbf4415cd0ad6d3f547152ba5515a90",
+        "enabled": true
+      }],
+    "_postman_variable_scope": "environment",
+    "_postman_exported_at": "2018-12-19T06:02:07.185Z",
+    "_postman_exported_using": "Postman/6.6.0",
+    "from": "self-import"
+  },
+    {
+      "id": "ae2643de-5294-428e-adbb-0eda58e175da",
+      "name": "join-test333333",
+      "values": [{
+        "key": "url",
+        "value": "test-activity.reactapp.com",
+        "enabled": true
+      },
+        {
+          "key": "react",
+          "value": "dsmvvmz",
+          "enabled": true
+        },
+        {
+          "key": "activity",
+          "value": "test",
+          "enabled": true
+        },
+        {
+          "key": "version",
+          "value": "20180521",
+          "enabled": true
+        },
+        {
+          "key": "auth",
+          "value": "eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw",
+          "enabled": true
+        },
+        {
+          "key": "iptoken",
+          "value": "0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C",
+          "description": {
+            "content": "",
+            "type": "text/plain"
+          },
+          "enabled": true
+        },
+        {
+          "key": "variable_key",
+          "value": "variable_value",
+          "enabled": true
+        },
+        {
+          "key": "sign",
+          "value": "fdbf4415cd0ad6d3f547152ba5515a90",
+          "enabled": true
+        }],
+      "_postman_variable_scope": "environment",
+      "_postman_exported_at": "2018-12-19T06:02:07.185Z",
+      "_postman_exported_using": "Postman/6.6.0",
+      "from": "self-import"
+    },
+    {
+      "id": "ae2643de-5294-428e-adbb-0eda58e175da",
+      "name": "join-test44444",
+      "values": [{
+        "key": "url",
+        "value": "test-activity.reactapp.com",
+        "enabled": true
+      },
+        {
+          "key": "react",
+          "value": "dsmvvmz",
+          "enabled": true
+        },
+        {
+          "key": "activity",
+          "value": "test",
+          "enabled": true
+        },
+        {
+          "key": "version",
+          "value": "20180521",
+          "enabled": true
+        },
+        {
+          "key": "auth",
+          "value": "eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw",
+          "enabled": true
+        },
+        {
+          "key": "iptoken",
+          "value": "0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C",
+          "description": {
+            "content": "",
+            "type": "text/plain"
+          },
+          "enabled": true
+        },
+        {
+          "key": "variable_key",
+          "value": "variable_value",
+          "enabled": true
+        },
+        {
+          "key": "sign",
+          "value": "fdbf4415cd0ad6d3f547152ba5515a90",
+          "enabled": true
+        }],
+      "_postman_variable_scope": "environment",
+      "_postman_exported_at": "2018-12-19T06:02:07.185Z",
+      "_postman_exported_using": "Postman/6.6.0",
+      "from": "self-import"
+    },
+    {
+      "id": "ae2643de-5294-428e-adbb-0eda58e175da",
+      "name": "join-test111",
+      "values": [{
+        "key": "url",
+        "value": "test-activity.reactapp.com",
+        "enabled": true
+      },
+        {
+          "key": "react",
+          "value": "dsmvvmz",
+          "enabled": true
+        },
+        {
+          "key": "activity",
+          "value": "test",
+          "enabled": true
+        },
+        {
+          "key": "version",
+          "value": "20180521",
+          "enabled": true
+        },
+        {
+          "key": "auth",
+          "value": "eyJhbGciOiJIUzUxMiJ9.eyJKT0lOX1VTRVIiOiIxIn0.vBuCOGW3hYy5nFDDise4JKi6Ol1flrl_bY9oGj9Tx8I_5b5tvZo3YeLgr6zpIXmf1AwE0_Lb64cNLKae_9wiRw",
+          "enabled": true
+        },
+        {
+          "key": "iptoken",
+          "value": "0FD56D71D315E1382DA2DA64606ED42FDF3326A47BC8286CEBEAC9690CF8BC4737BAFB59A726A0BF068B5607618F7AA8B5302D7F4A574068F5E5EBDB2F142A277F8B78B9611C51DAF47CA2414326A162E54B8EE90D02463F6558D5DA6E6D4178A9E76B8F1DA53A6613BFA5B0740C337D5116BE85887ED223DA6433740D28034396D2A86425FD1509B05AFA008761ADE20803B56798E07E8CC0C3218FB19B503C",
+          "description": {
+            "content": "",
+            "type": "text/plain"
+          },
+          "enabled": true
+        },
+        {
+          "key": "variable_key",
+          "value": "variable_value",
+          "enabled": true
+        },
+        {
+          "key": "sign",
+          "value": "fdbf4415cd0ad6d3f547152ba5515a90",
+          "enabled": true
+        }],
+      "_postman_variable_scope": "environment",
+      "_postman_exported_at": "2018-12-19T06:02:07.185Z",
+      "_postman_exported_using": "Postman/6.6.0",
+      "from": "self-import"
+    },
+    {
+      "name": "wwwsssaaaaaaa",
+      "values": [{
+        "key": "wwww",
+        "value": "wwwww",
+        "enabled": true
+      },
+        {
+          "key": "ttttt",
+          "value": "ttttttt",
+          "enabled": true
+        },
+        {
+          "key": "eee",
+          "value": "eeeee",
+          "enabled": true
+        },
+        {
+          "key": "12121212",
+          "value": "333333",
+          "enabled": true
+        }],
+      "from": "self-added"
+    },
+    {
+      "name": "wwwsss",
+      "values": [{
+        "key": "wwww",
+        "value": "wwwww",
+        "enabled": true
+      },
+        {
+          "key": "ttttt",
+          "value": "ttttttt",
+          "enabled": true
+        },
+        {
+          "key": "eee",
+          "value": "eeeee",
+          "enabled": true
+        },
+        {
+          "key": "mmmm",
+          "value": "mmmmm",
+          "enabled": true
+        }],
+      "from": "self-import"
+    },
+    {
+      "name": "ggg",
+      "values": [{
+        "key": "444",
+        "value": "4444",
+        "enabled": true
+      }],
+      "from": "self-added"
+    },
+    {
+      "name": "person0baas-test",
+      "values": [{
+        "key": "url",
+        "value": "http://tbaas.reactapp.com",
+        "enable": true,
+        "enabled": true
+      },
+        {
+          "key": "reactId",
+          "value": "act_operation",
+          "enable": true,
+          "enabled": true
+        },
+        {
+          "key": "reactKey",
+          "value": "b720daf0bfde4bf48b652c19c68513d0",
+          "enable": true,
+          "enabled": true
+        }],
+      "from": "self-import"
+    }]
+}

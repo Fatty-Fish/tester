@@ -393,7 +393,7 @@ class App extends Component {
         })
     }
     changeFarm (obj, name, from, path) {
-      console.log(obj, from, path)
+      console.log(path);
             if (obj.info) {
                 var fromArr = from.split("/");
                 fromArr.shift();
@@ -406,7 +406,7 @@ class App extends Component {
                             newpath.shift();
                             this.changeFarm(ele.item, name, from, newpath.join("/"));
                         }else {
-                            this.changeFarm(ele.item, name, from);
+                            this.changeFarm(ele.item, name, from, "/");
                         }
                     }else if (ele.request) {
                         var store = this.state.caseStore[name];
