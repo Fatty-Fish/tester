@@ -44,7 +44,6 @@ class WillSave extends Component {
         }
     }
     render () {
-        console.log(this.props.caseList)
         if (this.state.str) {
             var arr = this.state.str.split("/");
             arr.splice(0,1 );

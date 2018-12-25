@@ -113,7 +113,9 @@ module.exports = function(proxy, allowedHost) {
             fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
                 if (err) throw err;
                 if (auth) {
-                    var resState = addState(data, per, path, obj);
+                    var pre = req.body.preText;
+                    var test = req.body.TestText;
+                    var resState = addState(data, per, path, obj, pre, test);
                     fs.writeFile("storage/" + per + ".json", JSON.stringify(resState), "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
@@ -137,7 +139,6 @@ module.exports = function(proxy, allowedHost) {
         });
         app.post("/sureShare", (req, res)=> {
             console.log("sureshare")
-
             fs.readFile("storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
                 if(err) throw err;
                 var dataobj = JSON.parse(data);
@@ -163,7 +164,7 @@ module.exports = function(proxy, allowedHost) {
                 };
                 fs.writeFile("storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
                     if (err) throw err;
-                    return result.json("ok");
+                    return res.json("ok");
                 })
             });
         });

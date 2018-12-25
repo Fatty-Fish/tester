@@ -6,7 +6,49 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import "../css/Case.css"
+//延伸jQuery
 
+(function($){
+    $.fn.extend({
+        "insert":function(value){
+            //默认参数
+            value=$.extend({
+                "text":"123"
+            },value);
+
+            var dthis = $(this)[0]; //将jQuery对象转换为DOM元素
+
+            //IE下
+            if(document.selection){
+
+                $(dthis).focus();        //输入元素textara获取焦点
+                var fus = document.selection.createRange();//获取光标位置
+                fus.text = value.text;    //在光标位置插入值
+                $(dthis).trigger("focus");    ///输入元素textara获取焦点
+            }
+            //火狐下标准
+            else if(dthis.selectionStart || dthis.selectionStart == '0'){
+
+                var start = dthis.selectionStart;
+                var end = dthis.selectionEnd;
+                var top = dthis.scrollTop;
+
+                //以下这句，应该是在焦点之前，和焦点之后的位置，中间插入我们传入的值
+                dthis.value = dthis.value.substring(0, start) + value.text + dthis.value.substring(end, dthis.value.length);
+                $(dthis).trigger("focus"); //输入元素textara获取焦点
+                dthis.selectionEnd = end + value.text.length - 2;
+            }
+
+            //在输入元素textara没有定位光标的情况
+            else{
+                this.value += value.text;
+                this.trigger("focus");
+
+            }
+            return $(this);
+        }
+    })
+})($);
 class Case extends Component {
     constructor(props) {
         super(props);
@@ -19,6 +61,8 @@ class Case extends Component {
         this.jumpToHeaders = this.jumpToHeaders.bind(this);
         this.jumpToBody = this.jumpToBody.bind(this);
         this.jumpToParam = this.jumpToParam.bind(this);
+        this.jumpToPreScript = this.jumpToPreScript.bind(this);
+        this.jumpToTestScript = this.jumpToTestScript.bind(this);
         this.addLine = this.addLine.bind(this);
         this.addHeaders = this.addHeaders.bind(this);
         this.addBody = this.addBody.bind(this);
@@ -38,6 +82,10 @@ class Case extends Component {
         this.disableVar = this.disableVar.bind(this);
         this.changeVarSelect = this.changeVarSelect.bind(this);
         this.replaceReg = this.replaceReg.bind(this);
+        this.textAreaChange = this.textAreaChange.bind(this);
+        this.textAreaTestChange = this.textAreaTestChange.bind(this);
+        this.insertText = this.insertText.bind(this);
+        this.insertTestText = this.insertTestText.bind(this);
     };
     changeVarSelect (e) {
         var selectName = $(e.target).val();
@@ -98,7 +146,9 @@ class Case extends Component {
                         "newData": obj,
                         "person": from,
                         "tar": auth,
-                        "path": this.props.k
+                        "path": this.props.k,
+                        "preS": this.state.text_val || "",
+                        "testS": this.state.textTest_val || ""
                     }
                 }).then((res) => {
                     //ol
@@ -126,7 +176,6 @@ class Case extends Component {
         var newArr = Arr.filter((ele)=> {
             return ele.key && ele.value;
         });
-        console.log(newArr);
         // 替换变量
         var varContent = this.state.varContent;
         // 找出enable
@@ -137,7 +186,6 @@ class Case extends Component {
         varContent.forEach((ele, index)=> {
             varContents["{{" + ele.key + "}}"] =  ele.value
         });
-        console.log(varContents);
         newArr = newArr.map((ele, index)=> {
             if (varContents.hasOwnProperty(ele.value)) {
                 ele.value = varContents[ele.value];
@@ -164,6 +212,24 @@ class Case extends Component {
             }
         }
     }
+    textAreaChange (e) {
+        this.setState({
+            text_val: $(e.target).val()
+        });
+        this.props.PreChange($(e.target).val(), this.props.k);
+    }
+    textAreaTestChange (e) {
+        this.setState({
+            textTest_val: $(e.target).val()
+        });
+        this.props.TestChange($(e.target).val(), this.props.k);
+    }
+    insertText (e) {
+        $(".text-area").insert({"text": $(e.target).text() + "();"})
+    }
+    insertTestText (e) {
+        $(".text-areaTest").insert({"text": $(e.target).text() + "();"})
+    }
     submitProxy () {
         var method = this.state.method;
         var url = this.state.url;
@@ -181,6 +247,110 @@ class Case extends Component {
             var len = varContent.length;
             url = this.replaceReg(url,varContent, len, 0);
         }
+        var pm = {
+            varList:  () => {
+                return this.state.varList // 当前的所有环境变量集合
+            },
+            thisList:  ()=> {
+                var varList = pm.varList(); // 当前选中的环境变量的list
+                return varList[this.state.varSelect].values
+            },
+            len:  ()=> {
+                var thisList = pm.thisList(); // 当前选中的环境变量的list的长度
+                return thisList.length
+            },
+            globalList: ()=> {
+                var varList = pm.varList();
+                var gindex = this.state.global;
+                return varList[gindex].values
+            },
+            glen: () => {
+                var gList = pm.globalList();
+                return gList.length
+            },
+            environment: {
+                get:  (var_key)=> {
+                    var thisList = pm.thisList();
+                    var len = pm.len();
+                    for (var i = 0; i < len; i++) {
+                        if (thisList[i].key === var_key) {
+                            return thisList[i].value;
+                        }
+                    }
+                },
+                set:  (var_key, var_val) => {
+                    var thisList = pm.thisList();
+                    var varList = pm.varList();
+                    thisList.push({key: var_key, value: var_val, enable: true});
+                    varList[this.state.varSelect].values = thisList;
+                    this.setState({
+                        varList: varList
+                    });
+                },
+                unset: (var_key) => {
+                    var thisList = pm.thisList();
+                    var varList = pm.varList();
+                    var len = pm.len();
+                    for (var i = 0; i < len; i++) {
+                        if (thisList[i].key === var_key) {
+                            thisList.splice(i, 1);
+                        }
+                    }
+                    varList[this.state.varSelect].values = thisList;
+                    this.setState({
+                        varList: varList
+                    });
+                }
+            },
+            globals: {
+                get: (var_key) => {
+                    var len = pm.glen();
+                    var gList = pm.globalList();
+                    for (var i = 0; i < len; i++) {
+                        if (gList[i].key === var_key) {
+                            return gList[i].value
+                        }
+                    }
+                },
+                set: (var_key, var_val) => {
+                    var gList = pm.globalList();
+                    var varList = pm.varList();
+                    gList.push({key: var_key, value: var_val, enable: true});
+                    varList[this.state.global].values = gList;
+                    this.setState({
+                        varList: varList
+                    });
+                },
+                unset: (var_key)=> {
+                    var gList = pm.thisList();
+                    var varList = pm.varList();
+                    var len = pm.glen();
+                    for (var i = 0; i < len; i++) {
+                        if (gList[i].key === var_key) {
+                            gList.splice(i, 1);
+                        }
+                    }
+                    varList[this.state.global].values = gList;
+                    this.setState({
+                        varList: varList
+                    });
+                }
+            },
+            variables: {
+                get: (var_key)=> {
+                    var varContent = this.state.varContent;  // 当前环境变量和全局变量的集合
+                    var len = varContent.length;
+                    for (var i = 0; i < len; i++) {
+                        if (varContent[i].key === var_key) {
+                            return varContent[i].value
+                        }
+                    }
+                }
+            }
+        };
+        // 执行pre-script
+        eval(this.state.text_val);
+
         axios({
             method: "post",
             url: "/",
@@ -194,6 +364,14 @@ class Case extends Component {
                 "param": param
             }
         }).then((res)=> {
+            // 后置脚本
+            pm.response = {
+                json: ()=> {
+                    return res.data
+                }
+            };
+            console.log(this.state.textTest_val)
+            eval(this.state.textTest_val);
             this.setState({
                 result: JSON.stringify(res.data, null, 4)
             });
@@ -314,6 +492,33 @@ class Case extends Component {
         // }else {
             this.props.changeShowTable(this.props.k, "Param")
         // }
+    }
+    jumpToPreScript (e) {
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
+        // if (from === "newCase") {
+        //     this.setState({
+        //         showTable: "Param"
+        //     })
+        // }else {
+        this.props.changeShowTable(this.props.k, "preScriptShow")
+        // }
+    }
+    jumpToTestScript (e) {
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // var arr = this.props.k.split("/");
+        // var from = arr[0];
+        // if (from === "newCase") {
+        //     this.setState({
+        //         showTable: "Param"
+        //     })
+        // }else {
+        this.props.changeShowTable(this.props.k, "testScriptShow")
     }
     addLine (e) {
         // var arr = this.props.k.split("/");
@@ -556,8 +761,6 @@ class Case extends Component {
         var varList = this.state.varList;
         var index = this.findVarIndex(newVar.name);
         newVar.from = "self-import";
-        console.log(varList);
-        console.log(newVar.name);
         if (index >= 0) {
             var sure = window.confirm(newVar.name + "已经存在，替换？");
             if (sure) {
@@ -631,8 +834,10 @@ class Case extends Component {
             nextProps.caseRender.bodyList.push({key: "", value: ""})
         }
         this.setState({
-            ...nextProps.caseRender
-        })
+            ...nextProps.caseRender,
+            text_val: nextProps.preText,
+            textTest_val: nextProps.testText
+        });
     }
     disableVar(newList) {
         this.setState({
@@ -640,6 +845,10 @@ class Case extends Component {
         });
     }
     componentWillMount() {
+        this.setState({
+            text_val: this.props.preText,
+            textTest_val: this.props.testText
+        });
         axios({
             method: "get",
             url: "/new",
@@ -671,9 +880,11 @@ class Case extends Component {
     }
 
     render () {
+        var text_val = this.state.text_val;
+        // console.log(text_val)
+        var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;
         var varIndex = this.state.varSelect;
-        console.log(varIndex)
         if (varIndex >= 0) {
             var selectVar = varSelect[this.state.varSelect].name;
             var varOptions = varSelect.map((ele, index)=> {
@@ -691,7 +902,7 @@ class Case extends Component {
         }else {
             caseName = this.props.caseName;
         }
-        var method,url,raw,disparamList,paramsList,len,paramStr,headersShow,bodyShow,paramShow,headerFlag,disHeader,HeadersList,
+        var method,url,raw,disparamList,paramsList,len,paramStr,headersShow,bodyShow,paramShow,preScriptShow, testScriptShow,headerFlag,disHeader,HeadersList,
             bodyFlag,disBody,BodyList,paramFlag,disParam,ParamList;
              method = this.props.caseRender.method;
              url = this.props.caseRender.url;
@@ -718,9 +929,12 @@ class Case extends Component {
                 });
                 url = raw + paramStr;
             }
+            // console.log(url)
              headersShow = this.props.caseRender.showTable === "Headers" ? true : false;
              bodyShow = this.props.caseRender.showTable === "Body" ? true : false;
              paramShow = this.props.caseRender.showTable === "Param" ? true : false;
+             preScriptShow = this.props.caseRender.showTable === "preScriptShow" ? true : false;
+             testScriptShow = this.props.caseRender.showTable === "testScriptShow" ? true : false;
              headerFlag = this.props.caseRender.headersList.length;
              disHeader = this.props.caseRender.disableList.header;
              HeadersList = this.props.caseRender.headersList.map((ele, index)=> {
@@ -881,6 +1095,8 @@ class Case extends Component {
                         <li role="presentation" className={headersShow ? "active" : ""}><a href="#" onClick={this.jumpToHeaders}>Headers</a></li>
                         <li role="presentation" className={bodyShow　? "active" : ""}><a href="#" onClick={this.jumpToBody}>Body</a></li>
                         <li role="presentation" className={paramShow　? "active" : ""}><a href="#" onClick={this.jumpToParam}>Param</a></li>
+                        <li role="presentation" className={preScriptShow　? "active" : ""}><a href="#" onClick={this.jumpToPreScript}>Pre-request Script</a></li>
+                        <li role="presentation" className={testScriptShow　? "active" : ""}><a href="#" onClick={this.jumpToTestScript}>Test Script</a></li>
                     </ul>
                     <table className="table table-bordered table-hover" style={{display: headersShow ? "table" : "none"}}>
                         <thead>
@@ -928,6 +1144,35 @@ class Case extends Component {
                         {ParamList}
                         </tbody>
                     </table>
+
+                    <div className="text" style={{display: preScriptShow ? "block" : "none"}}>
+                        <textarea className="text-area form-control" placeholder="your pre-request script" rows="3" value={text_val} onChange={this.textAreaChange}>
+                        </textarea>
+                        <ul className="textlist" onClick={this.insertText}>
+                            <li>pm.environment.get</li>
+                            <li>pm.environment.set</li>
+                            <li>pm.environment.unset</li>
+                            <li>pm.globals.get</li>
+                            <li>pm.globals.set</li>
+                            <li>pm.globals.unset</li>
+                            <li>pm.variables.get</li>
+                        </ul>
+                    </div>
+                    <div className="text" style={{display: testScriptShow ? "block" : "none"}}>
+                        <textarea className="text-areaTest form-control" placeholder="your test script" rows="3" value={textTest_val} onChange={this.textAreaTestChange}>
+                        </textarea>
+                        <ul className="textlist" onClick={this.insertTestText}>
+                            <li>pm.environment.get</li>
+                            <li>pm.environment.set</li>
+                            <li>pm.environment.unset</li>
+                            <li>pm.globals.get</li>
+                            <li>pm.globals.set</li>
+                            <li>pm.globals.unset</li>
+                            <li>pm.variables.get</li>
+                            <li>pm.response.json</li>
+                        </ul>
+                    </div>
+
                 </div>
                 <div className="panel panel-default">
                     <div className="panel-heading">

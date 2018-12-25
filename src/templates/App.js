@@ -83,8 +83,24 @@ class App extends Component {
       this.sharechange = this.sharechange.bind(this);
       this.importCase = this.importCase.bind(this);
       this.importCaseFn = this.importCaseFn.bind(this);
+      this.TestChange = this.TestChange.bind(this);
+      this.PreChange = this.PreChange.bind(this);
       // this.varChangeNm = this.varChangeNm.bind(this);
   }
+    PreChange (text, k) {
+      var preText = this.state.preText || {};
+      preText[k] = text;
+      this.setState({
+          preText: preText
+      })
+    }
+    TestChange (text, k) {
+        var testText = this.state.testText || {};
+        testText[k] = text;
+        this.setState({
+            testText: testText
+        })
+    }
     caseSave(acName) {
       // acName  newCase/0
       var acArr = this.state.activeCase;
@@ -166,6 +182,8 @@ class App extends Component {
       var sourceArr = source.split("/");
       var slen = sourceArr.length;
       var obj = this.exportCaseFileFn(sourceArr[slen - 1], source, name);
+        console.log(obj)
+
         // str 找到位置放入
         var arr = str.split("/");
         arr.splice(0, 1);
@@ -179,6 +197,7 @@ class App extends Component {
                     var sure = window.confirm(name + "已经存在， 替换？");
                     if (sure) {
                         caseList[from].item[i] = obj.item[0];
+                        // console.log(obj.item[0])
                         if (!this.state.caseFlag) {
                             // nav 的删除操作
                             this.changeActiveCase(this.state.saveFlag, from);
@@ -200,6 +219,7 @@ class App extends Component {
                         });
                         // caseStore
                         this.refresh(caseList);
+
                         axios({
                             url: "/surechange",
                             method: "post",
@@ -393,7 +413,6 @@ class App extends Component {
         })
     }
     changeFarm (obj, name, from, path) {
-      console.log(path);
             if (obj.info) {
                 var fromArr = from.split("/");
                 fromArr.shift();
@@ -432,7 +451,6 @@ class App extends Component {
                                 return ele.key && ele.value;
                             })
                         }
-                        console.log(ele.name, trueName, path)
                         if(ele.name === trueName && ele.name === path) {
                             ele.request.method = store[from].method;
                         }
@@ -444,6 +462,63 @@ class App extends Component {
                             ele.request.url.query = query.filter((ele, index)=> {
                                 return ele.key && ele.value;
                             })
+                        }
+                        ele.event = [{
+                            "listen": "prerequest",
+                            "script": {
+                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                "exec": ele.event ? ele.event[0].script.exec : [],
+                                "type": "text/javascript"
+                            }
+                        }, {
+                            "listen": "test",
+                            "script": {
+                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                "exec": ele.event ? ele.event[1].script.exec : [],
+                                "type": "text/javascript"
+                            }
+                        }];
+                        if (ele.name === trueName && ele.name === path) {
+                            var preTexts = this.state.preText;
+                            if (preTexts) {
+                                for (var prop in preTexts) {
+                                    if (from === prop) {
+                                        var arrPre = preTexts[prop].split(";");
+                                        var alen = arrPre.length;
+                                        if (arrPre[alen - 1] === ";") {
+                                            arrPre.pop();
+                                        }
+                                        alen = arrPre.length;
+                                        arrPre = arrPre.map((ele, index)=> {
+                                            if (index === alen - 1) {
+                                                return ele = ele
+                                            }
+                                            return ele = ele + ";"
+                                        });
+                                        ele.event[0].script.exec = arrPre;
+                                    }
+                                }
+                            }
+                            var testTexts = this.state.testText;
+                            if (testTexts) {
+                                for (prop in testTexts) {
+                                    if (from === prop) {
+                                        var testPre = testTexts[prop].split(";");
+                                        alen = testPre.length;
+                                        if (testPre[alen - 1] === ";") {
+                                            testPre.pop();
+                                        }
+                                        alen = testPre.length;
+                                        testPre = testPre.map((ele, index)=> {
+                                            if (index === alen -1) {
+                                                return ele = ele
+                                            }
+                                            return ele = ele + ";"
+                                        });
+                                        ele.event[1].script.exec = testPre;
+                                    }
+                                }
+                            }
                         }
                         if (ele.name === trueName && ele.name === path) {
                             ele.request.url.raw = store[from].url;
@@ -458,7 +533,6 @@ class App extends Component {
             if(forsure) {
                 var casefromList = this.state.caseList;
                 this.changeFarm(casefromList[from], from, name);
-                console.log(casefromList)
                 axios({
                     url: "/surechange",
                     method: "post",
@@ -532,6 +606,34 @@ class App extends Component {
             var forsure = window.confirm("是否保存对" + path.join("/") + "的更改?");
             if(forsure) {
                var stateobj = this.stateFarm(this.state.caseStore[per][from]);
+               if (this.state.preText[from]) {
+                   var preArr = this.state.preText[from].split(";");
+                   var alen = preArr.length;
+                   if (preArr[alen - 1] === ";") {
+                       preArr.pop();
+                   }
+                   alen = preArr.length;
+                   preArr = preArr.map((ele, index)=> {
+                       if (index === alen - 1) {
+                           return ele = ele
+                       }
+                       return ele = ele + ";"
+                   });
+               }
+                if (this.state.testText[from]) {
+                    var testArr = this.state.testText[from].split(";");
+                    alen = testArr.length;
+                    if (testArr[alen - 1] === ";") {
+                        testArr.pop();
+                    }
+                    alen = testArr.length;
+                    testArr = testArr.map((ele, index)=> {
+                        if (index === alen -1) {
+                            return ele = ele
+                        }
+                        return ele = ele + ";"
+                    });
+                }
                 axios({
                     url: "/surechange",
                     method: "post",
@@ -539,7 +641,9 @@ class App extends Component {
                         "newData": stateobj,
                         "person": per,
                         "tar": auth,
-                        "path": from
+                        "path": from,
+                        "preText": preArr,
+                        "TestText": testArr
                     }
                 }).then((res) => {
                     //ol
@@ -576,8 +680,10 @@ class App extends Component {
         var len = arr.length;
         for (var i = 0; i < len; i++) {
             if (arr[i].name === name) {
+                // 改变active
                 this.findName(arr[i].item, from);
-                arr[i] = {};
+                // arr.splice(i, 1);
+                arr[i] = {}
             }else if (arr[i].item) {
                 arr[i].item = this.deleteDirFn(arr[i].item, name, from)
             }
@@ -594,17 +700,21 @@ class App extends Component {
             var activelist = this.state.activeCase;
             var activeindex = this.state.activeIndex;
             if (caselist.info.name === name) {
-                caseList[fromArr[0]] = {};
+                delete caseList[fromArr[0]];
                 activelist = activelist.filter((ele, index)=> {
                     // var arr = ele.split("/")[0];
                     return ele !== from
                 });
                 this.setState({
                     activeCase: activelist,
-                    activeIndex: 0
-                })
+                    activeIndex: 0,
+                    caseList: caseList
+                });
             } else {
                 caseList[fromArr[0]].item = this.deleteDirFn(caselist.item, name, from + "/" + name);
+                this.setState({
+                    caseList: caseList
+                })
             }
             axios({
                 url: "/surechange",
@@ -618,9 +728,6 @@ class App extends Component {
                     //
                 }
             });
-            this.setState({
-                caseList: caseList
-            })
         }
     }
     // 删除文件
@@ -664,8 +771,31 @@ class App extends Component {
       var len = arr.length;
       for (var i = 0; i < len; i++) {
           if(arr[i].name === oldName && arr[i].name === from) {
-              var newArr = {
+              var newArr = arr[i].event ? {
                   name: newName,
+                  event: [...arr[i].event],
+                  request: {
+                      ...arr[i].request
+                  },
+                  response: []
+              } : {
+                  name: newName,
+                  event: [{
+                      "listen": "prerequest",
+                      "script": {
+                          "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                          "exec": [],
+                          "type": "text/javascript"
+                      }
+                  },
+                      {
+                          "listen": "test",
+                          "script": {
+                              "id": "e405ca8a-268d-4d13-b7bd-70c7571f7828",
+                              "exec": [],
+                              "type": "text/javascript"
+                          }
+                      }],
                   request: {
                       ...arr[i].request
                   },
@@ -712,7 +842,9 @@ class App extends Component {
             method: "post",
             data: {
                 "newData": caselist,
-                "person": "person0"
+                "person": "person0",
+                "preS": this.state.preText || "",
+                "testS": this.state.testText || ""
             }
         }).then((res) => {
             if (res) {
@@ -847,6 +979,38 @@ class App extends Component {
         }
     }
     exportCaseFileFn (name, from, changedName) {
+      // console.log(from);
+      // console.log(this.state.preText[from]) // str
+        if (this.state.preText[from]) {
+            var preTexts = this.state.preText[from];
+            var arrPre = preTexts.split(";");
+            var alen = arrPre.length;
+            if (arrPre[alen - 1] === ";") {
+                arrPre.pop();
+            }
+            alen = arrPre.length;
+            arrPre = arrPre.map((ele, index)=> {
+                if (index === alen - 1) {
+                    return ele = ele
+                }
+                return ele = ele + ";"
+            });
+        }
+        if (this.state.testText[from]) {
+            var testTexts = this.state.testText[from];
+            var testPre = testTexts.split(";");
+            alen = testPre.length;
+            if (testPre[alen - 1] === ";") {
+                testPre.pop();
+            }
+            alen = testPre.length;
+            testPre = testPre.map((ele, index)=> {
+                if (index === alen -1) {
+                    return ele = ele
+                }
+                return ele = ele + ";"
+            });
+        }
       var fromArr = from.split("/");
         var rawState = this.state.caseStore[fromArr[0]][from] || {};
         var fileName = changedName || name;
@@ -912,6 +1076,21 @@ class App extends Component {
                             "query": upstate.paramList.length ? upstate.paramList : query
                         }
                     },
+                    "event": [{
+                                "listen": "prerequest",
+                                "script": {
+                                    "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                    "exec": arrPre ? arrPre : [],
+                                    "type": "text/javascript"
+                                }
+                            }, {
+                            "listen": "test",
+                            "script": {
+                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                "exec": testPre? testPre : [],
+                                "type": "text/javascript"
+                            }
+                        }],
                     "response": []
                 }
             ]
@@ -1107,10 +1286,34 @@ class App extends Component {
                         var query = ele.request.url.query;
                         var path = ele.request.url.path;
                         var url = ele.request.url.raw;
+                        ele.event = [{
+                            "listen": "prerequest",
+                            "script": {
+                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                "exec": ele.event ? ele.event[0].script.exec : [],
+                                "type": "text/javascript"
+                            }
+                        }, {
+                            "listen": "test",
+                            "script": {
+                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                "exec": ele.event ? ele.event[1].script.exec : [],
+                                "type": "text/javascript"
+                            }
+                        }];
+                        // 增加pre test
+                        var testText = this.state.testText || {};
+                        testText[prop + "/" + ele.name] = ele.event[1].script.exec.join("") || "";
+                        var preText = this.state.preText || {};
+                        preText[prop + "/" + ele.name] = ele.event[0].script.exec.join("") || "";
+                        this.setState({
+                            testText: testText,
+                            preText:preText
+                        });
                         url = url.replace("{{url}}", "http://test-activity.changyou.com");
-                        if(path) {
-                            url = url + "/" + path.join("/");
-                        }
+                        // if(path) {
+                        //     url = url + "/" + path.join("/");
+                        // }
                         newObj[prop + "/" + ele.name] = {
                             bodyList : body || [],
                             disableList : {
@@ -1309,7 +1512,6 @@ class App extends Component {
     importCase (obj, from) {
         var caseList = this.state.caseList;
         var fromArr = from.split("/");
-        console.log(fromArr)
         // 保存到根：
         if (fromArr.length === 1) {
             caseList[fromArr[0]].item.push(obj);
@@ -1346,8 +1548,7 @@ class App extends Component {
     }
 
     render() {
-      console.log(this.state);
-      console.log(this.state.caseStore);
+      // console.log(this.state);
         if (JSON.stringify(this.state.caseList) === "{}") {
             return (<h3>nothing here...</h3>)
         } else {
@@ -1361,8 +1562,10 @@ class App extends Component {
                     // }else {
                     //     file = ele
                     // }
+                    var pre = this.state.preText;
+                    var test = this.state.testText;
                 return acIndex === index ? (
-                    <Case stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={{display: "block"}}>
+                    <Case preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} TestChange={this.TestChange} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={{display: "block"}}>
                     </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={{display: "none"}}>
                 </Case>)
             });

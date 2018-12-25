@@ -1,4 +1,4 @@
-function findState (data, arr, caseState) {
+function findState (data, arr, caseState,  pre, test) {
     if (arr.length > 1) {
         for (var i = 0; i < data.length; i++) {
             if (data[i].name === arr[0]) {
@@ -11,6 +11,24 @@ function findState (data, arr, caseState) {
         for (i = 0; i < data.length; i++) {
             if (data[i].name === arr[0]) {
                 data[i].request = caseState;
+                data[i].event = [
+                    {
+                        "listen": "prerequest",
+                        "script": {
+                            "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                            "exec": pre,
+                            "type": "text/javascript"
+                        }
+                    },
+                    {
+                        "listen": "test",
+                        "script": {
+                            "id": "e405ca8a-268d-4d13-b7bd-70c7571f7828",
+                            "exec": test,
+                            "type": "text/javascript"
+                        }
+                    }
+                ];
                 data[i].response = [];
             }
         }
@@ -69,14 +87,14 @@ function caseFn (caseState) {
     return obj;
 }
 
-function addState (data, person, path, caseState) {
+function addState (data, person, path, caseState, pre, test) {
     var arr = path.split("/");
     var obj = JSON.parse(data);
     var variable = obj.variable;
     var state = arr[1];
     var newArr = arr.slice(2, arr.length - 1);
     var caseobj = caseFn(caseState);
-    obj[state].item = findState(obj[state].item, newArr, caseobj);
+    obj[state].item = findState(obj[state].item, newArr, caseobj,  pre, test);
     obj = {
         ...obj,
         variable: [

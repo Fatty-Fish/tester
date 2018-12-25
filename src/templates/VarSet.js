@@ -51,9 +51,6 @@ class VarSet extends Component {
         e.stopPropagation();
         var variable = this.findVar(this.state.varName);
         var index = this.findVarIndex(this.state.varName);
-        console.log(this.props.varList);
-        console.log(variable);
-        console.log(index);
         axios({
             url: "/changeSingleSelfVar",
             method: "post",
@@ -166,7 +163,6 @@ class VarSet extends Component {
         $("#varFile").click()
     }
     changeVarName (e) {
-        console.log(this.state)
         e.stopPropagation();
         $(e.target).parent().find("input").css({display: "inline-block"});
         $(e.target).css({display: "none"});
@@ -233,7 +229,6 @@ class VarSet extends Component {
         }else {
             newVar.values[index].enabled = true;
         }
-        console.log(newVar);
         this.putVar(newVar, name);
     }
     disableaddVar (e) {
@@ -377,7 +372,6 @@ class VarSet extends Component {
         });
         var newVariable = this.state.variable;
         if (newVariable) {
-            console.log(newVariable.values)
             newVariable = newVariable.values.map((ele, index) => {
                 return (<tr key={index} var={index}>
                     <td className="btn"><i className="glyphicon glyphicon-ok"

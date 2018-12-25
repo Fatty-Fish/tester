@@ -127,7 +127,6 @@ class Tool extends Component {
         if (dis) {
             // 取消分享
             var statefromArr = this.state[person];
-            console.log(this.state)
             for (var i = 0; i < fromArr.length; i++) {
                 var index = statefromArr.indexOf(fromArr[i]);
                 if (index >= 0) {
@@ -148,7 +147,6 @@ class Tool extends Component {
         }
     }
     shareEdit (from, person, dis) {
-        console.log(person)
         var fromArr = [].concat(from);
         if (dis) {
             // 取消分享

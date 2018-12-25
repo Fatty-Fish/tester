@@ -61,7 +61,6 @@ class List extends Component {
                 // 变为灰色
                 oUl.find(".glyphicon-eye-open").css({color: "#a8a8a8"});
                  if (oUl.parent().children("ul").length === 1) {
-                     console.log(oUl.parent().children("div"))
                      oUl.parent().children("div").find(".glyphicon-eye-open").css({color: "#a8a8a8"})
                  }
                 var disliArr = Array.prototype.slice.call(oUl.find("li"), 0);
@@ -322,14 +321,14 @@ class List extends Component {
                     {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: r||w ? "white" : "#a8a8a8"}} from={name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: w ? "white" : "#a8a8a8"}} from={name} onClick={this.shareEdit}></i></div>) : ""}</div>
                 {temp}
             </ul>)
-        } else {
+        } else if (list.length >= 0){
             var tem = list.map((ele, index)=> {
                 if(ele.item) {
                     var ulr = this.props.rarr ? this.props.rarr.indexOf(name + "/" + ele.name)>= 0 ? true : false : "";
                     var ulw = this.props.warr ? this.props.warr.indexOf(name + "/" + ele.name)>= 0 ? true : false : "";
                     var te = this.renderListFn(ele.item, name + "/" + ele.name, arr||ulr, arw||ulw);
                     // temp
-                    return (<ul key={index}>
+                    return (<ul key={name + "/" + ele.name}>
                         <div onClick={this.showChildren} from={name + "/" + ele.name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{ele.name}</span><input
                             type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={ele.name}/><i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i>
                             {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: arr || ulr || ulw ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || ulw ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</div>
@@ -339,11 +338,13 @@ class List extends Component {
                     // te
                     var r = this.props.rarr ? this.props.rarr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
                     var w = this.props.rarr ? this.props.warr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
-                    return (<li onClick={this.clickLi} from={name + "/" + ele.name} unique={ele.name} key={index} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
+                    return (<li onClick={this.clickLi} from={name + "/" + ele.name} unique={ele.name} key={name + "/" + ele.name} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
                         type="text" className="renameInput" onChange={this.inputName} onBlur={this.inputBlur} value={ele.name}/> <i className="glyphicon glyphicon-trash" onClick={this.deleteFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportFn}></i>{this.props.fromShare ? (<div><i className="glyphicon glyphicon-eye-open" style={{color:  arr || r||w ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || w ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</li>)
                 }
             });
             return tem
+        }else {
+            return ""
         }
     }
     clickLi(e) {
@@ -406,6 +407,7 @@ class List extends Component {
             {shareList}
         </ul>)
     }
+
     render (){
         var list = this.props.caseList;
         var caseList = [];

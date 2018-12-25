@@ -38,7 +38,7 @@ i.glyphicon-ok, i.glyphicon-minus {
     width: 100px;
     display: inline-block;
 }
-.table-bordered {
+.table-bordered,.text-area {
     border-top-width: 0px;
 }
 .table tbody tr td {
@@ -50,4 +50,23 @@ i.glyphicon-ok, i.glyphicon-minus {
 }
 .panel-title {
     display: inline-block;
+}
+.text-area, .text-areaTest {
+    /*position:absolute;*/
+    width: 80%;
+}
+div.text {
+    position: relative;
+}
+.textlist {
+    position: absolute;
+    right:0px;
+    top: 0px;
+    background: #a8a8a8;
+    color: white;
+}
+.textlist li {
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: underline;
 }
