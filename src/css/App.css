@@ -69,3 +69,8 @@ button {
   text-align: center;
   cursor: pointer;
 }
+.iframe-test {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+}

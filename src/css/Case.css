@@ -44,6 +44,9 @@ i.glyphicon-ok, i.glyphicon-minus {
 .table tbody tr td {
     padding:0px;
 }
+.panel {
+    position: relative;
+}
 .panel .panel-heading {
     text-align: left;
     background-image: none;
@@ -64,6 +67,9 @@ div.text {
     top: 0px;
     background: #a8a8a8;
     color: white;
+}
+.textlist:hover {
+    z-index: 10;
 }
 .textlist li {
     padding: 10px;

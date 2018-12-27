@@ -33,14 +33,19 @@ class WillSave extends Component {
     cancelSave () {
         if (! this.props.fromTool) {
             this.props.cancelSave();
+        }else {
+            this.props.cancelTool()
         }
     }
     saveAs () {
-        if (this.state.str) {
-            var name = this.state.initName;
-            var str = this.state.str;
-            var from = this.state.from;
+        var name = this.state.initName;
+        var str = this.state.str;
+        var from = this.state.from;
+        if (str) {
             this.props.saveAs(str, from, name);
+        }else {
+            // save to root
+            this.props.saveAsRoot(from, name);
         }
     }
     render () {
@@ -54,7 +59,7 @@ class WillSave extends Component {
             <div className="willsave">
                 <div className="save-wrapper">
                     {this.props.fromTool ? "" : (<i className="glyphicon glyphicon-remove-circle" onClick={this.cancelSave}></i>)}
-                    <div className="name">
+                    <div className="name" style={{visibility: this.props.fromTool ? "hidden" : "visible"}}>
                         <span className="name-desc">Request name:</span>
                         <input type="text" className="name-input" value={this.state.initName} onChange={this.requestName}/>
                     </div>
@@ -63,8 +68,8 @@ class WillSave extends Component {
                         <List activeDir={this.activeDir} fromSave="fromSave" caseList={this.props.caseList}></List>
                     </div>
                     <div className="button">
-                        {this.props.fromTool ? "" : (<button className="btn" onClick={this.cancelSave}>取消</button>)}
-                        <button className="btn" onClick={this.saveAs}>{"储存到" + (newStr ? newStr : "哪里？")}</button>
+                        <button className="btn" onClick={this.cancelSave}>取消</button>
+                        <button className="btn" onClick={this.saveAs}>{"储存到" + (newStr ? newStr : "根？")}</button>
                     </div>
                 </div>
             </div>

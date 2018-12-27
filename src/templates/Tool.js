@@ -16,7 +16,8 @@ class Tool extends Component {
         super(props);
         this.state = {
             flag: false,
-            share: false
+            share: false,
+            ulFlag: false
         };
         this.addCaseState = this.addCaseState.bind(this);
         this.reader= this.reader.bind(this);
@@ -25,6 +26,10 @@ class Tool extends Component {
         this.sureShare = this.sureShare.bind(this);
         this.shareEdit = this.shareEdit.bind(this);
         this.saveAs = this.saveAs.bind(this);
+        this.lightTask = this.lightTask.bind(this);
+        this.saveAsRoot = this.saveAsRoot.bind(this);
+        this.cancelSave = this.cancelSave.bind(this);
+        this.showShareUl = this.showShareUl.bind(this);
         // this.saveImport = this.saveImport.bind(this);
         // this.closeInput = this.closeInput.bind(this);
         // this.inputFn = this.inputFn.bind(this);
@@ -86,6 +91,19 @@ class Tool extends Component {
     import() {
         $("#myFile").click()
     }
+    showShareUl (e) {
+        if (this.state.ulFlag) {
+            $(e.target).parent().find(".shareUl").css({display: "block"})
+            this.setState({
+                ulFlag: false
+            })
+        }else {
+            $(e.target).parent().find(".shareUl").css({display: "block"})
+            this.setState({
+                ulFlag: true
+            })
+        }
+    }
     showShareList () {
         this.setState({
             share: true
@@ -106,21 +124,23 @@ class Tool extends Component {
         var sharearr = [];
         sharearr.push({"r": eyePerson});
         sharearr.push({"w": editPerson});
-        this.props.sharechange(sharearr, shareTo);
+        var a = this.props.sharechange(sharearr, shareTo);
         //改变shareto的shared
-        axios({
-           method: "post",
-           url: "/sureShare",
-           data: {
-               host: this.props.person,
-               r: eyePerson,
-               w: editPerson,
-               shareTo: shareTo
-           },
-           contentType:"application/json",
-        }).then ((res)=> {
-
-        });
+        if (a) {
+            axios({
+                method: "post",
+                url: "/sureShare",
+                data: {
+                    host: this.props.person,
+                    r: eyePerson,
+                    w: editPerson,
+                    shareTo: shareTo
+                },
+                contentType:"application/json",
+            }).then ((res)=> {
+                return true
+            });
+        }
     }
     shareEye (from, person, dis) {
         var fromArr = [].concat(from);
@@ -173,18 +193,15 @@ class Tool extends Component {
     reader () {
         var Files = document.getElementById("myFile").files;
         var trueFiles = Array.prototype.slice.call(Files);
+        var importObj = [];
         trueFiles.forEach((trueFile, index)=> {
             if(trueFile && trueFile.type === "application/json") {
                 var fr=new FileReader();
-                var that = this;
+                // var that = this;
                 fr.readAsText(trueFile);
                 fr.onload=function(){
                     var obj = JSON.parse(this.result);
-                    that.setState({
-                        saveFrame: true,
-                        importObj: obj
-                    });
-
+                    importObj.push(obj)
                     // if(obj) {
                     //     obj = obj.item[0];
                     //     var name, bodyList,headerList,method,url,paramList,query;
@@ -200,25 +217,79 @@ class Tool extends Component {
                     //     that.addCaseState(name, bodyList,headerList,method,url,paramList);
                     // }
                 };
-                document.getElementById("myFile").value = "";
             }else {
                 alert("file type not match")
 
             }
-        })
+        });
+        this.setState({
+            saveFrame: true,
+            importObj: importObj
+        });
+        document.getElementById("myFile").value = "";
     }
     // saveImport (obj) {
     //
     //     // this.props.addState(obj);
     // }
     saveAs (str, from, name) {
-        var caseObj = {
-            name: name,
-            item: this.state.importObj.item
-        };
-        this.props.importCase(caseObj, from);
+        var caseArr = this.state.importObj;
+        var caseObjArr = [];
+        caseArr.forEach((ele, index)=> {
+            caseObjArr.push({
+                name: ele.info.name ,
+                item: ele.item
+            })
+        });
+        this.props.importCase(caseObjArr, from);
         this.setState({
             saveFrame: false
+        })
+    }
+    cancelSave () {
+        this.setState({
+            saveFrame: false
+        })
+    }
+    saveAsRoot (from, name) {
+        this.props.importCase(this.state.importObj);
+        this.setState({
+            saveFrame: false
+        });
+        // var rootObj = {
+        //     info: {
+        //         "_postman_id": "aa2e99c6-aa0f-4bcc-9d6a-2a0e3ce86e05",
+        //         "name": name,
+        //         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+        //     },
+        //     item: [{
+        //         name: name,
+        //         item: this.state.importObj.item
+        //     }]
+        // }
+    }
+    lightTask (e) {
+        // i
+        $(e.target).css({color: "white"});
+        var path = $(e.target).attr("task");
+        axios({
+            method: "post",
+            url: "/lightTask",
+            data: {
+                path: path,
+                person: "person0"
+            }
+        }).then((res)=>{
+            var task_runner = this.state.task_runner;
+            task_runner[path] = res.data;
+            console.log(res.data);
+            this.props.taskRunnerChange(task_runner);
+
+            // this.setState({
+            //     task_runner: task_runner
+            // })
+            // $(e.target).next("div").css({display: "block"})
+            return true
         })
     }
     componentWillMount() {
@@ -228,43 +299,62 @@ class Tool extends Component {
             obj[ele.name + "edit"] = ele.item[1].w || [];
         });
         this.setState({
-            ...obj
+            ...obj,
+            task_runner: this.props.caseList.task_runner,
+            taskPathArr: this.props.taskPathArr
         })
     }
     componentWillReceiveProps(nextProps, nextContext) {
         var obj = {};
+        // share out
         nextProps.caseList.share.map((ele, index)=> {
             obj[ele.name] = ele.item[0].r || [];
             obj[ele.name + "edit"] = ele.item[1].w || [];
         });
         this.setState({
-            ...obj
+            ...obj,
+            task_runner: this.props.caseList.task_runner,
+            taskPathArr: this.props.taskPathArr
         })
     }
     render () {
+        var task_runner = this.state.task_runner;
         var shareFlag = this.state.share;
         var shareList = this.props.caseList.share;
         var shareArr = shareList.map((ele, index)=> {
             var rarr = ele.item[0].r;
             var warr = ele.item[1].w;
             return (<div key={index}>
-                <div className="shareDiv">{ele.name}</div>
+                <div className="shareDiv" onClick={this.showShareUl}>{ele.name}</div>
                 <ul className="shareUl"><div className="sureShare" affix={ele.name} onClick={this.sureShare}>确定</div>
                     <List rarr={rarr} warr={warr} shareEdit={this.shareEdit} shareEye={this.shareEye} person={ele.name} fromShare="fromShare" caseList={this.props.caseList}></List></ul>
             </div>)
+        });
+        var taskPathArr = this.state.taskPathArr;
+        var pathList = taskPathArr.map((ele, index)=> {
+            return <li key={ele}>{ele} <i task={ele} className="glyphicon glyphicon-cutlery" onClick={this.lightTask}></i>
+                <div className="liTask" task={ele} style={{display: task_runner[ele] ? "block" : "none"}}>
+                    {"http://10.12.28.36:3002/task/" + task_runner[ele]}
+            </div></li>
         });
         return(
             <div className="wrapper">
                 <div className="tool">
                     <div className="btn shareBtn" onClick={this.showShareList}>分享
-                        <div className="sharePanel">
+                        <div className="sharePanel" style={{display: this.state.share ? "block" : "none"}}>
                             {shareArr}
+                        </div>
+                    </div>
+                    <div className="btn taskBtn" >
+                        任务
+                        <div className="pathPanel">
+                            {pathList}
                         </div>
                     </div>
                     <button className="btn" id="chooseFile" onClick={this.import}>导入</button>
                     <input style={{display:"none"}} type="file" accept=".json" multiple id="myFile" onChange={this.reader}/>
                 </div>
-                {this.state.saveFrame ? (<WillSave fromTool="fromTool" saveAs={this.saveAs} caseList={this.props.caseList}></WillSave>) : ""}
+                {this.state.saveFrame ? (<WillSave cancelTool={this.cancelSave} saveAsRoot={this.saveAsRoot} fromTool="fromTool" saveAs={this.saveAs} caseList={this.props.caseList}></WillSave>) : ""}
             </div>
         )
 

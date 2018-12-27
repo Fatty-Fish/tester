@@ -11,10 +11,90 @@ const addState = require('./addState');
 const fs = require('fs');
 const axios = require("axios");
 const bodyParser = require('body-parser');
+const uuidv1 = require("uuid/v1");
 var person0 = require("../storage/person0.json");
 
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
+
+const express = require("express");
+var App = express();
+App.all("*", function(req, res, next) {             //设置跨域访问
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By",' 3.2.1');
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+});
+App.get("/task/:uuid", (req, ress)=>{
+    console.log(req.params.uuid);
+    var para = req.params.uuid;
+    fs.readFile("storage/task_uuid.json", "utf8", (err, data)=> {
+        // get path person
+        if (err) throw err;
+        var taskData = JSON.parse(data);
+        var path = taskData[para].path;
+        var person = taskData[para].person;
+        path = path.replace(person +"/", "");
+        fs.readFile("storage/" + person + ".json", "utf8", (err, data)=> {
+            // get right data cont
+            if (err) throw err;
+            var cont = findPath(path.split("/"), data);
+            var method = cont.request.method;
+            var url = cont.request.url.raw;
+            if (url.indexOf("{{url}}") >= 0) {
+                url = url.replace("{{url}}", "test-activity.changyou.com");
+            }
+            if (url.indexOf("http://") === -1 || url.indexOf("https://") === -1) {
+                // no protocal
+                url = "http://" + url;
+            }
+            var header = cont.request.header;
+            var headers = {};
+            header.map((ele, index)=> {
+                headers[ele.key] = ele.value;
+            });
+            var body = cont.request.body;
+            var bodyArr = body[body.mode];
+            var bodys = {};
+            if (bodyArr.length !== 0) {
+                bodyArr.map((ele, index)=> {
+                    bodys[ele.key] = ele.value;
+                })
+            }
+            var query = cont.request.url.query;
+            var querys = {};
+            if (query) {
+                query.map((ele, index)=> {
+                    querys[ele.key] = ele.value;
+                })
+            }
+            // return ress.json({
+            //     method: method,
+            //     url: url,
+            //     headers: headers,
+            //     data: bodys,
+            //     params: querys
+            // })
+            axios({
+                method: method,
+                url: url,
+                headers: headers,
+                data: bodys,
+                params: querys
+            }).then((res)=> {
+                return ress.json(res.data)
+            });
+        })
+    });
+});
+var server = App.listen(3002,function(){
+    var host = server.address().address;
+    var port = server.address().port;
+    console.log('listen at http://%s:%s',host,port)
+});
+
 
 module.exports = function(proxy, allowedHost) {
   return {
@@ -99,6 +179,7 @@ module.exports = function(proxy, allowedHost) {
                 data: req.body.body,
                 params: req.body.param
             }).then((res)=> {
+
               return result.json(res.data);
             }).catch((err)=> {
               return result.json(err.data);
@@ -110,7 +191,10 @@ module.exports = function(proxy, allowedHost) {
             var auth = req.body.tar;
             var path = req.body.path;
             var obj = req.body.newData;
+            var runner = req.body.runner;
             fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
+                var objdata = JSON.parse(data);
+
                 if (err) throw err;
                 if (auth) {
                     var pre = req.body.preText;
@@ -120,8 +204,14 @@ module.exports = function(proxy, allowedHost) {
                         if (err) throw err;
                         return result.json("ok");
                     })
+                }else if (runner) {
+                    // runner
+                    objdata.task_runner = runner;
+                    fs.writeFile("storage/" + per + ".json", JSON.stringify(objdata), "utf8", (err)=> {
+                        if (err) throw err;
+                        return result.json("ok");
+                    })
                 }else {
-                    var objdata = JSON.parse(data);
                     var variable = objdata.variable;
                     objdata = {
                         ...obj,
@@ -153,12 +243,26 @@ module.exports = function(proxy, allowedHost) {
                 warr.forEach((ele, index)=> {
                     arr.push({"path": ele, "auth": "w"});
                 });
+                var obj = {};
                 for (var i = 0; i< len; i++) {
+                    // 曾经分享过
                     if (shareArr[i].name === req.body.host) {
-                        shareArr[i].item = arr
+                        shareArr[i].item = arr;
+                        obj = {
+                            ...dataobj,
+                            shared: shareArr
+                        };
+                        fs.writeFile("storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
+                            if (err) throw err;
+                            return res.json("ok");
+                        })
                     }
-                };
-                var obj = {
+                }
+                shareArr.push({
+                    name: req.body.host,
+                    item: arr
+                });
+                obj = {
                     ...dataobj,
                     shared: shareArr
                 };
@@ -210,7 +314,7 @@ module.exports = function(proxy, allowedHost) {
         });
         // 人名变量替换
         app.get("/new", (req,res)=> {
-            console.log("new")
+            console.log("new222")
             var person = req.query.person;
           var path = req.query.path;
           fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
@@ -224,9 +328,36 @@ module.exports = function(proxy, allowedHost) {
                 }
             });
         });
-          app.post("/task/:id", (req, res)=>{
-
-          })
+        app.post("/lightTask", (req, res)=> {
+            var path = req.body.path;
+            var per = req.body.person;
+            var uuid = uuidv1();
+            fs.readFile("storage/task_uuid.json", "utf8", (er, dat)=> {
+                if (er) throw er;
+                var task_uuid = JSON.parse(dat);
+                for (var prop in task_uuid) {
+                    if (task_uuid[prop].path === path) {
+                        delete task_uuid[prop]
+                    }
+                }
+                task_uuid[uuid] = {
+                    path: path,
+                    person: per
+                };
+                fs.writeFile("storage/task_uuid.json", JSON.stringify(task_uuid), "utf8", (err)=> {
+                    if (err) throw err;
+                })
+            });
+            fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
+                if (err) throw err;
+                var perdata = JSON.parse(data);
+                perdata["task_runner"][path] = uuid;
+                fs.writeFile("storage/" + per + ".json", JSON.stringify(perdata), "utf8", (err)=> {
+                    if (err) throw err;
+                    return res.json(uuid);
+                })
+            })
+        })
     },
     before(app, server) {
       if (fs.existsSync(paths.proxySetup)) {

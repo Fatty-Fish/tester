@@ -42,13 +42,27 @@
 }
 .list {
     position: absolute;
-    display: block;
+    display: inline-block;
     width: 248px;
     height: 848px;
     top: 79px;
+    z-index: 999;
     color: #fff;
     background-color: #a8a8a8;
-    overflow: auto;
+    overflow:auto;
+}
+.resize {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    content: "";
+    display: inline-block;
+    height: 848px;
+    width: 10px;
+    cursor: ew-resize;
+}
+.list ul {
+    width: 210px;
 }
 .list i {
     color: rgba(115, 115, 115, 0.82);
@@ -67,6 +81,7 @@ div.glyphicon {
     position:relative;
     display: none;
     height:40px;
+    width: 150px;
     line-height:40px;
     border-bottom:1px solid #cbcbcb;
 }

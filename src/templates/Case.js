@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import $ from "jquery";
 import  VarSet from "./VarSet";
 import axios from "axios";
+// import mocha from "mocha"
+// import { assert } from 'chai';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
@@ -370,11 +372,10 @@ class Case extends Component {
                     return res.data
                 }
             };
-            console.log(this.state.textTest_val)
-            eval(this.state.textTest_val);
             this.setState({
                 result: JSON.stringify(res.data, null, 4)
             });
+            eval(this.state.textTest_val);
             // 提供下载。。
         }).catch((error)=> {
             this.setState({
@@ -821,6 +822,7 @@ class Case extends Component {
         // 提取Case后不需要了
     }
     componentWillReceiveProps(nextProps) {
+        console.log("will")
         var plen = nextProps.caseRender.paramList.length - 1;
         var hlen = nextProps.caseRender.headersList.length - 1;
         var blen = nextProps.caseRender.bodyList.length - 1;
@@ -845,6 +847,7 @@ class Case extends Component {
         });
     }
     componentWillMount() {
+        console.log("mount")
         this.setState({
             text_val: this.props.preText,
             textTest_val: this.props.testText
@@ -881,7 +884,7 @@ class Case extends Component {
 
     render () {
         var text_val = this.state.text_val;
-        // console.log(text_val)
+        console.log(this.state)
         var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;
         var varIndex = this.state.varSelect;
@@ -1072,7 +1075,7 @@ class Case extends Component {
             <div className="case" style={seen}>
                 <div className="top">
                     <div className="method">
-                        <select className="form-control" value={method} onChange={this.changeMethod}>
+                        <select className="form-control" value={method.toLowerCase()} onChange={this.changeMethod}>
                             <option value="get">GET</option>
                             <option value="post">POST</option>
                             <option value="put">PUT</option>
@@ -1187,7 +1190,7 @@ class Case extends Component {
                     </div>
                 </div>
                 {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={this.state.varList}></VarSet>) : ""}
-            </div>
+                </div>
         )
     }
 }

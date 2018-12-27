@@ -5,6 +5,45 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import "../css/List.css";
+// 延伸jq 拖拽窗口函数
+(function ($) {
+    $.fn.extend({
+        "myDrag": function (s) {
+            var start = "";
+            $(this).mousedown(function (e) {
+                // 当前鼠标坐标
+                var curX = e.clientX;
+                var curwidth = parseInt($(this).parent().css("width")); // number
+                var pthis = $(this).parent()[0];
+                document.onmousemove = function (e) {
+                    var moveX = e.clientX;
+                    var dis = moveX - curX;
+                    var width = curwidth + dis;
+                    $(pthis).css({
+                        "width": width >= 248 ? width + "px" : "248px"
+                    })
+                };
+                document.onmouseup = function (e) {
+                    document.onclick = function (event) {
+                        if (event.target.nodeName.toLowerCase() === "html") {
+                            var ulclass = $(pthis).parent().attr("class")// ul
+                            if (ulclass === "shareUl") {
+                                var ul  = $(pthis).parent().parent();
+                                ul.css({display: "none"});
+                                // ul.parent().parent().css({display: "none"});
+                            }
+                        }
+                    };
+                    document.onmousemove = null;
+                };
+            });
+            return $(this)
+        }
+    })
+})($);
+
+
+// $(".list").myDrag("hhh");
 
 class List extends Component {
     constructor (props) {
@@ -31,7 +70,16 @@ class List extends Component {
         this.showShare = this.showShare.bind(this);
         this.shareEye = this.shareEye.bind(this);
         this.shareEdit = this.shareEdit.bind(this);
+        // this.leaveShare = this.leaveShare.bind(this);
     }
+    // leaveShare (e) {
+    //     var pclass = $(e.target).parent().attr("class");
+    //     if (pclass === "shareUl") {
+    //         var ppdiv = $(e.target).parent().parent();
+    //         ppdiv.find(".shareUl").css({display: "none"});
+    //         ppdiv.parent().css({display: "none"})
+    //     }
+    // }
     shareEye (e) {
         e.stopPropagation();
         var oUl = $(e.target).parent().parent().parent();
@@ -407,6 +455,9 @@ class List extends Component {
             {shareList}
         </ul>)
     }
+    componentDidMount() {
+        $(".resize").myDrag("hhh");
+    }
 
     render (){
         var list = this.props.caseList;
@@ -421,6 +472,7 @@ class List extends Component {
         return (
             <div className="list">
                 {caseList}
+                <p className="resize"></p>
             </div>
         )
     }

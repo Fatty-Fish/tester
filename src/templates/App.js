@@ -85,8 +85,29 @@ class App extends Component {
       this.importCaseFn = this.importCaseFn.bind(this);
       this.TestChange = this.TestChange.bind(this);
       this.PreChange = this.PreChange.bind(this);
+      this.taskRunnerChange = this.taskRunnerChange.bind(this);
       // this.varChangeNm = this.varChangeNm.bind(this);
   }
+    taskRunnerChange (runner) {
+      var caseList = this.state.caseList;
+        caseList.task_runner = runner;
+      this.setState({
+          caseList: caseList
+      });
+        axios({
+            url: "/surechange",
+            method: "post",
+            data: {
+                "runner": runner,
+                "person": "person0",
+            }
+        }).then((res) => {
+            if (res) {
+                //
+                return true
+            }
+        });
+    }
     PreChange (text, k) {
       var preText = this.state.preText || {};
       preText[k] = text;
@@ -1281,7 +1302,13 @@ class App extends Component {
                 if(ele.item) {
                     this.storeChange(ele.item, newObj, prop + "/" +ele.name);
                 }else if (ele.request) {
-                        var body = ele.request.body.formdata;
+                        var mode = ele.request.body.mode;
+                        var body;
+                        if (mode) {
+                            body = ele.request.body[mode];
+                        }else {
+                            body = ele.request.body.formdata;
+                        }
                         var header = ele.request.header;
                         var query = ele.request.url.query;
                         var path = ele.request.url.path;
@@ -1434,6 +1461,7 @@ class App extends Component {
         }).then((res) => {
             if (res) {
                 //
+                return true
             }
         });
     }
@@ -1470,7 +1498,7 @@ class App extends Component {
                       // }
                         // });
           }
-          if (prop !== "shared" && prop !== "share" && prop !== "variable") {
+          if (prop !== "shared" && prop !== "share" && prop !== "variable" && prop !== "task_runner") {
               var obj = {};
               this.storeChange(arr[prop], obj, prop);
               newObj[arr[prop].info.name] = obj
@@ -1495,7 +1523,7 @@ class App extends Component {
       for (var i = 0; i < len; i++) {
           if (item[i].name === arr[0]) {
               if (arr.length === 1) {
-                  item[i].item.push(obj);
+                  item[i].item = item[i].item.concat(obj);
               }else if (item[i].item) {
                   item[i].item = this.importCaseFn(item[i].item, arr, obj)
               }
@@ -1511,12 +1539,21 @@ class App extends Component {
     // }
     importCase (obj, from) {
         var caseList = this.state.caseList;
-        var fromArr = from.split("/");
-        // 保存到根：
-        if (fromArr.length === 1) {
-            caseList[fromArr[0]].item.push(obj);
+        if (!from) {
+            var len = obj.length;
+            for (var i = 0; i < len; i ++) {
+                var name = obj[i].info.name;
+                caseList[name] = obj[i];
+            }
         }else {
-            caseList[fromArr[0]].item = this.importCaseFn(caseList[fromArr[0]].item, fromArr, obj);
+            // 保存到根：
+            var fromArr = from.split("/");
+
+            if (fromArr.length === 1) {
+                caseList[fromArr[0]].item = caseList[fromArr[0]].item.concat(obj);
+            }else {
+                caseList[fromArr[0]].item = this.importCaseFn(caseList[fromArr[0]].item, fromArr, obj);
+            }
         }
         this.setState({
             caseList: caseList
@@ -1531,6 +1568,7 @@ class App extends Component {
         }).then((res) => {
             if (res) {
                 //
+                return true
             }
         });
     }
@@ -1544,11 +1582,27 @@ class App extends Component {
             contentType:"application/json",
         }).then((res)=> {
             this.refresh(JSON.parse(res.data));
+            return true
         });
     }
 
     render() {
       // console.log(this.state);
+        var taskPathArr = [];
+        var caseStore = this.state.caseStore;
+        for (var prop in caseStore) {
+            for (var pro in caseStore[prop]) {
+                taskPathArr.push("person0/" + pro) // 不同人
+            }
+        }
+        var sharedArr = this.state.caseList.shared;
+        if (sharedArr) {
+            sharedArr.map((ele, index)=> {
+                ele.item.forEach((el, index)=> {
+                    taskPathArr.push(ele.name + "/" + el.path)
+                })
+            });
+        }
         if (JSON.stringify(this.state.caseList) === "{}") {
             return (<h3>nothing here...</h3>)
         } else {
@@ -1572,12 +1626,15 @@ class App extends Component {
             return (
                 <div className="App">
                     <div className="cover">
-                        <Tool importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
+                        <Tool taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
                         <Nav activeCase = {this.state.activeIndex} acCaseFn = {this.acCaseFn} addFn = {this.addFile} delFn = {this.delFn} caseList={this.state.activeCase}></Nav>
                         {this.state.saveFlag >= 0 ? (<WillSave cancelSave={this.cancelSave} saveAs={this.saveAs} caseList={this.state.caseList}></WillSave>) : ""}
                         {this.state.sureFlag >= 0 ? (<IfSure saveFn={this.saveFn} cancelFn={this.cancelFn} loseFn={this.loseFn}></IfSure>) : ""}
                         <List receiveShare={this.receiveShare} exportDirFn={this.exportDirFn} refresh={this.refresh} delDirFn={this.delDirFn} renameDirFn={this.renameDirFn} deleteFn={this.deleteFn} renameFn={this.renameFn} exportStateFn={this.exportStateFn} acName={this.changeAcName} caseList={this.state.caseList}></List>
                         {caseListRender}
+                        {/*<div className="iframe-wrapper">*/}
+                            {/*<iframe className="iframe-test" src="../test.html"></iframe>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             );

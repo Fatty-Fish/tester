@@ -21,9 +21,9 @@
     background: white;
     transform: translate(-50%, -50%);
 }
-.shareBtn:hover .sharePanel {
-    display: block;
-}
+/*.shareBtn:hover .sharePanel {*/
+    /*display: block;*/
+/*}*/
 .sharePanel {
     position: absolute;
     width: 227px;
@@ -32,18 +32,57 @@
     z-index: 1000;
     background: #767676;
     color: whitesmoke;
+    /*display: none;*/
+}
+.taskBtn:hover .pathPanel {
+    display: block;
+}
+.taskBtn .glyphicon {
+    display: inline-block;
+    padding: 5px;
+    color: #cbcbcb;
+}
+.taskBtn .liTask {
+    display: none;
+    padding: 10px;
+    color: white;
+    cursor: text;
+    user-select: text;
+    /*border-bottom: 1px solid black;*/
+}
+.pathPanel {
+    position: absolute;
+    /*width: 227px;*/
+    height: 800px;
+    top: 55px;
+    left: 21px;
+    z-index: 1000;
+    background: #767676;
+    color: whitesmoke;
+    overflow: auto;
     display: none;
 }
-.shareBtn .sharePanel:hover .shareUl {
-    display: block;
-    position: absolute;
-    left: 227px;
-    top:0px;
-    width: 248px;
-    background: #767676;
+.pathPanel li {
+    text-align: right;
+    padding: 0 10px;
+    color: #cbcbcb;
+    border-bottom: 1px solid #4b4b4b;
 }
+/*.shareBtn .sharePanel:hover .shareUl {*/
+    /*display: block;*/
+    /*position: absolute;*/
+    /*left: 227px;*/
+    /*top:0;*/
+    /*width: 248px;*/
+    /*background: #767676;*/
+/*}*/
 .sharePanel .shareUl {
     display: none;
+    position: absolute;
+    left: 227px;
+    top:0;
+    width: 248px;
+    background: #767676;
 }
 .sharePanel .list i.glyphicon-eye-open {
     position: absolute;
