@@ -69,8 +69,13 @@ button {
   text-align: center;
   cursor: pointer;
 }
-.iframe-test {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
+.iframe-test #mocha-stats {
+  position: static;
+  font-size: 20px;
 }
+ .iframe-test #mocha .test a.replay {
+    display: none;
+}
+ .iframe-test #mocha h1 a:hover {
+   cursor: text;
+ }

@@ -7,8 +7,8 @@ import List from "./List"
 import Nav from "./Nav"
 import Case from "./Case";
 import WillSave from "./WillSave"
-import IfSure from "./IfSure"
-
+import IfSure from "./IfSure";
+// import mocha from "mocha"
 import axios from "axios";
 // case模板对象
 const CASE_TEMP = function () {
@@ -23,6 +23,7 @@ const CASE_TEMP = function () {
     this.paramList = [{key:"", value: ""}];
     this.result = "";
     this.showTable = "Headers";
+    this.show = "panel";
     this.url = "";
 };
 // 匹配人名
@@ -86,8 +87,10 @@ class App extends Component {
       this.TestChange = this.TestChange.bind(this);
       this.PreChange = this.PreChange.bind(this);
       this.taskRunnerChange = this.taskRunnerChange.bind(this);
-      // this.varChangeNm = this.varChangeNm.bind(this);
+      this.changeShow = this.changeShow.bind(this);
+      this.changeResult = this.changeResult.bind(this);
   }
+
     taskRunnerChange (runner) {
       var caseList = this.state.caseList;
         caseList.task_runner = runner;
@@ -1243,6 +1246,26 @@ class App extends Component {
             caseStore: store
         })
     }
+    changeResult (k, val) {
+        var name = k.split("/")[0];
+        var store = this.state.caseStore;
+        var newList = store[name];
+        newList[k].result = val;
+        store[name] = newList;
+        this.setState({
+            caseStore: store
+        })
+    }
+    changeShow (k, value) {
+        var name = k.split("/")[0];
+        var store = this.state.caseStore;
+        var newList = store[name];
+        newList[k].show = value;
+        store[name] = newList;
+        this.setState({
+            caseStore: store
+        })
+    }
     changeAble(k, value) {
       // 更改able不会更改原始数组
         var name = k.split("/")[0];
@@ -1353,6 +1376,7 @@ class App extends Component {
                             paramList : query || [],
                             result : "",
                             showTable : "Headers",
+                            show: "panel",
                             url : url,
                         }
                 }
@@ -1423,6 +1447,7 @@ class App extends Component {
             paramList : query || [],
             result : "",
             showTable : "Headers",
+            show: "panel",
             url : url,
             auth: auth
         }
@@ -1587,7 +1612,7 @@ class App extends Component {
     }
 
     render() {
-      // console.log(this.state);
+      console.log(this.state);
         var taskPathArr = [];
         var caseStore = this.state.caseStore;
         for (var prop in caseStore) {
@@ -1619,8 +1644,8 @@ class App extends Component {
                     var pre = this.state.preText;
                     var test = this.state.testText;
                 return acIndex === index ? (
-                    <Case preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} TestChange={this.TestChange} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={{display: "block"}}>
-                    </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={{display: "none"}}>
+                    <Case preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
+                    </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele}>
                 </Case>)
             });
             return (
@@ -1632,9 +1657,6 @@ class App extends Component {
                         {this.state.sureFlag >= 0 ? (<IfSure saveFn={this.saveFn} cancelFn={this.cancelFn} loseFn={this.loseFn}></IfSure>) : ""}
                         <List receiveShare={this.receiveShare} exportDirFn={this.exportDirFn} refresh={this.refresh} delDirFn={this.delDirFn} renameDirFn={this.renameDirFn} deleteFn={this.deleteFn} renameFn={this.renameFn} exportStateFn={this.exportStateFn} acName={this.changeAcName} caseList={this.state.caseList}></List>
                         {caseListRender}
-                        {/*<div className="iframe-wrapper">*/}
-                            {/*<iframe className="iframe-test" src="../test.html"></iframe>*/}
-                        {/*</div>*/}
                     </div>
                 </div>
             );

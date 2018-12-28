@@ -4,7 +4,8 @@ import './css/index.css';
 import App from './templates/App';
 import * as serviceWorker from './serviceWorker';
 import axios from "axios";
-
+import $ from "jquery";
+// import mocha from "mocha";
 // 初始化请求json文件储存
 ReactDOM.render(<App/>, document.getElementById('root'));
 

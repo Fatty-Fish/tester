@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import $ from "jquery";
 import  VarSet from "./VarSet";
 import axios from "axios";
-// import mocha from "mocha"
-// import { assert } from 'chai';
-
+import mocha from "mocha"
+import chai from 'chai';
+import "mocha/mocha.css"
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import "../css/Case.css"
@@ -88,7 +88,27 @@ class Case extends Component {
         this.textAreaTestChange = this.textAreaTestChange.bind(this);
         this.insertText = this.insertText.bind(this);
         this.insertTestText = this.insertTestText.bind(this);
+        this.jumpToPanel = this.jumpToPanel.bind(this);
+        this.jumpToTest = this.jumpToTest.bind(this);
     };
+    jumpToTest (e) {
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // this.props.changeShow(this.props.k, "test");
+        this.setState({
+            show: "test"
+        })
+    }
+    jumpToPanel (e) {
+        e.preventDefault();
+        $(e.target).parent().parent().find(".active").removeClass("active");
+        $(e.target).parent().addClass("active");
+        // this.props.changeShow(this.props.k, "panel");
+        this.setState({
+            show: "panel"
+        })
+    }
     changeVarSelect (e) {
         var selectName = $(e.target).val();
         var varList = this.state.varList;
@@ -233,6 +253,9 @@ class Case extends Component {
         $(".text-areaTest").insert({"text": $(e.target).text() + "();"})
     }
     submitProxy () {
+        var str = "";
+        eval(str);
+        // 每次提交清空mocha div
         var method = this.state.method;
         var url = this.state.url;
         var headerlist = this.state.headersList;
@@ -351,7 +374,6 @@ class Case extends Component {
             }
         };
         // 执行pre-script
-        eval(this.state.text_val);
 
         axios({
             method: "post",
@@ -366,22 +388,47 @@ class Case extends Component {
                 "param": param
             }
         }).then((res)=> {
+            // 每次测试清空报告
+            $("#mocha").html("");
+            // $("#mocha-report").html("");
             // 后置脚本
             pm.response = {
                 json: ()=> {
                     return res.data
                 }
             };
-            this.setState({
-                result: JSON.stringify(res.data, null, 4)
+            pm.assert = chai.assert;
+            // 没有textTest_val时，eval报错，不继续执行。
+            // this.setState({
+            //     result: JSON.stringify(res.data, null, 4)
+            // });
+            if (this.state.textTest_val) {
+                str = "mocha.setup('bdd');" +  this.state.textTest_val + "mocha.run();";
+                var Runner = eval("mocha.setup('bdd');");
+                // console.log(Runner)
+                // 清除runner记录
+                Runner.suite.suites = [];
+                eval(str);
+                // console.log(a)
+            }
+            // 消除无用的a标签跳转
+            $(function () {
+                $(".suite h1").find("a").removeAttr("href");
+
             });
-            eval(this.state.textTest_val);
             // 提供下载。。
+            // console.log(this.state.textTest_val)
+            return res.data;
         }).catch((error)=> {
             this.setState({
                 result: JSON.stringify(error.data, null, 4)
             });
-        })
+        }).then((res)=> {
+            // console.log(res)
+            this.props.changeResult(this.props.k, JSON.stringify(res, null, 4))
+            // this.setState({result: JSON.stringify(res, null, 4)});
+        });
+        eval(this.state.text_val);
     }
     changeMethod (e) {
         // var arr = this.props.k.split("/");
@@ -836,6 +883,7 @@ class Case extends Component {
             nextProps.caseRender.bodyList.push({key: "", value: ""})
         }
         this.setState({
+            show: "panel",
             ...nextProps.caseRender,
             text_val: nextProps.preText,
             textTest_val: nextProps.testText
@@ -871,6 +919,7 @@ class Case extends Component {
                 }
             }
             this.setState({
+                show: "panel",
                 varList: variable,
                 varSelect: 0,
                 global: index,
@@ -938,6 +987,8 @@ class Case extends Component {
              paramShow = this.props.caseRender.showTable === "Param" ? true : false;
              preScriptShow = this.props.caseRender.showTable === "preScriptShow" ? true : false;
              testScriptShow = this.props.caseRender.showTable === "testScriptShow" ? true : false;
+             var panelShow = this.state.show === "panel" ? true : false;
+             var testShow = this.state.show === "test" ? true : false;
              headerFlag = this.props.caseRender.headersList.length;
              disHeader = this.props.caseRender.disableList.header;
              HeadersList = this.props.caseRender.headersList.map((ele, index)=> {
@@ -1072,7 +1123,7 @@ class Case extends Component {
                 }
             });
         return (
-            <div className="case" style={seen}>
+            <div className="case" style={{display: seen ? "block" : "none"}}>
                 <div className="top">
                     <div className="method">
                         <select className="form-control" value={method.toLowerCase()} onChange={this.changeMethod}>
@@ -1152,6 +1203,7 @@ class Case extends Component {
                         <textarea className="text-area form-control" placeholder="your pre-request script" rows="3" value={text_val} onChange={this.textAreaChange}>
                         </textarea>
                         <ul className="textlist" onClick={this.insertText}>
+                            <li>console.log</li>
                             <li>pm.environment.get</li>
                             <li>pm.environment.set</li>
                             <li>pm.environment.unset</li>
@@ -1165,6 +1217,7 @@ class Case extends Component {
                         <textarea className="text-areaTest form-control" placeholder="your test script" rows="3" value={textTest_val} onChange={this.textAreaTestChange}>
                         </textarea>
                         <ul className="textlist" onClick={this.insertTestText}>
+                            <li>console.log</li>
                             <li>pm.environment.get</li>
                             <li>pm.environment.set</li>
                             <li>pm.environment.unset</li>
@@ -1178,19 +1231,28 @@ class Case extends Component {
 
                 </div>
                 <div className="panel panel-default">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">Response for {caseName}</h3>
-                    </div>
-                    <div className="panel-body" style={{textAlign: "justify"}}>
+                    <ul className="nav nav-tabs">
+                        <li role="presentation" className={panelShow ? "active" : ""}><a href="#" onClick={this.jumpToPanel}>Result Data</a></li>
+                        <li role="presentation" className={testShow　? "active" : ""}><a href="#" onClick={this.jumpToTest}>Test Page</a></li>
+                    </ul>
+                    <div className="panel-cover" style={{display: panelShow ? "block" : "none"}}>
+                        <div className="panel-heading">
+                            <h3 className="panel-title">Response for {caseName}</h3>
+                        </div>
+                        <div className="panel-body" style={{textAlign: "justify"}}>
                         <pre>
                             <code>
                                 {this.state.result ? this.state.result : "Click Send Button to Test This URL"}
                             </code>
                         </pre>
+                        </div>
+                    </div>
+                    <div className="iframe-test" style={{display: testShow ? "block" : "none"}}>
+                        <div id={seen ? "mocha" : ""}></div>
                     </div>
                 </div>
                 {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={this.state.varList}></VarSet>) : ""}
-                </div>
+            </div>
         )
     }
 }
