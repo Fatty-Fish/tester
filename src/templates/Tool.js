@@ -282,7 +282,6 @@ class Tool extends Component {
         }).then((res)=>{
             var task_runner = this.state.task_runner;
             task_runner[path] = res.data;
-            console.log(res.data);
             this.props.taskRunnerChange(task_runner);
 
             // this.setState({

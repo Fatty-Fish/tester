@@ -89,6 +89,7 @@ class App extends Component {
       this.taskRunnerChange = this.taskRunnerChange.bind(this);
       this.changeShow = this.changeShow.bind(this);
       this.changeResult = this.changeResult.bind(this);
+      this.changeSelfVar = this.changeSelfVar.bind(this);
   }
 
     taskRunnerChange (runner) {
@@ -206,7 +207,6 @@ class App extends Component {
       var sourceArr = source.split("/");
       var slen = sourceArr.length;
       var obj = this.exportCaseFileFn(sourceArr[slen - 1], source, name);
-        console.log(obj)
 
         // str 找到位置放入
         var arr = str.split("/");
@@ -468,6 +468,7 @@ class App extends Component {
                         }
                         if(ele.name === trueName && ele.name === path) {
                             ele.request.header = store[from].headersList;
+                            ele.request.valSelect = store[from].valSelect || 0;
                         }
                         var header = ele.request.header;
                         if(header) {
@@ -997,6 +998,7 @@ class App extends Component {
         return {
             method: obj.method,
             url: obj.url,
+            valSelect: obj.valSelect || 0,
             headList: headersList,
             bodyList: bodyList,
             paramList: paramList // 不用
@@ -1226,6 +1228,17 @@ class App extends Component {
             caseStore: store
         })
     }
+    changeSelfVar (k, index) {
+        var name = k.split("/")[0];
+        var store = this.state.caseStore;
+        var newList = store[name];
+        newList[k].valSelect = index;
+        store[name] = newList;
+        console.log(88)
+        this.setState({
+            caseStore: store
+        })
+    }
     changeUrl(k, value) {
         var name = k.split("/")[0];
         var store = this.state.caseStore;
@@ -1360,6 +1373,11 @@ class App extends Component {
                             testText: testText,
                             preText:preText
                         });
+                    // 增加变量
+
+
+                    // var val = ele.request.valSelect;
+                        // var valSelect = val ? val : "Global"
                         url = url.replace("{{url}}", "http://test-activity.changyou.com");
                         // if(path) {
                         //     url = url + "/" + path.join("/");
@@ -1378,6 +1396,7 @@ class App extends Component {
                             showTable : "Headers",
                             show: "panel",
                             url : url,
+                            valSelect: ele.request.valSelect || 0
                         }
                 }
             })
@@ -1612,9 +1631,9 @@ class App extends Component {
     }
 
     render() {
-      console.log(this.state);
         var taskPathArr = [];
         var caseStore = this.state.caseStore;
+        console.log(this.state)
         for (var prop in caseStore) {
             for (var pro in caseStore[prop]) {
                 taskPathArr.push("person0/" + pro) // 不同人
@@ -1644,7 +1663,7 @@ class App extends Component {
                     var pre = this.state.preText;
                     var test = this.state.testText;
                 return acIndex === index ? (
-                    <Case preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
+                    <Case preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} changeSelfVar={this.changeSelfVar} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
                     </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele}>
                 </Case>)
             });

@@ -116,8 +116,11 @@ class Case extends Component {
         var global = this.state.global;
         for (var i = 0; i < len; i++) {
             if (varList[i].name === selectName) {
+                this.props.changeSelfVar(this.props.k, i)
+
+
                 this.setState({
-                    varSelect: i,
+                    valSelect: i,
                     varContent: [
                         ...varList[i].values,
                         ...varList[global].values
@@ -126,6 +129,7 @@ class Case extends Component {
                 break;
             }
         }
+
     }
     varSetHide () {
         this.setState({
@@ -173,7 +177,7 @@ class Case extends Component {
                         "testS": this.state.textTest_val || ""
                     }
                 }).then((res) => {
-                    //ol
+                    alert("保存成功~")
                 });
             }
         }else {
@@ -208,15 +212,16 @@ class Case extends Component {
         varContent.forEach((ele, index)=> {
             varContents["{{" + ele.key + "}}"] =  ele.value
         });
-        newArr = newArr.map((ele, index)=> {
+        // 不希望{{}}被改变
+        var newObj = [];
+        newArr.forEach((ele, index)=> {
             if (varContents.hasOwnProperty(ele.value)) {
-                ele.value = varContents[ele.value];
+                newObj.push({key: ele.key, value: varContents[ele.value]});
             }
-            return ele
         });
         // console.log(newArr)
         var obj = {};
-        newArr.forEach((ele)=> {
+        newObj.forEach((ele)=> {
             obj[ele.key] = ele.value;
         });
         return obj;
@@ -258,6 +263,7 @@ class Case extends Component {
         // 每次提交清空mocha div
         var method = this.state.method;
         var url = this.state.url;
+        // header this.state.headersList 指向同一个引用，一改都改。
         var headerlist = this.state.headersList;
         var paramlist = this.state.paramList;
         var bodylist = this.state.bodyList;
@@ -268,6 +274,7 @@ class Case extends Component {
             result: "Waiting...."
         });
         var varContent = this.state.varContent;
+        // 修改 url
         if (url.indexOf("{{") >= 0) {
             var len = varContent.length;
             url = this.replaceReg(url,varContent, len, 0);
@@ -278,7 +285,7 @@ class Case extends Component {
             },
             thisList:  ()=> {
                 var varList = pm.varList(); // 当前选中的环境变量的list
-                return varList[this.state.varSelect].values
+                return varList[this.state.valSelect].values
             },
             len:  ()=> {
                 var thisList = pm.thisList(); // 当前选中的环境变量的list的长度
@@ -307,7 +314,7 @@ class Case extends Component {
                     var thisList = pm.thisList();
                     var varList = pm.varList();
                     thisList.push({key: var_key, value: var_val, enable: true});
-                    varList[this.state.varSelect].values = thisList;
+                    varList[this.state.valSelect].values = thisList;
                     this.setState({
                         varList: varList
                     });
@@ -321,7 +328,7 @@ class Case extends Component {
                             thisList.splice(i, 1);
                         }
                     }
-                    varList[this.state.varSelect].values = thisList;
+                    varList[this.state.valSelect].values = thisList;
                     this.setState({
                         varList: varList
                     });
@@ -373,8 +380,6 @@ class Case extends Component {
                 }
             }
         };
-        // 执行pre-script
-
         axios({
             method: "post",
             url: "/",
@@ -414,7 +419,6 @@ class Case extends Component {
             // 消除无用的a标签跳转
             $(function () {
                 $(".suite h1").find("a").removeAttr("href");
-
             });
             // 提供下载。。
             // console.log(this.state.textTest_val)
@@ -425,9 +429,11 @@ class Case extends Component {
             });
         }).then((res)=> {
             // console.log(res)
+            // 希望result 在没有新请求时，被记录。
             this.props.changeResult(this.props.k, JSON.stringify(res, null, 4))
             // this.setState({result: JSON.stringify(res, null, 4)});
         });
+        // 执行pre-script
         eval(this.state.text_val);
     }
     changeMethod (e) {
@@ -890,12 +896,22 @@ class Case extends Component {
         });
     }
     disableVar(newList) {
+        // console.log(newList)
+        // 还要改变 varContent,
+        var index = this.state.valSelect;
+        var global = this.state.global;
+        var cont = [
+            ...newList[global].values,
+            ...newList[index].values
+        ];
         this.setState({
-            varList: newList
+            varList: newList,
+            varContent: cont
         });
     }
     componentWillMount() {
-        console.log("mount")
+        console.log("mount");
+        var varSelect = this.props.caseRender.valSelect;
         this.setState({
             text_val: this.props.preText,
             textTest_val: this.props.testText
@@ -918,10 +934,11 @@ class Case extends Component {
                     break;
                 }
             }
+            console.log(variable)
             this.setState({
                 show: "panel",
                 varList: variable,
-                varSelect: 0,
+                valSelect: varSelect,
                 global: index,
                 varContent: [
                     ...variable[0].values,
@@ -932,13 +949,14 @@ class Case extends Component {
     }
 
     render () {
+        console.log(this.props.caseRender)
         var text_val = this.state.text_val;
-        console.log(this.state)
         var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;
-        var varIndex = this.state.varSelect;
-        if (varIndex >= 0) {
-            var selectVar = varSelect[this.state.varSelect].name;
+        var varIndex = this.state.valSelect;
+        console.log(this.state);
+        if (varSelect) {
+            var selectVar = varSelect[this.state.valSelect].name;
             var varOptions = varSelect.map((ele, index)=> {
                 return (<option key={index} value={ele.name}>{ele.name}</option>)
             });
@@ -1251,7 +1269,7 @@ class Case extends Component {
                         <div id={seen ? "mocha" : ""}></div>
                     </div>
                 </div>
-                {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={this.state.varList}></VarSet>) : ""}
+                {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={varSelect}></VarSet>) : ""}
             </div>
         )
     }

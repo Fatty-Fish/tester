@@ -282,10 +282,14 @@ class VarSet extends Component {
         for (var i = 0; i < len; i++) {
             if (varList[i].name === name) {
                 varList[i] = newVar;
-                this.props.disableVar(varList);
-                break;
+                this.props.disableVar(varList, name);
+                return;
             }
         }
+        // varList.push({
+        //     name: name,
+        //     values:
+        // })
     }
     addVarLine (e) {
         // button add
@@ -345,8 +349,10 @@ class VarSet extends Component {
             variable: variable
         })
     }
+
     render () {
         var varSet = this.props.varList;
+        // console.log(this.state.variable)   join-test  环境变量
         var len = varSet.length;
         if (this.state.varName) {
             var setName = this.state.varName;
