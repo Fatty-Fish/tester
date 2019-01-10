@@ -41,14 +41,17 @@ class WillSave extends Component {
         var name = this.state.initName;
         var str = this.state.str;
         var from = this.state.from;
+        // console.log(this.state.str)
         if (str) {
             this.props.saveAs(str, from, name);
         }else {
             // save to root
-            this.props.saveAsRoot(from, name);
+            // console.log(this.state)
+            this.props.saveAsRoot(from, name, this.props.saveflag);
         }
     }
     render () {
+        // console.log("WillSave")
         if (this.state.str) {
             var arr = this.state.str.split("/");
             arr.splice(0,1 );
@@ -65,7 +68,7 @@ class WillSave extends Component {
                     </div>
                     <div className="folder">
                         <span className="folder-desc">Choose a folder to save to:</span>
-                        <List activeDir={this.activeDir} fromSave="fromSave" caseList={this.props.caseList}></List>
+                        <List per={this.props.per} activeDir={this.activeDir} fromSave="fromSave" caseList={this.props.caseList}></List>
                     </div>
                     <div className="button">
                         <button className="btn" onClick={this.cancelSave}>取消</button>

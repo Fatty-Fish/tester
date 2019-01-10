@@ -27,6 +27,7 @@ class IfSure extends Component {
         this.props.saveFn();
     }
     render () {
+        // console.log("IfSure")
         return(
             <div className="willsave">
                 <div className="ifsure">

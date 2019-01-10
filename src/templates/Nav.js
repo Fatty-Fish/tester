@@ -22,9 +22,23 @@ class Nav extends Component {
             this.props.acCaseFn($(e.target).index(), $(e.target).attr("from"));
         }
     }
+
+    // shouldComponentUpdate(nextProps, nextState, nextContext) {
+       //  var nextStr = nextProps.caseList.toString();
+       //  var Str = this.props.caseList.toString();
+       //  console.log(nextStr, Str)
+       // if (nextStr === Str && nextProps.activeCase === this.props.activeCase) {
+       //     return false;
+       // }
+        // console.log(nextProps.caseList);
+        // console.log(this.props.caseList);
+        // return true
+    // }
     render () {
+        // console.log("Nav")
         var activeCase = this.props.activeCase;
         var caseList = this.props.caseList;
+        // console.log(caseList, activeCase)
         var caseListCol = caseList.map((ele, index)=> {
             var arr = ele.split("/");
             var len = arr.length;
@@ -47,7 +61,7 @@ class Nav extends Component {
                     <span className="name">{file}</span>
                     <i className="glyphicon glyphicon-remove" onClick={this.deleteFn}></i>
                 </div>)
-            });
+        });
         return (
             <div className="row">
                 {caseListCol}

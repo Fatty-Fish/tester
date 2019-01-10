@@ -255,6 +255,7 @@ class Case extends Component {
         $(".text-area").insert({"text": $(e.target).text() + "();"})
     }
     insertTestText (e) {
+        // console.log($(e.target).text())
         $(".text-areaTest").insert({"text": $(e.target).text() + "();"})
     }
     submitProxy () {
@@ -408,7 +409,9 @@ class Case extends Component {
             //     result: JSON.stringify(res.data, null, 4)
             // });
             if (this.state.textTest_val) {
-                str = "mocha.setup('bdd');" +  this.state.textTest_val + "mocha.run();";
+                var casename = this.props.k;
+                // describe('#indexOf()', function() {it('should return -1 when the value is not present', function() {})})
+                str = "mocha.setup('bdd');describe('测试报告', function() {it('" + casename + "', function() {" +  this.state.textTest_val + "})});mocha.run();";
                 var Runner = eval("mocha.setup('bdd');");
                 // console.log(Runner)
                 // 清除runner记录
@@ -805,7 +808,7 @@ class Case extends Component {
             method: "post",
             data: {
                 varList: varList,
-                self: "person0"
+                self: this.props.per
             }
         }).then((res)=> {
             //
@@ -827,7 +830,7 @@ class Case extends Component {
                     method: "post",
                     data: {
                         varList: varList,
-                        self: "person0"
+                        self: this.props.per
                     }
                 }).then((res)=> {
                     //
@@ -843,7 +846,7 @@ class Case extends Component {
                 method: "post",
                 data: {
                     varList: varList,
-                    self: "person0"
+                    self: this.props.per
                 }
             }).then((res)=> {
                 //
@@ -860,10 +863,24 @@ class Case extends Component {
             method: "post",
             data: {
                 varList: varlist,
-                self: "person0"
+                self: this.props.per
             }
         }).then((res)=> {
             //
+        });
+    };
+    disableVar(newList) {
+        // console.log(newList)
+        // 还要改变 varContent,
+        var index = this.state.valSelect;
+        var global = this.state.global;
+        var cont = [
+            ...newList[global].values,
+            ...newList[index].values
+        ];
+        this.setState({
+            varList: newList,
+            varContent: cont
         });
     }
     componentDidUpdate () {
@@ -875,7 +892,6 @@ class Case extends Component {
         // 提取Case后不需要了
     }
     componentWillReceiveProps(nextProps) {
-        console.log("will")
         var plen = nextProps.caseRender.paramList.length - 1;
         var hlen = nextProps.caseRender.headersList.length - 1;
         var blen = nextProps.caseRender.bodyList.length - 1;
@@ -894,37 +910,33 @@ class Case extends Component {
             text_val: nextProps.preText,
             textTest_val: nextProps.testText
         });
-    }
-    disableVar(newList) {
-        // console.log(newList)
-        // 还要改变 varContent,
-        var index = this.state.valSelect;
-        var global = this.state.global;
-        var cont = [
-            ...newList[global].values,
-            ...newList[index].values
-        ];
-        this.setState({
-            varList: newList,
-            varContent: cont
-        });
-    }
+    };
     componentWillMount() {
-        console.log("mount");
         var varSelect = this.props.caseRender.valSelect;
-        this.setState({
-            text_val: this.props.preText,
-            textTest_val: this.props.testText
-        });
+
+        var plen = this.props.caseRender.paramList.length - 1;
+        var hlen = this.props.caseRender.headersList.length - 1;
+        var blen = this.props.caseRender.bodyList.length - 1;
+        if(JSON.stringify(this.props.caseRender.paramList[plen]) !== JSON.stringify({key: "", value: ""})) {
+            this.props.caseRender.paramList.push({key: "", value: ""})
+        }
+        if(JSON.stringify(this.props.caseRender.headersList[hlen]) !== JSON.stringify({key: "", value: ""})) {
+            this.props.caseRender.headersList.push({key: "", value: ""})
+        }
+        if(JSON.stringify(this.props.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
+            this.props.caseRender.bodyList.push({key: "", value: ""})
+        }
         axios({
             method: "get",
             url: "/new",
             params: {
-                person: "person0"
+                person: this.props.per
             },
             contentType:"application/json",
         }).then((res)=> {
-            var caseList = JSON.parse(res.data);
+            // var caseList = JSON.parse(res.data);
+            var caseList = res.data;
+
             var variable = caseList.variable;
             var len = variable.length;
             var index;
@@ -934,27 +946,27 @@ class Case extends Component {
                     break;
                 }
             }
-            console.log(variable)
             this.setState({
                 show: "panel",
                 varList: variable,
-                valSelect: varSelect,
+                valSelect: varSelect || 0,
                 global: index,
                 varContent: [
                     ...variable[0].values,
                     ...variable[index].values
-                ]
+                ],
+                text_val: this.props.preText,
+                textTest_val: this.props.testText
             });
         });
     }
 
     render () {
-        console.log(this.props.caseRender)
+        // console.log("Case");
         var text_val = this.state.text_val;
         var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;
         var varIndex = this.state.valSelect;
-        console.log(this.state);
         if (varSelect) {
             var selectVar = varSelect[this.state.valSelect].name;
             var varOptions = varSelect.map((ele, index)=> {
@@ -1007,18 +1019,19 @@ class Case extends Component {
              testScriptShow = this.props.caseRender.showTable === "testScriptShow" ? true : false;
              var panelShow = this.state.show === "panel" ? true : false;
              var testShow = this.state.show === "test" ? true : false;
+             var color76 = {width: "100%", height: "34px", color: "#767676", lineHeight: "34px"};
              headerFlag = this.props.caseRender.headersList.length;
              disHeader = this.props.caseRender.disableList.header;
              HeadersList = this.props.caseRender.headersList.map((ele, index)=> {
                 if (index === headerFlag - 1) {
                     return (<tr className="header" key={index}>
-                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i
+                        <td className="btn" style={color76}><i
                             className="glyphicon glyphicon-ok"></i></td>
                         <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
                                    value={ele.key}/></td>
                         <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
                                    value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i
+                        <td className="btn" style={color76}><i
                             className="glyphicon glyphicon-minus"></i></td>
                     </tr>)
                 } else {
@@ -1059,12 +1072,12 @@ class Case extends Component {
              BodyList = this.props.caseRender.bodyList.map((ele, index)=> {
                 if (index === bodyFlag - 1) {
                     return (<tr className="body" key={index}>
-                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-ok"></i></td>
+                        <td className="btn" style={color76}><i className="glyphicon glyphicon-ok"></i></td>
                         <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
                                    value={ele.key}/></td>
                         <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
                                    value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-minus"></i></td>
+                        <td className="btn" style={color76}><i className="glyphicon glyphicon-minus"></i></td>
                     </tr>)
                 } else {
                     if (disBody.indexOf(index) >= 0) {
@@ -1102,12 +1115,12 @@ class Case extends Component {
              ParamList = this.props.caseRender.paramList.map((ele, index)=> {
                 if (index === paramFlag - 1) {
                     return (<tr className="param" key={index}>
-                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-ok"></i></td>
+                        <td className="btn" style={color76}><i className="glyphicon glyphicon-ok"></i></td>
                         <td><input className="form-control" name={ele.key} type="text" onChange={this.addLine}
                                    value={ele.key}/></td>
                         <td><input className="form-control" name={ele.value} type="text" onChange={this.addLine}
                                    value={ele.value}/></td>
-                        <td className="btn" style={{width: "100%", height: "34px", color: "#767676", lineHeight: "34px"}}><i className="glyphicon glyphicon-minus"></i></td>
+                        <td className="btn" style={color76}><i className="glyphicon glyphicon-minus"></i></td>
                     </tr>)
                 } else {
                     if (disParam.indexOf(index) >= 0) {
@@ -1269,7 +1282,7 @@ class Case extends Component {
                         <div id={seen ? "mocha" : ""}></div>
                     </div>
                 </div>
-                {this.state.varSet ? (<VarSet disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={varSelect}></VarSet>) : ""}
+                {this.state.varSet ? (<VarSet per={this.props.per} disableVar={this.disableVar} changeVarName={this.changeVarName} importVar={this.importVar} removeVar={this.removeVar} varSetHide={this.varSetHide} varList={varSelect}></VarSet>) : ""}
             </div>
         )
     }

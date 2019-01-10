@@ -7,7 +7,13 @@ import axios from "axios";
 import $ from "jquery";
 // import mocha from "mocha";
 // 初始化请求json文件储存
-ReactDOM.render(<App/>, document.getElementById('root'));
+axios({
+    method:"get",
+    url: "/ip"
+}).then((res)=> {
+    // console.log(res.data)
+    ReactDOM.render(<App per={res.data}/>, document.getElementById('root'));
+});
 
 // axios({
 //     method: "get",

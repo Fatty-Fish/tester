@@ -376,7 +376,7 @@ class List extends Component {
                     var ulw = this.props.warr ? this.props.warr.indexOf(name + "/" + ele.name)>= 0 ? true : false : "";
                     var te = this.renderListFn(ele.item, name + "/" + ele.name, arr||ulr, arw||ulw);
                     // temp
-                    return (<ul key={name + "/" + ele.name}>
+                    return (<ul key={index}>
                         <div onClick={this.showChildren} from={name + "/" + ele.name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{ele.name}</span><input
                             type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={ele.name}/><i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i>
                             {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: arr || ulr || ulw ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || ulw ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</div>
@@ -384,9 +384,10 @@ class List extends Component {
                     </ul>)
                 }else if (ele.request) {
                     // te
+                    // console.log(ele.name);
                     var r = this.props.rarr ? this.props.rarr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
                     var w = this.props.rarr ? this.props.warr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
-                    return (<li onClick={this.clickLi} from={name + "/" + ele.name} unique={ele.name} key={name + "/" + ele.name} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
+                    return (<li onClick={this.clickLi} from={name + "/" + ele.name} unique={ele.name} key={index} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
                         type="text" className="renameInput" onChange={this.inputName} onBlur={this.inputBlur} value={ele.name}/> <i className="glyphicon glyphicon-trash" onClick={this.deleteFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportFn}></i>{this.props.fromShare ? (<div><i className="glyphicon glyphicon-eye-open" style={{color:  arr || r||w ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || w ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</li>)
                 }
             });
@@ -400,21 +401,28 @@ class List extends Component {
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
+            var target = e.target;
             axios({
                 method: "get",
                 url: "/new",
                 params: {
-                    person: "person0"
+                    person: this.props.per
                 },
                 contentType:"application/json",
             }).then((res)=> {
-                this.props.refresh(JSON.parse(res.data));
+                // this.props.refresh(JSON.parse(res.data));
+                this.props.refresh(res.data)
+                if (target.className === "outer") {
+                    this.props.acName($(target).attr("unique"), $(target).attr("from"));
+                }else if (target.className === "content") {
+                    this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("from"));
+                }
             });
-            if (e.target.className === "outer") {
-                this.props.acName($(e.target).attr("unique"), $(e.target).attr("from"));
-            }else if (e.target.className === "content") {
-                this.props.acName($(e.target).parent().attr("unique"), $(e.target).parent().attr("from"));
-            }
+            // if (e.target.className === "outer") {
+            //     this.props.acName($(e.target).attr("unique"), $(e.target).attr("from"));
+            // }else if (e.target.className === "content") {
+            //     this.props.acName($(e.target).parent().attr("unique"), $(e.target).parent().attr("from"));
+            // }
         }
     }
     showShare (e) {
@@ -458,8 +466,13 @@ class List extends Component {
     componentDidMount() {
         $(".resize").myDrag("hhh");
     }
+    componentWillReceiveProps(nextProps, nextContext) {
+
+    }
 
     render (){
+        // console.log(this.state) 没有state
+        // console.log("List")
         var list = this.props.caseList;
         var caseList = [];
         for (var prop in list){

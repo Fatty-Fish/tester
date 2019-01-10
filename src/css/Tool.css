@@ -52,8 +52,8 @@
 }
 .pathPanel {
     position: absolute;
-    /*width: 227px;*/
     height: 800px;
+    max-width: 1000px;
     top: 55px;
     left: 21px;
     z-index: 1000;
@@ -62,7 +62,35 @@
     overflow: auto;
     display: none;
 }
+.pathPanel .new-task .path-list{
+    width: 516px;
+}
+.pathPanel .new-task .path-list, .pathPanel .new-task .task-item {
+    float: left;
+    margin-top: 0px;
+}
+.task-name .uuidName {
+    position: absolute;
+    cursor: text;
+    user-select: text;
+    top:0px;
+    visibility: hidden;
+}
+.task-name:hover .uuidName {
+    visibility: visible;
+}
+.taskname-span:hover .uuidName {
+    display: block;
+}
+.task-item .task-name li span {
+    display: inline-block;
+    width: 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+}
 .pathPanel li {
+    height: 30px;
     text-align: right;
     padding: 0 10px;
     color: #cbcbcb;
@@ -128,4 +156,23 @@
 }
 .sharePanel .list i {
     color: #767676;
+}
+.pathPanel .new-task .task-nav li, .pathPanel .task-item .task-name li{
+    height: 30px;
+}
+.pathPanel .task-item {
+    border-left: 1px solid black;
+}
+.check-list li {
+    text-align: center;
+    line-height: 30px;
+}
+/*.task-nav::after {*/
+    /*content: "";*/
+    /*clear: both;*/
+    /*display: block;*/
+/*}*/
+.task-nav li {
+    display: block;
+    color: white;
 }

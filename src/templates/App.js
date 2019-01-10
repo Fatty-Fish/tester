@@ -90,6 +90,7 @@ class App extends Component {
       this.changeShow = this.changeShow.bind(this);
       this.changeResult = this.changeResult.bind(this);
       this.changeSelfVar = this.changeSelfVar.bind(this);
+      this.saveAsRoot = this.saveAsRoot.bind(this);
   }
 
     taskRunnerChange (runner) {
@@ -103,7 +104,7 @@ class App extends Component {
             method: "post",
             data: {
                 "runner": runner,
-                "person": "person0",
+                "person": this.props.per,
             }
         }).then((res) => {
             if (res) {
@@ -167,6 +168,81 @@ class App extends Component {
       this.setState({
           saveFlag: -1
       })
+    }
+    saveAsRoot (from, name, saveflag) {
+      // console.log(from, name)
+        if (!from) {
+            var caseList = this.state.caseList;
+            var caseStore = this.state.caseStore;
+            // console.log(caseStore);
+            // console.log(saveflag) 在activeList中的位置
+            var data = caseStore.newCase[this.state.activeCase[this.state.activeIndex]];
+            var chData = this.stateFarm(data);
+            // console.log(this.state.testText)
+            // console.log(chData);
+            var testScript = this.state.testText ? this.state.testText["newCase/" + saveflag] : "";
+            var textScript = this.state.preText ? this.state.preText["newCase/" + saveflag] : "";
+            var obj = {
+                name: name,
+                request: {
+                    method: chData.method,
+                    header: chData.headList,
+                    body: {
+                        mode: "raw",
+                        raw: chData.bodyList
+                    },
+                    url: {
+                        raw: chData.url
+                    }
+                },
+                response: [],
+                event: [{
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                        "exec": [textScript],
+                        "type": "text/javascript"
+                    }
+                },
+                    {
+                        "listen": "test",
+                        "script": {
+                            "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                            "exec": [testScript],
+                            "type": "text/javascript"
+                        }
+                    }]
+            }
+            // console.log(obj)
+            caseList[name] = {
+                "info": {
+                    "_postman_id": "1cc76b57-abb3-44b6-870f-0504e56d56f0",
+                    "name": name,
+                    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+                },
+                "item": [obj]
+            }
+            // console.log(caseList)
+            this.changeActiveCase(this.state.saveFlag);
+            // console.log(this.state.saveFlag)
+            this.setState({
+                caseList: caseList,
+                saveFlag: -1
+            });
+            axios({
+                url: "/surechange",
+                method: "post",
+                data: {
+                    "newData": caseList,
+                    "person": this.props.per
+                }
+            }).then((res) => {
+                if (res) {
+                    //
+                    return true
+                }
+            });
+        }
     }
     saveAsFn (item, arr, name, obj, from) {
       var len = item.length;
@@ -249,7 +325,7 @@ class App extends Component {
                             method: "post",
                             data: {
                                 "newData": caseList,
-                                "person": "person0"
+                                "person": this.props.per
                             }
                         }).then((res) => {
                             if (res) {
@@ -288,7 +364,7 @@ class App extends Component {
                 method: "post",
                 data: {
                     "newData": caseList,
-                    "person": "person0"
+                    "person": this.props.per
                 }
             }).then((res) => {
                 if (res) {
@@ -326,7 +402,7 @@ class App extends Component {
                     method: "post",
                     data: {
                         "newData": caseList,
-                        "person": "person0"
+                        "person": this.props.per
                     }
                 }).then((res) => {
                     if (res) {
@@ -355,7 +431,7 @@ class App extends Component {
                     method: "post",
                     data: {
                         "newData": caseList,
-                        "person": "person0"
+                        "person": this.props.per
                     }
                 }).then((res) => {
                     if (res) {
@@ -382,7 +458,7 @@ class App extends Component {
                 method: "post",
                 data: {
                     "newData": caseList,
-                    "person": "person0"
+                    "person": this.props.per
                 }
             }).then((res) => {
                 if (res) {
@@ -410,7 +486,7 @@ class App extends Component {
             newCaseStore["newCase"].length = len + 1;
             newActiveCase.push("newCase/" + len);
         }
-
+        // console.log(77777)
         // var newCaseList = this.state.caseList;
         // newCaseList.item.push({
         //     name: "newCase",
@@ -452,102 +528,105 @@ class App extends Component {
                             this.changeFarm(ele.item, name, from, "/");
                         }
                     }else if (ele.request) {
-                        var store = this.state.caseStore[name];
-                        var trueNamearr = from.split("/");
-                        var trueName = trueNamearr[trueNamearr.length - 1];
-                        if(ele.name === trueName && ele.name === path) {
-                            ele.request.body = {
-                                formdata: store[from].bodyList
-                            };
-                        }
-                        var body = ele.request.body.formdata;
-                        if (body) {
-                            ele.request.body.formdata = body.filter((ele, index)=> {
-                                return ele.key && ele.value;
-                            })
-                        }
-                        if(ele.name === trueName && ele.name === path) {
-                            ele.request.header = store[from].headersList;
-                            ele.request.valSelect = store[from].valSelect || 0;
-                        }
-                        var header = ele.request.header;
-                        if(header) {
-                            ele.request.header = header.filter((ele, index)=> {
-                                return ele.key && ele.value;
-                            })
-                        }
-                        if(ele.name === trueName && ele.name === path) {
-                            ele.request.method = store[from].method;
-                        }
-                        if(ele.name === trueName && ele.name === path) {
-                            ele.request.url.query = store[from].paramList;
-                        }
-                        var query = ele.request.url.query;
-                        if(query) {
-                            ele.request.url.query = query.filter((ele, index)=> {
-                                return ele.key && ele.value;
-                            })
-                        }
-                        ele.event = [{
-                            "listen": "prerequest",
-                            "script": {
-                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
-                                "exec": ele.event ? ele.event[0].script.exec : [],
-                                "type": "text/javascript"
+                        // console.log(from)
+                        if (name !== "/") {
+                            var store = this.state.caseStore[name];
+                            var trueNamearr = from.split("/");
+                            var trueName = trueNamearr[trueNamearr.length - 1];
+                            if (ele.name === trueName && ele.name === path) {
+                                ele.request.body = {
+                                    formdata: store[from].bodyList
+                                };
                             }
-                        }, {
-                            "listen": "test",
-                            "script": {
-                                "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
-                                "exec": ele.event ? ele.event[1].script.exec : [],
-                                "type": "text/javascript"
+                            var body = ele.request.body.formdata;
+                            if (body) {
+                                ele.request.body.formdata = body.filter((ele, index) => {
+                                    return ele.key && ele.value;
+                                })
                             }
-                        }];
-                        if (ele.name === trueName && ele.name === path) {
-                            var preTexts = this.state.preText;
-                            if (preTexts) {
-                                for (var prop in preTexts) {
-                                    if (from === prop) {
-                                        var arrPre = preTexts[prop].split(";");
-                                        var alen = arrPre.length;
-                                        if (arrPre[alen - 1] === ";") {
-                                            arrPre.pop();
-                                        }
-                                        alen = arrPre.length;
-                                        arrPre = arrPre.map((ele, index)=> {
-                                            if (index === alen - 1) {
-                                                return ele = ele
+                            if (ele.name === trueName && ele.name === path) {
+                                ele.request.header = store[from].headersList;
+                                ele.request.valSelect = store[from].valSelect || 0;
+                            }
+                            var header = ele.request.header;
+                            if (header) {
+                                ele.request.header = header.filter((ele, index) => {
+                                    return ele.key && ele.value;
+                                })
+                            }
+                            if (ele.name === trueName && ele.name === path) {
+                                ele.request.method = store[from].method;
+                            }
+                            if (ele.name === trueName && ele.name === path) {
+                                ele.request.url.query = store[from].paramList;
+                            }
+                            var query = ele.request.url.query;
+                            if (query) {
+                                ele.request.url.query = query.filter((ele, index) => {
+                                    return ele.key && ele.value;
+                                })
+                            }
+                            ele.event = [{
+                                "listen": "prerequest",
+                                "script": {
+                                    "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                    "exec": ele.event ? ele.event[0].script.exec : [],
+                                    "type": "text/javascript"
+                                }
+                            }, {
+                                "listen": "test",
+                                "script": {
+                                    "id": "53310d38-5289-4cde-8c1a-8cf317c7239a",
+                                    "exec": ele.event ? ele.event[1].script.exec : [],
+                                    "type": "text/javascript"
+                                }
+                            }];
+                            if (ele.name === trueName && ele.name === path) {
+                                var preTexts = this.state.preText;
+                                if (preTexts) {
+                                    for (var prop in preTexts) {
+                                        if (from === prop) {
+                                            var arrPre = preTexts[prop].split(";");
+                                            var alen = arrPre.length;
+                                            if (arrPre[alen - 1] === ";") {
+                                                arrPre.pop();
                                             }
-                                            return ele = ele + ";"
-                                        });
-                                        ele.event[0].script.exec = arrPre;
+                                            alen = arrPre.length;
+                                            arrPre = arrPre.map((ele, index) => {
+                                                if (index === alen - 1) {
+                                                    return ele = ele
+                                                }
+                                                return ele = ele + ";"
+                                            });
+                                            ele.event[0].script.exec = arrPre;
+                                        }
+                                    }
+                                }
+                                var testTexts = this.state.testText;
+                                if (testTexts) {
+                                    for (prop in testTexts) {
+                                        if (from === prop) {
+                                            var testPre = testTexts[prop].split(";");
+                                            alen = testPre.length;
+                                            if (testPre[alen - 1] === ";") {
+                                                testPre.pop();
+                                            }
+                                            alen = testPre.length;
+                                            testPre = testPre.map((ele, index) => {
+                                                if (index === alen - 1) {
+                                                    return ele = ele
+                                                }
+                                                return ele = ele + ";"
+                                            });
+                                            ele.event[1].script.exec = testPre;
+                                        }
                                     }
                                 }
                             }
-                            var testTexts = this.state.testText;
-                            if (testTexts) {
-                                for (prop in testTexts) {
-                                    if (from === prop) {
-                                        var testPre = testTexts[prop].split(";");
-                                        alen = testPre.length;
-                                        if (testPre[alen - 1] === ";") {
-                                            testPre.pop();
-                                        }
-                                        alen = testPre.length;
-                                        testPre = testPre.map((ele, index)=> {
-                                            if (index === alen -1) {
-                                                return ele = ele
-                                            }
-                                            return ele = ele + ";"
-                                        });
-                                        ele.event[1].script.exec = testPre;
-                                    }
-                                }
+                            if (ele.name === trueName && ele.name === path) {
+                                ele.request.url.raw = store[from].url;
+                                ele.request.url.raw.replace("{{url}}", "http://test-activity.changyou.com");
                             }
-                        }
-                        if (ele.name === trueName && ele.name === path) {
-                            ele.request.url.raw = store[from].url;
-                            ele.request.url.raw.replace("{{url}}", "http://test-activity.changyou.com");
                         }
                     }
                 })
@@ -563,7 +642,7 @@ class App extends Component {
                     method: "post",
                     data: {
                         "newData": casefromList,
-                        "person": "person0"
+                        "person": this.props.per
                     }
                 }).then((res) => {
                     if (res) {
@@ -693,10 +772,11 @@ class App extends Component {
               this.findName(ele.item);
           }else if(ele.request) {
               var acCase = this.state.activeCase;
-              var index = acCase.indexOf(from);
-              if(index >= 0) {
-                  this.changeActiveCase(index, from);
-              }
+              acCase.forEach((ele, index)=> {
+                  if (ele.indexOf(from)=== 0) {
+                      this.changeActiveCase(index, from);
+                  }
+              });
           }
       })
     }
@@ -721,38 +801,50 @@ class App extends Component {
         if(forsure) {
             var caseList = this.state.caseList;
             var fromArr = from.split("/");
-            var caselist = caseList[fromArr[0]];
-            var activelist = this.state.activeCase;
-            var activeindex = this.state.activeIndex;
-            if (caselist.info.name === name) {
-                delete caseList[fromArr[0]];
-                activelist = activelist.filter((ele, index)=> {
-                    // var arr = ele.split("/")[0];
-                    return ele !== from
-                });
-                this.setState({
-                    activeCase: activelist,
-                    activeIndex: 0,
-                    caseList: caseList
-                });
-            } else {
-                caseList[fromArr[0]].item = this.deleteDirFn(caselist.item, name, from + "/" + name);
-                this.setState({
-                    caseList: caseList
-                })
+            // console.log(fromArr[0])// haiaaaa
+            var caselist;
+            for (var prop in caseList) {
+                if (prop !== "shared" && prop !== "share" && prop !== "variable" && prop !== "task_runner") {
+                    if (caseList[prop].info.name === fromArr[0]) {
+                        caselist = caseList[prop];
+                        var activelist = this.state.activeCase;
+                        var activeindex = this.state.activeIndex;
+                        if (caselist.info.name === name) {
+                            delete caseList[fromArr[0]];
+                            activelist = activelist.filter((ele, index)=> {
+                                var arr = ele.split("/")[0];
+                                // console.log(arr, from)
+                                return arr !== from
+                            });
+                            // console.log(activelist)
+                            // console.log(this.state.activeCase)
+                            this.setState({
+                                activeCase: activelist,
+                                activeIndex: 0,
+                                caseList: caseList
+                            });
+                        } else {
+                            caseList[prop].item = this.deleteDirFn(caselist.item, name, from);
+                            this.setState({
+                                caseList: caseList
+                            })
+                        }
+                        axios({
+                            url: "/surechange",
+                            method: "post",
+                            data: {
+                                "newData": caseList,
+                                "person": this.props.per
+                            }
+                        }).then((res) => {
+                            if (res) {
+                                //
+                            }
+                        });
+                        break
+                    }
+                }
             }
-            axios({
-                url: "/surechange",
-                method: "post",
-                data: {
-                    "newData": caseList,
-                    "person": "person0"
-                }
-            }).then((res) => {
-                if (res) {
-                    //
-                }
-            });
         }
     }
     // 删除文件
@@ -779,7 +871,7 @@ class App extends Component {
                 method: "post",
                 data: {
                     "newData": newCaseList,
-                    "person": "person0"
+                    "person": this.props.per
                 }
             }).then((res) => {
                 if (res) {
@@ -867,7 +959,7 @@ class App extends Component {
             method: "post",
             data: {
                 "newData": caselist,
-                "person": "person0",
+                "person": this.props.per,
                 "preS": this.state.preText || "",
                 "testS": this.state.testText || ""
             }
@@ -889,7 +981,7 @@ class App extends Component {
     findDirName (old, now, arr, from) {
       var fromArr = from.split("/");
       var fromlen = fromArr.length;
-      if (fromlen > 2) {
+      if (fromlen > 3) {
           var len = arr.length;
           for (var i = 0; i < len; i++) {
               if (arr[i].name === fromArr[1]) {
@@ -900,7 +992,7 @@ class App extends Component {
               //     arr[i].item = this.findDirName(old, now, arr[i].item);
               // }
           }
-      }else if (fromlen === 2) {
+      }else if (fromlen === 3) {
           len = arr.length;
           for (i = 0; i < len; i++) {
               if (arr[i].name === fromArr[1]) {
@@ -913,39 +1005,37 @@ class App extends Component {
     renameDirFn(name, newName, from) {
       var fromArr = from.split("/");
       var arr = this.state.caseList[fromArr[0]];
-      var newArr;
+        var arrList = this.state.caseList;
+        var newArr;
         if (arr.info.name === name) {
-            // caseStore也更改
-            // var caseStore = this.state.caseStore;
-            // if (caseStore.hasOwnProperty(name)) {
-            //     var storeCont = caseStore[name];
-            //     delete caseStore[name];
-            //    caseStore[newName] = storeCont;
-            // }
           arr.info.name = newName;
           newArr = {
               info: {
                   ...arr.info
               },
               item: arr.item
-          }
-      }else {
+          };
+        // delete arrList[fromArr[0]];
+
+        // arrList[name] = newArr;
+            arrList[fromArr[0]] = newArr;
+
+        }else {
           var newarr = this.findDirName(name, newName, arr.item, from + "/" + name);
           newArr = {
               info: {
                   ...arr.info
               },
               item: newarr
-          }
-      };
-        var arrList = this.state.caseList;
-        arrList[fromArr[0]] = newArr;
+          };
+          arrList[fromArr[0]] = newArr;
+      }
         axios({
             url: "/surechange",
             method: "post",
             data: {
                 "newData": arrList,
-                "person": "person0"
+                "person": this.props.per
             }
         }).then((res) => {
             if (res) {
@@ -1234,7 +1324,6 @@ class App extends Component {
         var newList = store[name];
         newList[k].valSelect = index;
         store[name] = newList;
-        console.log(88)
         this.setState({
             caseStore: store
         })
@@ -1500,12 +1589,12 @@ class App extends Component {
             method: "post",
             data: {
                 "newData": caseList,
-                "person": "person0"
+                "person": this.props.per
             }
         }).then((res) => {
             if (res) {
+
                 //
-                return true
             }
         });
     }
@@ -1607,7 +1696,7 @@ class App extends Component {
             method: "post",
             data: {
                 "newData": caseList,
-                "person": "person0"
+                "person": this.props.per
             }
         }).then((res) => {
             if (res) {
@@ -1617,23 +1706,26 @@ class App extends Component {
         });
     }
     componentWillMount() {
+      // var per = this.props.perID;
+      // console.log(per)
         axios({
             method: "get",
             url: "/new",
             params: {
-                person: "person0"
+                person: this.props.per
             },
             contentType:"application/json",
         }).then((res)=> {
-            this.refresh(JSON.parse(res.data));
+            // console.log(res.data)
+            this.refresh(res.data);
             return true
         });
     }
 
     render() {
+      // console.log(this.state);
         var taskPathArr = [];
         var caseStore = this.state.caseStore;
-        console.log(this.state)
         for (var prop in caseStore) {
             for (var pro in caseStore[prop]) {
                 taskPathArr.push("person0/" + pro) // 不同人
@@ -1663,18 +1755,18 @@ class App extends Component {
                     var pre = this.state.preText;
                     var test = this.state.testText;
                 return acIndex === index ? (
-                    <Case preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} changeSelfVar={this.changeSelfVar} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
+                    <Case per={this.props.per} preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} changeSelfVar={this.changeSelfVar} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
                     </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele}>
                 </Case>)
             });
             return (
                 <div className="App">
                     <div className="cover">
-                        <Tool taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
+                        <Tool per={this.props.per} taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
                         <Nav activeCase = {this.state.activeIndex} acCaseFn = {this.acCaseFn} addFn = {this.addFile} delFn = {this.delFn} caseList={this.state.activeCase}></Nav>
-                        {this.state.saveFlag >= 0 ? (<WillSave cancelSave={this.cancelSave} saveAs={this.saveAs} caseList={this.state.caseList}></WillSave>) : ""}
+                        {this.state.saveFlag >= 0 ? (<WillSave saveflag={this.state.saveFlag} saveAsRoot={this.saveAsRoot} cancelSave={this.cancelSave} saveAs={this.saveAs} caseList={this.state.caseList}></WillSave>) : ""}
                         {this.state.sureFlag >= 0 ? (<IfSure saveFn={this.saveFn} cancelFn={this.cancelFn} loseFn={this.loseFn}></IfSure>) : ""}
-                        <List receiveShare={this.receiveShare} exportDirFn={this.exportDirFn} refresh={this.refresh} delDirFn={this.delDirFn} renameDirFn={this.renameDirFn} deleteFn={this.deleteFn} renameFn={this.renameFn} exportStateFn={this.exportStateFn} acName={this.changeAcName} caseList={this.state.caseList}></List>
+                        <List per={this.props.per} receiveShare={this.receiveShare} exportDirFn={this.exportDirFn} refresh={this.refresh} delDirFn={this.delDirFn} renameDirFn={this.renameDirFn} deleteFn={this.deleteFn} renameFn={this.renameFn} exportStateFn={this.exportStateFn} acName={this.changeAcName} caseList={this.state.caseList}></List>
                         {caseListRender}
                     </div>
                 </div>

@@ -56,7 +56,7 @@ class VarSet extends Component {
             method: "post",
             data: {
                 variable: variable,
-                self: "person0",
+                self: this.props.per,
                 index: index
             }
         }).then((res)=> {
@@ -70,7 +70,7 @@ class VarSet extends Component {
             method: "post",
             data: {
                 varList: this.props.varList,
-                self: "person0"
+                self: this.props.per
             }
         }).then((res)=> {
             //
@@ -351,6 +351,7 @@ class VarSet extends Component {
     }
 
     render () {
+        // console.log("VarSet")
         var varSet = this.props.varList;
         // console.log(this.state.variable)   join-test  环境变量
         var len = varSet.length;
