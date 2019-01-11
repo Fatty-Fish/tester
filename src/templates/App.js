@@ -1641,7 +1641,7 @@ class App extends Component {
       // var newArr = arr.variable;
       delete arr.variable;
       this.setState({
-            person: "person0",
+            person: this.props.per,
             caseList: arr,
             caseStore: {
                 newCase: newCase,
@@ -1728,7 +1728,7 @@ class App extends Component {
         var caseStore = this.state.caseStore;
         for (var prop in caseStore) {
             for (var pro in caseStore[prop]) {
-                taskPathArr.push("person0/" + pro) // 不同人
+                taskPathArr.push(this.props.per + "/" + pro) // 不同人
             }
         }
         var sharedArr = this.state.caseList.shared;
@@ -1762,7 +1762,7 @@ class App extends Component {
             return (
                 <div className="App">
                     <div className="cover">
-                        <Tool per={this.props.per} taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
+                        <Tool IPAddress={this.props.IPAddress} per={this.props.per} taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
                         <Nav activeCase = {this.state.activeIndex} acCaseFn = {this.acCaseFn} addFn = {this.addFile} delFn = {this.delFn} caseList={this.state.activeCase}></Nav>
                         {this.state.saveFlag >= 0 ? (<WillSave saveflag={this.state.saveFlag} saveAsRoot={this.saveAsRoot} cancelSave={this.cancelSave} saveAs={this.saveAs} caseList={this.state.caseList}></WillSave>) : ""}
                         {this.state.sureFlag >= 0 ? (<IfSure saveFn={this.saveFn} cancelFn={this.cancelFn} loseFn={this.loseFn}></IfSure>) : ""}

@@ -299,14 +299,32 @@ class Tool extends Component {
         })
     }
     taskPlay (e) {
-        var uuid = $(e.target).parent().prev().text();
-        // console.log(uuid);
-        // 生成UUID，对应path，执行path
-        // axios({
-        //     method: "post",
-        //     url: "http://localhost:3002/task/" + uuid,
-        // })
-
+        var flag = $(e.target).css("color");
+        if (flag === "rgb(0, 0, 0)") {
+            // 不可点击，执行任务中
+            return
+        }else {
+            var uuid = $(e.target).parent().prev().text();
+            $(e.target).css({color: "#cbcbcb"});
+            var tar = e.target;
+            // console.log(uuid);
+            // 生成UUID，对应path，执行path
+            axios({
+                method: "post",
+                url: "http://localhost:3002/task/" + uuid,
+            }).then((res)=> {
+                console.log(res.data);
+                if (res.data.state) {
+                    // 测试全部通过
+                    alert("测试全部通过")
+                }else {
+                    // 测试有失败
+                    var hrefA = "http://" + this.props.IPAddress + ":3002/" + res.data.testURL
+                    alert("有部分测试未通过，通过链接：" + hrefA + " 查看详细报告")
+                }
+                $(tar).css({color: "white"});
+            })
+        }
     }
 
 
@@ -337,6 +355,7 @@ class Tool extends Component {
             this.props.taskRunnerChange(runner);
             var width = $(".path-list").width();
             var height = $(".path-list").height();
+            console.log(height)
             // var pwidth = width + 160 * 3;
             // $(".pathPanel").css({"max-width": pwidth +"px"})
             this.setState({
@@ -411,11 +430,18 @@ class Tool extends Component {
         for (var prop in task_runner) {
             taskName.push(prop);
         }
+        var width = $(".path-list").width();
+        var height = $(".path-list").height();
+        // var pwidth = width + 160 * 3;
+        // $(".pathPanel").css({"max-width": pwidth +"px"})
+
         this.setState({
             ...obj,
             task_runner: task_runner,
             taskPathArr: this.props.taskPathArr,
-            taskName: taskName
+            taskName: taskName,
+            width: width,
+            height: height
         })
     }
     componentWillReceiveProps(nextProps, nextContext) {

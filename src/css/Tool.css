@@ -35,7 +35,8 @@
     /*display: none;*/
 }
 .taskBtn:hover .pathPanel {
-    display: block;
+    /*display: block;*/
+    visibility: visible;
 }
 .taskBtn .glyphicon {
     display: inline-block;
@@ -60,7 +61,8 @@
     background: #767676;
     color: whitesmoke;
     overflow: auto;
-    display: none;
+    visibility: hidden;
+    /*display: none;*/
 }
 .pathPanel .new-task .path-list{
     width: 516px;

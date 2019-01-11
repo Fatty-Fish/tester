@@ -14,6 +14,7 @@ const clearArr = require("./clearArr");
 const fs = require('fs');
 const Path = require("path");
 const chai = require("chai");
+const execFile = require("child_process").exec;
 const axios = require("axios");
 const taskManager = require("./taskManager");
 const singlePath = require("./singlePath");
@@ -33,10 +34,11 @@ App.all("*", function(req, res, next) {             //设置跨域访问
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     res.header("X-Powered-By",' 3.2.1');
-    res.header("Content-Type", "application/json;charset=utf-8");
+    res.header("Content-Type", "text/html; charset=UTF-8");
     next();
 });
 App.use(bodyParser());
+App.use(express.static(BASE_URL + "test_task"));
 // post
 App.post("/task/:uuid", (req, ress)=>{
     var query_date = req.query.date;
@@ -49,7 +51,7 @@ App.post("/task/:uuid", (req, ress)=>{
         if (query_date) {
             // 有具体日期，目标 返回任务html
             if (err) throw err;
-            ress.setHeader('Content-Type', 'text/html; charset=UTF-8');
+            // ress.setHeader('Content-Type', 'text/html; charset=UTF-8');
             // ress.
             ress.sendFile (BASE_URL+ "test_task/" + para + query_date + ".html");
         }else {
@@ -93,15 +95,171 @@ App.post("/task/:uuid", (req, ress)=>{
                         variable: variable,
                         thisList: thisList,
                         len: len,
-                        glo: glo
+                        glo: glo,
+                        path: ele
                     });
                     return singlePath(cont, varContent)
                 });
                 axios.all(taskFnArr).then(axios.spread((...resp)=> {
+                    var outerPm = "var configObj, pm;";
                     resp.forEach((ele, index) => {
                         console.log(ele.data); // 返回数据
-                        console.log(configArr[index])
+                        var configObj = configArr[index];
+                        var pm = `{
+                            varList:  () => {
+                                return configObj.variable // 当前的所有环境变量集合
+                            },
+                            thisList:  ()=> {// 当前选中的环境变量的list
+                                return configObj.thisList
+                            },
+                            len:  ()=> {// 当前选中的环境变量的list的长度
+                                return configObj.len
+                            },
+                            globalList: ()=> {
+                                return configObj.variable[configObj.len].values
+                            },
+                            glen: () => {
+                                var gList = pm.globalList();
+                                return gList.length
+                            },
+                            environment: {
+                                get:  (var_key)=> {
+                                    var thisList = pm.thisList();
+                                    var len = pm.len();
+                                    for (var i = 0; i < len; i++) {
+                                        if (thisList[i].key === var_key) {
+                                            return thisList[i].value;
+                                        }
+                                    }
+                                },
+                                set:  (var_key, var_val) => {
+                                    var thisList = pm.thisList();
+                                    var varList = pm.varList();
+                                    thisList.push({key: var_key, value: var_val, enable: true});
+                                    varList[configObj.select].values = thisList;
+                                    configObj.variable = varList;
+                                    // this.setState({
+                                    //     varList: varList
+                                    // });
+                                },
+                                unset: (var_key) => {
+                                    var thisList = pm.thisList();
+                                    var varList = pm.varList();
+                                    var len = pm.len();
+                                    for (var i = 0; i < len; i++) {
+                                        if (thisList[i].key === var_key) {
+                                            thisList.splice(i, 1);
+                                        }
+                                    }
+                                    varList[configObj.select].values = thisList;
+                                    configObj.variable = varList
+                                    // this.setState({
+                                    //     varList: varList
+                                    // });
+                                }
+                            },
+                            globals: {
+                                get: (var_key) => {
+                                    var len = pm.glen();
+                                    var gList = pm.globalList();
+                                    for (var i = 0; i < len; i++) {
+                                        if (gList[i].key === var_key) {
+                                            return gList[i].value
+                                        }
+                                    }
+                                },
+                                set: (var_key, var_val) => {
+                                    var gList = pm.globalList();
+                                    var varList = pm.varList();
+                                    gList.push({key: var_key, value: var_val, enable: true});
+                                    varList[configObj.glo].values = gList;
+                                    configObj.variable = varList
+                                    // this.setState({
+                                    //     varList: varList
+                                    // });
+                                },
+                                unset: (var_key)=> {
+                                    var gList = pm.thisList();
+                                    var varList = pm.varList();
+                                    var len = pm.glen();
+                                    for (var i = 0; i < len; i++) {
+                                        if (gList[i].key === var_key) {
+                                            gList.splice(i, 1);
+                                        }
+                                    }
+                                    varList[configObj.glo].values = gList;
+                                    configObj.variable = varList
+                                    // this.setState({
+                                    //     varList: varList
+                                    // });
+                                }
+                            },
+                            variables: {
+                                get: (var_key)=> {
+                                    var varContent = configObj.varContent;  // 当前环境变量和全局变量的集合
+                                    var len = varContent.length;
+                                    for (var i = 0; i < len; i++) {
+                                        if (varContent[i].key === var_key) {
+                                            return varContent[i].value
+                                        }
+                                    }
+                                }
+                            },
+                            response: {
+                                json: ()=> {
+                                    return ${JSON.stringify(ele.data)}
+                                }
+                            },
+                            assert: chai.assert
+                        };`;
+                        var eachTest = `
+                        configObj=${JSON.stringify(configObj)};
+                        pm=${pm}
+                        ${configObj.testScript}
+                        `;
+                        outerPm += eachTest
                     });
+                    var testStr = `
+                    describe('测试报告', function() {
+                        it('${uuidname} / ${dateStr}', function() {
+                           ${outerPm}
+                        })
+                    })`;
+                    var htmlStr = `<!DOCTYPE html><html><head><title>${path}</title>
+<link href="https://cdn.bootcss.com/mocha/5.2.0/mocha.min.css" rel="stylesheet"></head><body><div id="mocha"></div><script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script><script src="https://cdn.bootcss.com/mocha/5.2.0/mocha.min.js"></script><script src="https://cdn.bootcss.com/chai/4.2.0/chai.min.js"></script><script>mocha.setup('bdd')</script>
+        <!-- load code you want to test here -->
+        <script >
+        ${testStr}
+</script>
+        <!-- load your test files here -->
+
+<script>mocha.run();</script></body></html>`;
+                    fs.writeFile("test_task/" + uuidname + dateStr + ".html", htmlStr, "utf8", (err)=> {
+                        if (err) throw err;
+                        var jsStr = `const chai = require("chai");
+                            ${testStr}
+                        `;
+                        fs.writeFile(BASE_URL +"test"+ person + ".js", jsStr, "utf8", (err)=> {
+                            if (err) throw err;
+                            execFile(`mocha test${person}.js`, (err, stdout, stderr)=> {
+                                console.log(err, stdout, stderr);
+                                var testURL = uuidname + dateStr + ".html";
+                                if (err) {
+                                    // 测试有失败
+                                    return ress.json({
+                                        state: false,
+                                        testURL: testURL
+                                    })
+                                }else {
+                                    return ress.json({
+                                        state:true,
+                                        testURL: testURL
+                                    })
+                                }
+                            })
+                        })
+                    })
+
                 }))
             })
         }
@@ -623,12 +781,18 @@ module.exports = function(proxy, allowedHost) {
                             fs.writeFile("storage/ip_address.json", JSON.stringify(ipData), "utf8", (err) => {
                                 if (err) throw  err;
                             });
-                            return res.json(person);
+                            return res.json({
+                                person: person,
+                                IPAddress: IPAddress
+                            });
                         }
                     })
                 }else {
                     // 不是新入，刷新share
-                    return res.json(person);
+                    return res.json({
+                        person: person,
+                        IPAddress: IPAddress
+                    });
                 }
                 // console.log(person)
             });

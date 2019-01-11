@@ -12,7 +12,7 @@ axios({
     url: "/ip"
 }).then((res)=> {
     // console.log(res.data)
-    ReactDOM.render(<App per={res.data}/>, document.getElementById('root'));
+    ReactDOM.render(<App IPAddress={res.data.IPAddress} per={res.data.person}/>, document.getElementById('root'));
 });
 
 // axios({

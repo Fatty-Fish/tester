@@ -1,6 +1,10 @@
 .case {
     margin-left:248px;
 }
+button.setting {
+    margin-left: 5px;
+    padding: 9px 18px;
+}
 .top {
     height: 80px;
     line-height: 80px;
