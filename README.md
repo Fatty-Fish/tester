@@ -1,5 +1,5 @@
 这是一个仿照postman的单页面应用。
-基于：node,express,react,jquery,axios,mocha,chai,h5。
+基于：node,express,react,jquery,axios,mocha,chai,h5，bootstrap。
 
 
 
