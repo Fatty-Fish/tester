@@ -91,6 +91,7 @@ class App extends Component {
       this.changeResult = this.changeResult.bind(this);
       this.changeSelfVar = this.changeSelfVar.bind(this);
       this.saveAsRoot = this.saveAsRoot.bind(this);
+      this.caseStoreFn = this.caseStoreFn.bind(this);
   }
 
     taskRunnerChange (runner) {
@@ -303,14 +304,14 @@ class App extends Component {
                             this.changeActiveCase(this.state.saveFlag, from);
                         }else {
                             // case的直接保存
-                            var activeCase = this.state.activeCase;
+                            activeCase = this.state.activeCase;
                             activeCase[this.state.saveFlag] = from + "/" + name;
                             this.setState({
                                 activeCase: activeCase,
                                 activeIndex: this.state.saveFlag
                             })
                         }
-                        var caseStore = this.state.caseStore;
+                        caseStore = this.state.caseStore;
                         delete caseStore.newCase[source[1]];
                         caseStore.newCase.length -= 1;
                         this.setState({
@@ -343,14 +344,14 @@ class App extends Component {
                 this.changeActiveCase(this.state.saveFlag, from);
             }else {
                 // case的直接保存
-                var activeCase = this.state.activeCase;
+                activeCase = this.state.activeCase;
                 activeCase[this.state.saveFlag] = from + "/" + name;
                 this.setState({
                     activeCase: activeCase,
                     activeIndex: this.state.saveFlag
                 })
             }
-            var caseStore = this.state.caseStore;
+            caseStore = this.state.caseStore;
             delete caseStore.newCase[source[1]];
             caseStore.newCase.length -= 1;
             this.setState({
@@ -381,7 +382,7 @@ class App extends Component {
                     this.changeActiveCase(this.state.saveFlag, from);
                 }else {
                     // case的直接保存
-                    var activeCase = this.state.activeCase;
+                    activeCase = this.state.activeCase;
                     activeCase[this.state.saveFlag] = from + "/" + name;
                     this.setState({
                         activeCase: activeCase,
@@ -818,15 +819,19 @@ class App extends Component {
                             });
                             // console.log(activelist)
                             // console.log(this.state.activeCase)
+                            var caseStore = this.caseStoreFn(caseList);
                             this.setState({
                                 activeCase: activelist,
                                 activeIndex: 0,
-                                caseList: caseList
+                                caseList: caseList,
+                                caseStore: caseStore
                             });
                         } else {
                             caseList[prop].item = this.deleteDirFn(caselist.item, name, from);
+                            caseStore = this.caseStoreFn(caseList);
                             this.setState({
-                                caseList: caseList
+                                caseList: caseList,
+                                caseStore: caseStore
                             })
                         }
                         axios({
@@ -1062,7 +1067,7 @@ class App extends Component {
             body = body.filter((ele, index)=> {
                 return disBody.indexOf(index) < 0
             });
-        };
+        }
         var disHeader = obj.disableList.header;
         if(disHeader.length) {
             header = header.filter((ele, index)=> {
@@ -1107,9 +1112,10 @@ class App extends Component {
             alen = arrPre.length;
             arrPre = arrPre.map((ele, index)=> {
                 if (index === alen - 1) {
-                    return ele = ele
+                    return ele
                 }
-                return ele = ele + ";"
+                ele = ele + ";";
+                return ele
             });
         }
         if (this.state.testText[from]) {
@@ -1122,13 +1128,15 @@ class App extends Component {
             alen = testPre.length;
             testPre = testPre.map((ele, index)=> {
                 if (index === alen -1) {
-                    return ele = ele
+                    return ele
                 }
-                return ele = ele + ";"
+                ele = ele + ";";
+                return ele
             });
         }
       var fromArr = from.split("/");
         var rawState = this.state.caseStore[fromArr[0]][from] || {};
+        // console.log(rawState); 保存newCase发生rawState===undefined
         var fileName = changedName || name;
         var upstate = this.stateFarm(rawState);
         var url = upstate.url || "";
@@ -1598,55 +1606,59 @@ class App extends Component {
             }
         });
     }
+    caseStoreFn(arr) {
+        var newObj = {};
+        for(var prop in arr) {
+            if(prop === "shared") {
+                for (var i = 0; i < arr[prop].length; i++) {
+                    newObj[arr[prop][i].name] = this.state.caseStore[arr[prop][i].name] || {}
+                }
+                // 别人分享过来的
+                // var Arr = arr[prop];
+                // var len = Arr.length;
+                // for (var i = 0; i < len; i++) {
+                //     var a = Arr[i].path.split("/");
+                //     axios({
+                //         method:"get",
+                //         url: "/new",
+                //         params: {
+                //             person: a[0]
+                //         },
+                //         contentType:"application/json",
+                //     }).then((res)=> {
+                //         var path = Arr[i].path.replace(a[0] +"/", "");
+                //         var shareitem = this.findShare(res.data, path);
+                //         console.log(shareitem)
+                // shareObj[a[0]] = {
+                //     "info": {
+                //         "_postman_id": "1cc76b57-abb3-44b6-870f-0504e56d56f0",
+                //         "name": a[0],
+                //         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+                //     },
+                //     "item": shareitem
+                // }
+                // });
+            }
+            if (prop !== "shared" && prop !== "share" && prop !== "variable" && prop !== "task_runner") {
+                var obj = {};
+                this.storeChange(arr[prop], obj, prop);
+                newObj[arr[prop].info.name] = obj
+            }
+        }
+        var newCase = this.state.caseStore.newCase || {};
+      return {
+          newCase: newCase,
+          ...newObj
+      };
+    }
     refresh (arr) {
-      var newObj = {};
-      for(var prop in arr) {
-          if(prop === "shared") {
-              for (var i = 0; i < arr[prop].length; i++) {
-                  newObj[arr[prop][i].name] = this.state.caseStore[arr[prop][i].name] || {}
-              }
-              // 别人分享过来的
-              // var Arr = arr[prop];
-              // var len = Arr.length;
-              // for (var i = 0; i < len; i++) {
-              //     var a = Arr[i].path.split("/");
-              //     axios({
-              //         method:"get",
-              //         url: "/new",
-              //         params: {
-              //             person: a[0]
-              //         },
-              //         contentType:"application/json",
-              //     }).then((res)=> {
-              //         var path = Arr[i].path.replace(a[0] +"/", "");
-              //         var shareitem = this.findShare(res.data, path);
-              //         console.log(shareitem)
-                      // shareObj[a[0]] = {
-                      //     "info": {
-                      //         "_postman_id": "1cc76b57-abb3-44b6-870f-0504e56d56f0",
-                      //         "name": a[0],
-                      //         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-                      //     },
-                      //     "item": shareitem
-                      // }
-                        // });
-          }
-          if (prop !== "shared" && prop !== "share" && prop !== "variable" && prop !== "task_runner") {
-              var obj = {};
-              this.storeChange(arr[prop], obj, prop);
-              newObj[arr[prop].info.name] = obj
-          }
-      }
-      var newCase = this.state.caseStore.newCase || {};
+      var caseStore = this.caseStoreFn(arr);
       // var newArr = arr.variable;
       delete arr.variable;
       this.setState({
             person: this.props.per,
             caseList: arr,
-            caseStore: {
-                newCase: newCase,
-                ...newObj
-            },
+            caseStore: caseStore,
           // variable: newArr
         })
     }
@@ -1688,9 +1700,11 @@ class App extends Component {
                 caseList[fromArr[0]].item = this.importCaseFn(caseList[fromArr[0]].item, fromArr, obj);
             }
         }
-        this.setState({
-            caseList: caseList
-        });
+        // 也更新caseStore
+        this.refresh(caseList)
+        // this.setState({
+        //     caseList: caseList
+        // });
         axios({
             url: "/surechange",
             method: "post",
@@ -1726,9 +1740,12 @@ class App extends Component {
       // console.log(this.state);
         var taskPathArr = [];
         var caseStore = this.state.caseStore;
+        // console.log(caseStore)
         for (var prop in caseStore) {
-            for (var pro in caseStore[prop]) {
-                taskPathArr.push(this.props.per + "/" + pro) // 不同人
+            if (prop !== "newCase") {
+                for (var pro in caseStore[prop]) {
+                    taskPathArr.push(this.props.per + "/" + pro) // 不同人
+                }
             }
         }
         var sharedArr = this.state.caseList.shared;

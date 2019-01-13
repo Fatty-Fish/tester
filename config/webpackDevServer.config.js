@@ -259,8 +259,9 @@ App.post("/task/:uuid", (req, ress)=>{
                             })
                         })
                     })
-
-                }))
+                })).catch((err)=> {
+                    return ress.json(err.config);
+                })
             })
         }
     })
@@ -459,7 +460,7 @@ module.exports = function(proxy, allowedHost) {
                             shared: shareArr
                         };
                         if (JSON.stringify(obj) === "{}" || obj === undefined) {
-                            fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                            fs.writeFile("storage/" + req.body.shareTo + ".json", data, "utf8", (err)=> {
                                 if (err) throw err;
                                 return res.json("ok");
                             })
@@ -481,7 +482,7 @@ module.exports = function(proxy, allowedHost) {
                         shared: shareArr
                     };
                     if (JSON.stringify(obj) === "{}" || obj === undefined) {
-                        fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                        fs.writeFile("storage/" + req.body.shareTo + ".json", data, "utf8", (err)=> {
                             if (err) throw err;
                             return res.json("ok");
                         })
@@ -502,7 +503,7 @@ module.exports = function(proxy, allowedHost) {
                 var newData = JSON.parse(data);
                 newData.variable.push(addVar);
                 if (JSON.stringify(newData) === "{}" || newData === undefined) {
-                    fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                    fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
                     })
@@ -523,7 +524,7 @@ module.exports = function(proxy, allowedHost) {
                 var newData = JSON.parse(data);
                 newData.variable[index] = variable;
                 if (JSON.stringify(newData) === "{}" || newData === undefined) {
-                    fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                    fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
                     })
@@ -543,7 +544,7 @@ module.exports = function(proxy, allowedHost) {
                 var newData = JSON.parse(data);
                 newData.variable = varList;
                if (JSON.stringify(newData) === "{}" || newData === undefined) {
-                   fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                   fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
                        if (err) throw err;
                        return result.json("ok");
                    })
@@ -561,7 +562,7 @@ module.exports = function(proxy, allowedHost) {
             // 每次遍历人数，及时增加share列表
             console.log("new222");
             var person = req.query.person;
-            console.log(person)
+            console.log(person);
 
             var path = req.query.path;
           fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
@@ -619,95 +620,55 @@ module.exports = function(proxy, allowedHost) {
                 }
             });
         });
-        app.post("/lightTask", (req, res)=> {
-            var path = req.body.path;
-            var per = req.body.person;
-            var uuid = uuidv1();
-            fs.readFile("storage/task_uuid.json", "utf8", (er, dat)=> {
-                if (er) throw er;
-                var task_uuid = JSON.parse(dat);
-                for (var prop in task_uuid) {
-                    if (task_uuid[prop].path === path) {
-                        delete task_uuid[prop]
-                    }
-                }
-                task_uuid[uuid] = {
-                    path: path,
-                    person: per
-                };
-                if (JSON.stringify(task_uuid) === "{}" || task_uuid === undefined) {
-                    fs.writeFile("storage/" + per + ".json", dat, "utf8", (err)=> {
-                        if (err) throw err;
-                        return res.json("ok");
-                    })
-                }else {
-                    fs.writeFile("storage/task_uuid.json", JSON.stringify(task_uuid), "utf8", (err)=> {
-                        if (err) throw err;
-                    })
-                }
-            });
-            fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
-                if (err) throw err;
-                var perdata = JSON.parse(data);
-                perdata["task_runner"][path] = uuid;
-                if (JSON.stringify(perdata) === "{}" || perdata === undefined) {
-                    fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
-                        if (err) throw err;
-                        return res.json("ok");
-                    })
-                }else {
-                    fs.writeFile("storage/" + per + ".json", JSON.stringify(perdata), "utf8", (err)=> {
-                        if (err) throw err;
-                        return res.json(uuid);
-                    })
-                }
-            })
-        });
         app.post("/createUuid", (req, res)=>{
-            var name = req.body.taskName;
-            var per = req.body.person;
-            var uuid = uuidv1();
-            // 写入task_uuid文件
-            fs.readFile("storage/task_uuid.json", "utf8", (err, data)=> {
-                if (err) throw err;
-                var task_uuid = JSON.parse(data);
-                task_uuid[uuid] = {
-                    "path": [],
-                    "name": name,
-                    "person": per
-                };
-                if (JSON.stringify(task_uuid) === "{}" || task_uuid === undefined) {
-                    fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
-                        if (err) throw err;
-                        return res.json("ok");
-                    })
-                }else {
-                    fs.writeFile("storage/task_uuid.json", JSON.stringify(task_uuid), "utf8", (err)=> {
-                        if (err) throw err;
-                    })
-                }
-            });
-            // 写入person文件
-            fs.readFile("storage/" + per +".json", "utf8", (er, dat)=> {
-                if (er) throw er;
-                var perdata = JSON.parse(dat);
-                perdata["task_runner"][name] = {
-                    taskUuid:uuid,
-                    path: []
-                };
-                if (JSON.stringify(perdata) === "{}" || perdata === undefined) {
-                    fs.writeFile("storage/" + per + ".json", dat, "utf8", (err)=> {
-                        if (err) throw err;
-                        return res.json("ok");
-                    })
-                }else {
-                    fs.writeFile("storage/" + per + ".json", JSON.stringify(perdata), "utf8", (err)=> {
-                        if (err) throw err;
-                        return res.json(uuid);
-                    })
-                }
-            })
-        })
+              var name = req.body.taskName;
+              var per = req.body.person;
+              var uuid = uuidv1();
+              // 写入task_uuid文件
+              // console.log(uuid);
+
+              fs.readFile("storage/task_uuid.json", "utf8", (err, data)=> {
+                  if (err) throw err;
+                  var task_uuid = JSON.parse(data);
+                  console.log(uuid);
+                  task_uuid[uuid] = {
+                      "path": [],
+                      "name": name,
+                      "person": per
+                  };
+                  // console.log(task_uuid)
+                  if (JSON.stringify(task_uuid) === "{}" || task_uuid === undefined) {
+                      fs.writeFile("storage/task_uuid.json", data, "utf8", (err)=> {
+                          if (err) throw err;
+                          return res.json("ok");
+                      })
+                  }else {
+                      fs.writeFile("storage/task_uuid.json", JSON.stringify(task_uuid), "utf8", (err)=> {
+                          if (err) throw err;
+                      })
+                  }
+              });
+              // 写入person文件
+              fs.readFile("storage/" + per +".json", "utf8", (er, dat)=> {
+                  if (er) throw er;
+                  var perdata = JSON.parse(dat);
+                  perdata["task_runner"][name] = {
+                      taskUuid:uuid,
+                      path: []
+                  };
+                  if (JSON.stringify(perdata) === "{}" || perdata === undefined) {
+                      fs.writeFile("storage/" + per + ".json", dat, "utf8", (err)=> {
+                          if (err) throw err;
+                          return res.json("ok");
+                      })
+                  }else {
+                      fs.writeFile("storage/" + per + ".json", JSON.stringify(perdata), "utf8", (err)=> {
+                          if (err) throw err;
+                          return res.json(uuid);
+                      })
+                  }
+              })
+          })
     },
     before(app, server) {
       if (fs.existsSync(paths.proxySetup)) {
@@ -775,7 +736,7 @@ module.exports = function(proxy, allowedHost) {
                             fs.writeFile("storage/ip_address.json", data, "utf8", (err)=> {
                                 if (err) throw  err;
                             });
-                            return res.json(null); // 创建失败，重新刷新
+                            return res.json(null); // 创建失败，重新刷新, 覆盖创建失败的person
                         }else {
                             // 新增id标识
                             fs.writeFile("storage/ip_address.json", JSON.stringify(ipData), "utf8", (err) => {

@@ -26,7 +26,7 @@ class Tool extends Component {
         this.sureShare = this.sureShare.bind(this);
         this.shareEdit = this.shareEdit.bind(this);
         this.saveAs = this.saveAs.bind(this);
-        this.lightTask = this.lightTask.bind(this);
+        // this.lightTask = this.lightTask.bind(this);
         this.saveAsRoot = this.saveAsRoot.bind(this);
         this.cancelSave = this.cancelSave.bind(this);
         this.showShareUl = this.showShareUl.bind(this);
@@ -275,34 +275,34 @@ class Tool extends Component {
         //     }]
         // }
     }
-    lightTask (e) {
-        // i
-        $(e.target).css({color: "white"});
-        var path = $(e.target).attr("task");
-        axios({
-            method: "post",
-            url: "/lightTask",
-            data: {
-                path: path,
-                person: this.props.per
-            }
-        }).then((res)=>{
-            var task_runner = this.state.task_runner;
-            task_runner[path] = res.data;
-            this.props.taskRunnerChange(task_runner);
-
-            // this.setState({
-            //     task_runner: task_runner
-            // })
-            // $(e.target).next("div").css({display: "block"})
-            return true
-        })
-    }
+    // lightTask (e) {
+    //     // i
+    //     $(e.target).css({color: "white"});
+    //     var path = $(e.target).attr("task");
+    //     axios({
+    //         method: "post",
+    //         url: "/lightTask",
+    //         data: {
+    //             path: path,
+    //             person: this.props.per
+    //         }
+    //     }).then((res)=>{
+    //         var task_runner = this.state.task_runner;
+    //         task_runner[path] = res.data;
+    //         this.props.taskRunnerChange(task_runner);
+    //
+    //         // this.setState({
+    //         //     task_runner: task_runner
+    //         // })
+    //         // $(e.target).next("div").css({display: "block"})
+    //         return true
+    //     })
+    // }
     taskPlay (e) {
         var flag = $(e.target).css("color");
         if (flag === "rgb(0, 0, 0)") {
             // 不可点击，执行任务中
-            return
+
         }else {
             var uuid = $(e.target).parent().prev().text();
             $(e.target).css({color: "#cbcbcb"});
@@ -313,14 +313,16 @@ class Tool extends Component {
                 method: "post",
                 url: "http://localhost:3002/task/" + uuid,
             }).then((res)=> {
-                console.log(res.data);
+                // console.log(res.data)
                 if (res.data.state) {
                     // 测试全部通过
                     alert("测试全部通过")
-                }else {
+                }else if (res.data.testURL) {
                     // 测试有失败
-                    var hrefA = "http://" + this.props.IPAddress + ":3002/" + res.data.testURL
+                    var hrefA = "http://" + this.props.IPAddress + ":3002/" + res.data.testURL;
                     alert("有部分测试未通过，通过链接：" + hrefA + " 查看详细报告")
+                }else {
+                    alert("参数错误，去保存配置再试试" + JSON.stringify(res.data,null, 4))
                 }
                 $(tar).css({color: "white"});
             })
@@ -339,6 +341,7 @@ class Tool extends Component {
         }else {
             return;
         }
+        // console.log(this.props.per)
         axios({
             method: "post",
             url: "/createUuid",
@@ -451,7 +454,7 @@ class Tool extends Component {
             obj[ele.name] = ele.item[0].r || [];
             obj[ele.name + "edit"] = ele.item[1].w || [];
         });
-        var task_runner = this.props.caseList.task_runner;
+        var task_runner = nextProps.caseList.task_runner;
         var taskName = [];
         for (var prop in task_runner) {
             taskName.push(prop);
@@ -459,7 +462,7 @@ class Tool extends Component {
         this.setState({
             ...obj,
             task_runner: task_runner,
-            taskPathArr: this.props.taskPathArr,
+            taskPathArr: nextProps.taskPathArr,
             taskName: taskName
         })
     }
