@@ -1,3 +1,8 @@
+这是一个仿照postman的单页面应用。
+基于：node,express,react,jquery,axios,mocha,chai,h5，bootstrap。
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
