@@ -1,0 +1,23 @@
+.shareForm_wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #f6f6f673;
+    bottom: 0;
+    color: black;
+    z-index: 1000;
+}
+.shareForm_wrapper .desc {
+    text-align:center;
+    margin-top: 100px;
+}
+.people_list {
+    width: 140px;
+    margin: 0 auto;
+}
+.people_check label {
+    display: block;
+    text-align: center;
+}
+

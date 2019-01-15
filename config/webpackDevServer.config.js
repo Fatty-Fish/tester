@@ -18,7 +18,6 @@ const execFile = require("child_process").exec;
 const axios = require("axios");
 const taskManager = require("./taskManager");
 const singlePath = require("./singlePath");
-const getIPAddress = require("./getIPAddress");
 const bodyParser = require('body-parser');
 const BASE_URL = Path.join(__dirname, "../");
 
@@ -433,7 +432,7 @@ module.exports = function(proxy, allowedHost) {
         });
         app.post("/sureShare", (req, res)=> {
             console.log("sureshare");
-            console.log(req.body.host)
+            console.log(req.body.host);
             fs.readFile("storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
                 if(err) throw err;
                 var dataobj = JSON.parse(data);
@@ -579,8 +578,9 @@ module.exports = function(proxy, allowedHost) {
                     // console.log(666)
                     fs.readFile("storage/ip_address.json", "utf8", (err, ipdata)=> {
                         var ipAdd = JSON.parse(ipdata);
+                        // console.log(ipAdd)
                         // ipAdd.ip  [{"ip":"10.12.28.36","name":"person0"}]
-                        var iplen = ipAdd.ip;
+                        var iplen = ipAdd.ip.length;
                         // console.log(stateData.share)
                         for (var s = 0; s < iplen; s++) {
                             // 现有ipname不是本身，且本身shareList不包含ipname
@@ -680,8 +680,15 @@ module.exports = function(proxy, allowedHost) {
       // This lets us open files from the runtime error overlay.
       app.use(errorOverlayMiddleware());
         app.get("/ip", (req,res)=> {
-            // console.log();
-            var IPAddress = getIPAddress();
+            let getClientIp = function (req) {
+                return req.headers['x-forwarded-for'] ||
+                    req.connection.remoteAddress ||
+                    req.socket.remoteAddress ||
+                    req.connection.socket.remoteAddress || '';
+            };
+            let ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/);
+            ip = ip ? ip.join('.') : null;
+            var IPAddress = ip;
             fs.readFile("storage/ip_address.json", "utf8", (err, data)=> {
                 if (err) throw err;
                 var ipData = JSON.parse(data);
@@ -698,13 +705,14 @@ module.exports = function(proxy, allowedHost) {
                     // 新入
                     ipData.ip[len] = {
                         ip: IPAddress,
-                        name: "person" + len
+                        name: "ip" + IPAddress
                     };
                     // 创建新
                     var shareArr = [];
                     for (var j = 0; j < len; j++) {
                         var obj = {
-                            "name": "person" + j,
+                            // "name": "person" + j,
+                            name: ipData.ip[j].name,
                             "item": [{
                                 "r": []
                             },
@@ -714,7 +722,8 @@ module.exports = function(proxy, allowedHost) {
                         };
                         shareArr.push(obj)
                     }
-                    person = "person" + len;
+                    // person = "person" + len;
+                    person = "ip" + IPAddress;
                     var newPerson = {
                         variable: [{
                             "name": "Global",
@@ -730,7 +739,7 @@ module.exports = function(proxy, allowedHost) {
                         task_runner: {}
                     };
                     // 新增数据
-                    fs.writeFile("storage/" +person + ".json", JSON.stringify(newPerson), "utf8", (err)=> {
+                    fs.writeFile("storage/" + person + ".json", JSON.stringify(newPerson), "utf8", (err)=> {
                         if (err) throw err;
                         if (JSON.stringify(ipData) === "{}" || ipData === undefined) {
                             fs.writeFile("storage/ip_address.json", data, "utf8", (err)=> {

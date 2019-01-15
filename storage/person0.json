@@ -1,14 +1,1 @@
-{
-  "shared": [],
-  "share": [],
-  "task_runner": {},
-  "variable": [{
-    "name": "Global",
-    "values": [{
-      "key": "userType",
-      "value": "quan",
-      "enabled": true
-    }],
-    "from": "raw"
-  }]
-}
+{"shared":[],"share":[],"task_runner":{},"variable":[{"name":"Global","values":[{"key":"userType","value":"quan","enabled":true}],"from":"raw"}]}

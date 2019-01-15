@@ -1,6 +1,7 @@
 .row{
     margin-left:248px;
-    margin-right: 0px;
+    margin-right: 0;
+    margin-top: -78px;
     overflow: hidden;
     color: #fff;
 }

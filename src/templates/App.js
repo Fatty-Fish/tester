@@ -8,6 +8,7 @@ import Nav from "./Nav"
 import Case from "./Case";
 import WillSave from "./WillSave"
 import IfSure from "./IfSure";
+import ShareForm from "./ShareForm"
 // import mocha from "mocha"
 import axios from "axios";
 // case模板对象
@@ -92,6 +93,9 @@ class App extends Component {
       this.changeSelfVar = this.changeSelfVar.bind(this);
       this.saveAsRoot = this.saveAsRoot.bind(this);
       this.caseStoreFn = this.caseStoreFn.bind(this);
+      this.changeShowPeople = this.changeShowPeople.bind(this);
+      this.changeAuth = this.changeAuth.bind(this);
+      this.hidePeople = this.hidePeople.bind(this);
   }
 
     taskRunnerChange (runner) {
@@ -1580,15 +1584,15 @@ class App extends Component {
             caseStore: caseObj
         })
     }
-    sharechange (shareitem, shareTo) {
+    sharechange (caseList, shareTo) {
         // 改变自己state,并上传
-        var caseList = this.state.caseList;
-        var len = caseList.share.length;
-        for (var i = 0; i <len; i++) {
-            if (caseList.share[i].name === shareTo) {
-                caseList.share[i].item = shareitem
-            }
-        }
+        // var caseList = this.state.caseList;
+        // var len = caseList.share.length;
+        // for (var i = 0; i <len; i++) {
+        //     if (caseList.share[i].name === shareTo) {
+        //         caseList.share[i].item = shareitem
+        //     }
+        // }
         this.setState({
             caseList: caseList
         });
@@ -1605,6 +1609,94 @@ class App extends Component {
                 //
             }
         });
+    }
+    changeShowPeople(bool, auth, path) {
+        this.setState({
+            showPeople: bool,
+            auth: auth,
+            pathArr: path
+        })
+    }
+    hidePeople() {
+      this.setState({
+          showPeople: false
+      })
+    }
+    changeAuth(val,checked) {
+      console.log(val, checked);
+      var auth = this.state.auth;
+      var pathArr = this.state.pathArr;
+      var showFlag = this.state.showPeople;
+        var caseList = this.state.caseList;
+        var shareLen = caseList.share.length;
+        var eyePerson,
+            editPerson;
+        console.log(auth,pathArr,showFlag);
+      if (checked) {
+          // 分享
+          //  "item":[{"r":[]},{"w":[]}] 自己
+          // var shareArr = caseList.share;
+          for (var i = 0; i < shareLen; i++) {
+              if (caseList.share[i].name === val) {
+                  if (auth === "eye") {
+                      var eyeAuth = caseList.share[i].item[0].r;
+                      eyeAuth = [...new Set(eyeAuth.concat(pathArr))];
+                      eyePerson = eyeAuth;
+                      editPerson = caseList.share[i].item[1].w;
+                      caseList.share[i].item[0] = {"r": eyeAuth};
+                      // caseList.share[i].item
+                  }else {
+                      // edit
+                      var editAuth = caseList.share[i].item[1].w;
+                      editAuth = [...new Set(editAuth.concat(pathArr))];
+                      editPerson = editAuth;
+                      eyePerson = caseList.share[i].item[0].r;
+                      caseList.share[i].item[1] = {"w": editAuth};
+                  }
+              }
+          }
+      }else {
+          // 取消分享
+          // console.log(checked)
+          for (i = 0; i < shareLen; i++) {
+              if (caseList.share[i].name === val) {
+                  if (auth === "eye") {
+                      eyeAuth = caseList.share[i].item[0].r;
+                      var nowAuth = eyeAuth.filter((ele, index)=> {
+                          return pathArr.indexOf(ele) == -1
+                      });
+                      eyePerson = nowAuth;
+                      editPerson = caseList.share[i].item[1].w;
+                      caseList.share[i].item[0] = {"r": nowAuth};
+                  }else {
+                      // edit
+                      editAuth = caseList.share[i].item[1].w;
+                      nowAuth = editAuth.filter((ele, index)=> {
+                          return pathArr.indexOf(ele) == -1
+                      });
+                      editPerson = nowAuth;
+                      eyePerson = caseList.share[i].item[0].r;
+                      caseList.share[i].item[1] = {"w": nowAuth};
+                  }
+              }
+          }
+      }
+      this.sharechange(caseList, val);
+        // 改变shareTo的shared
+        axios({
+            method: "post",
+            url: "/sureShare",
+            data: {
+                host: this.props.per,
+                r: eyePerson || [],
+                w: editPerson || [],
+                shareTo: val
+            },
+            contentType:"application/json",
+        }).then ((res)=> {
+            return true
+        });
+        // // 改变自己的share
     }
     caseStoreFn(arr) {
         var newObj = {};
@@ -1739,6 +1831,7 @@ class App extends Component {
     render() {
       // console.log(this.state);
         var taskPathArr = [];
+        var shareList = this.state.caseList.share;
         var caseStore = this.state.caseStore;
         // console.log(caseStore)
         for (var prop in caseStore) {
@@ -1779,7 +1872,10 @@ class App extends Component {
             return (
                 <div className="App">
                     <div className="cover">
-                        <Tool IPAddress={this.props.IPAddress} per={this.props.per} taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
+                        <div className="userid">{this.props.IPAddress}</div>
+                        <Tool changeShowPeople={this.changeShowPeople} IPAddress={this.props.IPAddress} per={this.props.per} taskRunnerChange={this.taskRunnerChange} taskPathArr={taskPathArr} importCase={this.importCase} sharechange={this.sharechange} person={this.state.person} caseList={this.state.caseList} addState = {this.addCase}></Tool>
+                        {this.state.showPeople ? <ShareForm hidePeople={this.hidePeople} changeAuth={this.changeAuth} pathArr={this.state.pathArr} auth={this.state.auth} shareList={shareList}></ShareForm> : ""}
+
                         <Nav activeCase = {this.state.activeIndex} acCaseFn = {this.acCaseFn} addFn = {this.addFile} delFn = {this.delFn} caseList={this.state.activeCase}></Nav>
                         {this.state.saveFlag >= 0 ? (<WillSave saveflag={this.state.saveFlag} saveAsRoot={this.saveAsRoot} cancelSave={this.cancelSave} saveAs={this.saveAs} caseList={this.state.caseList}></WillSave>) : ""}
                         {this.state.sureFlag >= 0 ? (<IfSure saveFn={this.saveFn} cancelFn={this.cancelFn} loseFn={this.loseFn}></IfSure>) : ""}

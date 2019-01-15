@@ -47,17 +47,18 @@
     height: 848px;
     top: 79px;
     z-index: 999;
+    border-right:1px solid black;
     color: #fff;
     background-color: #a8a8a8;
     overflow:auto;
 }
 .resize {
     position: absolute;
-    right: 0px;
-    top: 0px;
+    right: 0;
+    top: 0;
     content: "";
     display: inline-block;
-    height: 848px;
+    height: 838px;
     width: 10px;
     cursor: ew-resize;
 }

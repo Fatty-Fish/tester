@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import $ from "jquery";
 import axios from "axios";
+import ShareForm from "./ShareForm"
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
@@ -81,81 +82,87 @@ class List extends Component {
     //     }
     // }
     shareEye (e) {
+        // var person =
+        // console.log(this.props.shareList);
         e.stopPropagation();
         var oUl = $(e.target).parent().parent().parent();
         // 点击文件夹
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "div") {
-            if ($(e.target).css("color") === "rgb(168, 168, 168)") {
+            // console.log($(e.target).css("color"))
+            // if ($(e.target).css("color") === "rgb(69, 66, 66)") {
                 // 变为白色
                 // console.log()
-                oUl.find(".glyphicon-eye-open").css({color: "white"});
-                var ulArr = Array.prototype.slice.call(oUl.parent().children().find(".glyphicon-eye-open"), 0)
-                var arr = ulArr.filter((ele, index)=>{
-                    if (index > 0) {
-                        return $(ele).css("color") === "rgb(168, 168, 168)"
-                    }
-                });
-                if (arr.length === 0) {
-                    oUl.parent().find(".glyphicon-eye-open").css({color: "white"});
-                }
+                // oUl.find(".glyphicon-eye-open").css({color: "white"});
+                // var ulArr = Array.prototype.slice.call(oUl.parent().children().find(".glyphicon-eye-open"), 0);
+                // var arr = ulArr.filter((ele, index)=>{
+                //     if (index > 0) {
+                //         return $(ele).css("color") === "rgb(69, 66, 66)"
+                //     }
+                // });
+                // if (arr.length === 0) {
+                //     oUl.parent().find(".glyphicon-eye-open").css({color: "white"});
+                // }
                 var liArr = Array.prototype.slice.call(oUl.find("li"), 0);
                 var itemArr = [];
                 liArr.forEach((ele, index)=> {
                     itemArr.push($(ele).attr("from"));
                 });
                 itemArr.push($(e.target).parent().parent().attr("from"));
-                this.props.shareEye(itemArr , this.props.person);
-            }else {
+
+                // this.props.showPeople(itemArr, "eye");
+
+                this.props.shareEye(itemArr, this.props.person);
+            // }else {
                 // 变为灰色
-                oUl.find(".glyphicon-eye-open").css({color: "#a8a8a8"});
-                 if (oUl.parent().children("ul").length === 1) {
-                     oUl.parent().children("div").find(".glyphicon-eye-open").css({color: "#a8a8a8"})
-                 }
-                var disliArr = Array.prototype.slice.call(oUl.find("li"), 0);
-                var disitemArr = [];
-                disliArr.forEach((ele, index)=> {
-                    disitemArr.push($(ele).attr("from"));
-                });
-                disitemArr.push($(e.target).parent().parent().attr("from"));
-                this.props.shareEye(disitemArr , this.props.person, "dis");
-            };
+                // oUl.find(".glyphicon-eye-open").css({color: "#454242"});
+                //  if (oUl.parent().children("ul").length === 1) {
+                //      oUl.parent().children("div").find(".glyphicon-eye-open").css({color: "#454242"})
+                //  }
+                // var disliArr = Array.prototype.slice.call(oUl.find("li"), 0);
+                // var disitemArr = [];
+                // disliArr.forEach((ele, index)=> {
+                //     disitemArr.push($(ele).attr("from"));
+                // });
+                // disitemArr.push($(e.target).parent().parent().attr("from"));
+                // this.props.shareEye(disitemArr , this.props.person, "dis");
+            // };
         }
         // 点击文件
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "li") {
             var eyeArr,EyeArr, grayEye;
-            if ($(e.target).css("color") === "rgb(168, 168, 168)") {
-                $(e.target).css({color: "white"});
-                eyeArr = $(e.target).parent().parent().parent().find(".glyphicon-eye-open");
-                EyeArr = Array.prototype.slice.call(eyeArr, 0);
-                grayEye = EyeArr.filter((ele, index)=> {
-                    if (index > 0) {
-                        return $(ele).css("color") === "rgb(168, 168, 168)"
-                    }
-                });
-                if (grayEye.length > 0) {
+            // if ($(e.target).css("color") === "rgb(69, 66, 66)") {
+                // $(e.target).css({color: "white"});
+                // eyeArr = $(e.target).parent().parent().parent().find(".glyphicon-eye-open");
+                // EyeArr = Array.prototype.slice.call(eyeArr, 0);
+                // grayEye = EyeArr.filter((ele, index)=> {
+                //     if (index > 0) {
+                //         return $(ele).css("color") === "rgb(69, 66, 66)"
+                //     }
+                // });
+                // if (grayEye.length > 0) {
                     this.props.shareEye($(e.target).parent().parent().attr("from"), this.props.person)
 
-                }else {
-                    $(e.target).parent().parent().parent().find(".glyphicon-eye-open").css({color: "white"});
-                    var fileliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"));
-                    var fileItemArr = [];
-                    fileliArr.forEach((ele, index)=> {
-                        fileItemArr.push($(ele).attr("from"));
-                    });
-                    this.props.shareEye(fileItemArr, this.props.person)
-                }
-            }else {
-                $(e.target).css({color: "#a8a8a8"});
-                $(e.target).parent().parent().parent().children(":first").find(".glyphicon-eye-open").css({color: "#a8a8a8"});
-                this.props.shareEye($(e.target).parent().parent().attr("from"), this.props.person, "dis")
-            }
+                // }else {
+                //     $(e.target).parent().parent().parent().find(".glyphicon-eye-open").css({color: "white"});
+                //     var fileliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"));
+                //     var fileItemArr = [];
+                //     fileliArr.forEach((ele, index)=> {
+                //         fileItemArr.push($(ele).attr("from"));
+                //     });
+                //     this.props.shareEye(fileItemArr, this.props.person)
+                // }
+            // }else {
+            //     $(e.target).css({color: "#454242"});
+            //     $(e.target).parent().parent().parent().children(":first").find(".glyphicon-eye-open").css({color: "#454242"});
+            //     this.props.shareEye($(e.target).parent().parent().attr("from"), this.props.person, "dis")
+            // }
         }
     }
     shareEdit (e) {
         e.stopPropagation();
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "div") {
-            if ($(e.target).css("color") === "rgb(168, 168, 168)") {
-                $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "white"});
+            // if ($(e.target).css("color") === "rgb(168, 168, 168)") {
+                // $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "white"});
                 var liArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"), 0);
                 var itemArr = [];
                 liArr.forEach((ele, index)=> {
@@ -163,46 +170,46 @@ class List extends Component {
                 });
                 itemArr.push($(e.target).parent().parent().attr("from"));
                 this.props.shareEdit(itemArr , this.props.person);
-            }else {
-                $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "#a8a8a8"});
-                var disliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"), 0);
-                var disitemArr = [];
-                disliArr.forEach((ele, index)=> {
-                    disitemArr.push($(ele).attr("from"));
-                });
-                disitemArr.push($(e.target).parent().parent().attr("from"));
-                this.props.shareEdit(disitemArr , this.props.person, "dis");
-            };
+            // }else {
+                // $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "#a8a8a8"});
+                // var disliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"), 0);
+                // var disitemArr = [];
+                // disliArr.forEach((ele, index)=> {
+                //     disitemArr.push($(ele).attr("from"));
+                // });
+                // disitemArr.push($(e.target).parent().parent().attr("from"));
+                // this.props.shareEdit(disitemArr , this.props.person, "dis");
+            // };
         }
         // 点击文件
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "li") {
             var eyeArr,EyeArr, grayEye;
-            if ($(e.target).css("color") === "rgb(168, 168, 168)") {
-                $(e.target).css({color: "white"});
-                eyeArr = $(e.target).parent().parent().parent().find(".glyphicon-pencil");
-                EyeArr = Array.prototype.slice.call(eyeArr, 0);
-                grayEye = EyeArr.filter((ele, index)=> {
-                    if (index > 0) {
-                        return $(ele).css("color") === "rgb(168, 168, 168)"
-                    }
-                });
-                if (grayEye.length > 0) {
+            // if ($(e.target).css("color") === "rgb(168, 168, 168)") {
+                // $(e.target).css({color: "white"});
+                // eyeArr = $(e.target).parent().parent().parent().find(".glyphicon-pencil");
+                // EyeArr = Array.prototype.slice.call(eyeArr, 0);
+                // grayEye = EyeArr.filter((ele, index)=> {
+                //     if (index > 0) {
+                //         return $(ele).css("color") === "rgb(168, 168, 168)"
+                //     }
+                // });
+                // if (grayEye.length > 0) {
                     this.props.shareEdit($(e.target).parent().parent().attr("from"), this.props.person)
-
-                }else {
-                    $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "white"});
-                    var fileliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"));
-                    var fileItemArr = [];
-                    fileliArr.forEach((ele, index)=> {
-                        fileItemArr.push($(ele).attr("from"));
-                    });
-                    this.props.shareEdit(fileItemArr, this.props.person)
-                }
-            }else {
-                $(e.target).css({color: "#a8a8a8"});
-                $(e.target).parent().parent().parent().children(":first").find(".glyphicon-pencil").css({color: "#a8a8a8"});
-                this.props.shareEdit($(e.target).parent().parent().attr("from"), this.props.person, "dis")
-            }
+                //
+                // }else {
+                //     $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "white"});
+                //     var fileliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"));
+                //     var fileItemArr = [];
+                //     fileliArr.forEach((ele, index)=> {
+                //         fileItemArr.push($(ele).attr("from"));
+                //     });
+                //     this.props.shareEdit(fileItemArr, this.props.person)
+                // }
+            // }else {
+            //     $(e.target).css({color: "#a8a8a8"});
+                // $(e.target).parent().parent().parent().children(":first").find(".glyphicon-pencil").css({color: "#a8a8a8"});
+                // this.props.shareEdit($(e.target).parent().parent().attr("from"), this.props.person, "dis")
+            // }
         }
     }
     findPath (oDiv, str) {
@@ -365,8 +372,8 @@ class List extends Component {
             var temp = this.renderListFn(list.item, list.info.name, r, w);
             return (<ul key={name}>
                 <div onClick={this.showChildren} from={name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{list.info.name}</span><input
-                    type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={list.info.name}/><i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i>
-                    {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: r||w ? "white" : "#a8a8a8"}} from={name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: w ? "white" : "#a8a8a8"}} from={name} onClick={this.shareEdit}></i></div>) : ""}</div>
+                    type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={list.info.name}/>{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> : ""}{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i> : ""}
+                    {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: r||w ? "white" : "#454242"}} from={name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: w ? "white" : "#454242"}} from={name} onClick={this.shareEdit}></i></div>) : ""}</div>
                 {temp}
             </ul>)
         } else if (list.length >= 0){
@@ -378,8 +385,8 @@ class List extends Component {
                     // temp
                     return (<ul key={index}>
                         <div onClick={this.showChildren} from={name + "/" + ele.name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{ele.name}</span><input
-                            type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={ele.name}/><i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i>
-                            {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: arr || ulr || ulw ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || ulw ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</div>
+                            type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={ele.name}/>{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> : ""} {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i> : ""}
+                            {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: arr || ulr || ulw ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || ulw ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</div>
                         {te}
                     </ul>)
                 }else if (ele.request) {
@@ -388,7 +395,7 @@ class List extends Component {
                     var r = this.props.rarr ? this.props.rarr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
                     var w = this.props.rarr ? this.props.warr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
                     return (<li onClick={this.clickLi} from={name + "/" + ele.name} unique={ele.name} key={index} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
-                        type="text" className="renameInput" onChange={this.inputName} onBlur={this.inputBlur} value={ele.name}/> <i className="glyphicon glyphicon-trash" onClick={this.deleteFn}></i> <i className="glyphicon glyphicon-download-alt" onClick={this.exportFn}></i>{this.props.fromShare ? (<div><i className="glyphicon glyphicon-eye-open" style={{color:  arr || r||w ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || w ? "white" : "#a8a8a8"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</li>)
+                        type="text" className="renameInput" onChange={this.inputName} onBlur={this.inputBlur} value={ele.name}/> {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteFn}></i> : ""} {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportFn}></i> : ""}{this.props.fromShare ? (<div><i className="glyphicon glyphicon-eye-open" style={{color:  arr || r||w ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || w ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</li>)
                 }
             });
             return tem
@@ -418,11 +425,6 @@ class List extends Component {
                     this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("from"));
                 }
             });
-            // if (e.target.className === "outer") {
-            //     this.props.acName($(e.target).attr("unique"), $(e.target).attr("from"));
-            // }else if (e.target.className === "content") {
-            //     this.props.acName($(e.target).parent().attr("unique"), $(e.target).parent().attr("from"));
-            // }
         }
     }
     showShare (e) {
@@ -478,7 +480,7 @@ class List extends Component {
         for (var prop in list){
             if (prop !== "share" && prop !== "shared") {
                 caseList.push(this.renderListFn(list[prop], prop));
-            }else if (prop === "shared") {
+            }else if (prop === "shared" && !this.props.fromShare) {
                 caseList.push(this.renderShareFn(list[prop], prop));
             }
         }
