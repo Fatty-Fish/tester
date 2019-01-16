@@ -71,40 +71,46 @@ App.post("/task/:uuid", (req, ress)=>{
                 taskFnArr = path.map((ele, index)=> {
                     var npath = ele.replace(person +"/", "");
                     var cont = findPath(npath.split("/"), data);
-                    var perState = JSON.parse(data);
-                    var variable = perState.variable;
-                    var select = cont.request.valSelect || 0; // 新加的属性，说明选中哪一个环境变量 需要保存后才有
-                    var glo;
-                    for(var i = 0; i < variable.length; i++) {
-                        if (variable[i].name === "Global") {
-                            glo = i;
-                            break;
+                    if (cont) {
+                        var perState = JSON.parse(data);
+                        var variable = perState.variable;
+                        var select = cont.request.valSelect || 0; // 新加的属性，说明选中哪一个环境变量 需要保存后才有
+                        var glo;
+                        for(var i = 0; i < variable.length; i++) {
+                            if (variable[i].name === "Global") {
+                                glo = i;
+                                break;
+                            }
                         }
+                        var thisList = variable[select];
+                        var len = thisList.length;
+                        var varContent = [
+                            ...variable[glo].values,
+                            ...variable[select].values
+                        ];
+                        var testScript = cont.event[1].script.exec.join("");
+                        configArr.push({
+                            varContent: varContent,
+                            testScript: testScript,
+                            variable: variable,
+                            thisList: thisList,
+                            len: len,
+                            glo: glo,
+                            path: ele
+                        });
+                        return singlePath(cont, varContent)
                     }
-                    var thisList = variable[select];
-                    var len = thisList.length;
-                    var varContent = [
-                        ...variable[glo].values,
-                        ...variable[select].values
-                    ];
-                    var testScript = cont.event[1].script.exec.join("");
-                    configArr.push({
-                        varContent: varContent,
-                        testScript: testScript,
-                        variable: variable,
-                        thisList: thisList,
-                        len: len,
-                        glo: glo,
-                        path: ele
-                    });
-                    return singlePath(cont, varContent)
+                    else {
+                        return false;
+                    }
                 });
-                axios.all(taskFnArr).then(axios.spread((...resp)=> {
-                    var outerPm = "var configObj, pm;";
-                    resp.forEach((ele, index) => {
-                        console.log(ele.data); // 返回数据
-                        var configObj = configArr[index];
-                        var pm = `{
+                if (taskFnArr) {
+                    axios.all(taskFnArr).then(axios.spread((...resp)=> {
+                        var outerPm = "var configObj, pm;";
+                        resp.forEach((ele, index) => {
+                            console.log(ele.data); // 返回数据
+                            var configObj = configArr[index];
+                            var pm = `{
                             varList:  () => {
                                 return configObj.variable // 当前的所有环境变量集合
                             },
@@ -211,20 +217,20 @@ App.post("/task/:uuid", (req, ress)=>{
                             },
                             assert: chai.assert
                         };`;
-                        var eachTest = `
+                            var eachTest = `
                         configObj=${JSON.stringify(configObj)};
                         pm=${pm}
                         ${configObj.testScript}
                         `;
-                        outerPm += eachTest
-                    });
-                    var testStr = `
+                            outerPm += eachTest
+                        });
+                        var testStr = `
                     describe('测试报告', function() {
                         it('${uuidname} / ${dateStr}', function() {
                            ${outerPm}
                         })
                     })`;
-                    var htmlStr = `<!DOCTYPE html><html><head><title>${path}</title>
+                        var htmlStr = `<!DOCTYPE html><html><head><title>${path}</title>
 <link href="https://cdn.bootcss.com/mocha/5.2.0/mocha.min.css" rel="stylesheet"></head><body><div id="mocha"></div><script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script><script src="https://cdn.bootcss.com/mocha/5.2.0/mocha.min.js"></script><script src="https://cdn.bootcss.com/chai/4.2.0/chai.min.js"></script><script>mocha.setup('bdd')</script>
         <!-- load code you want to test here -->
         <script >
@@ -233,34 +239,37 @@ App.post("/task/:uuid", (req, ress)=>{
         <!-- load your test files here -->
 
 <script>mocha.run();</script></body></html>`;
-                    fs.writeFile("test_task/" + uuidname + dateStr + ".html", htmlStr, "utf8", (err)=> {
-                        if (err) throw err;
-                        var jsStr = `const chai = require("chai");
+                        fs.writeFile("test_task/" + uuidname + dateStr + ".html", htmlStr, "utf8", (err)=> {
+                            if (err) throw err;
+                            var jsStr = `const chai = require("chai");
                             ${testStr}
                         `;
-                        fs.writeFile(BASE_URL +"test"+ person + ".js", jsStr, "utf8", (err)=> {
-                            if (err) throw err;
-                            execFile(`mocha test${person}.js`, (err, stdout, stderr)=> {
-                                console.log(err, stdout, stderr);
-                                var testURL = uuidname + dateStr + ".html";
-                                if (err) {
-                                    // 测试有失败
-                                    return ress.json({
-                                        state: false,
-                                        testURL: testURL
-                                    })
-                                }else {
-                                    return ress.json({
-                                        state:true,
-                                        testURL: testURL
-                                    })
-                                }
+                            fs.writeFile(BASE_URL +"test"+ person + ".js", jsStr, "utf8", (err)=> {
+                                if (err) throw err;
+                                execFile(`mocha test${person}.js`, (err, stdout, stderr)=> {
+                                    console.log(err, stdout, stderr);
+                                    var testURL = uuidname + dateStr + ".html";
+                                    if (err) {
+                                        // 测试有失败
+                                        return ress.json({
+                                            state: false,
+                                            testURL: testURL
+                                        })
+                                    }else {
+                                        return ress.json({
+                                            state:true,
+                                            testURL: testURL
+                                        })
+                                    }
+                                })
                             })
                         })
+                    })).catch((err)=> {
+                        return ress.json(err.config);
                     })
-                })).catch((err)=> {
-                    return ress.json(err.config);
-                })
+                }else {
+                    return ress.json(false);
+                }
             })
         }
     })

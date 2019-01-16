@@ -288,8 +288,10 @@ class Tool extends Component {
                     // 测试有失败
                     var hrefA = "http://" + this.props.IPAddress + ":3002/" + res.data.testURL;
                     alert("有部分测试未通过，通过链接：" + hrefA + " 查看详细报告")
-                }else {
+                }else if (res.data) {
                     alert("参数错误，去保存配置再试试" + JSON.stringify(res.data,null, 4))
+                }else {
+                    alert("该任务已经失效了。")
                 }
                 $(tar).css({color: "black"});
             })
@@ -438,12 +440,17 @@ class Tool extends Component {
     }
     showTask(e) {
         var tar = $(e.target).attr("class");
+        var arrLen = this.state.taskPathArr.length;
         if (tar === "btn taskBtn") {
             // flag
-            var taskFlag = this.state.taskFlag;
-            this.setState({
-                taskFlag: !taskFlag
-            })
+            if (arrLen) {
+                var taskFlag = this.state.taskFlag;
+                this.setState({
+                    taskFlag: !taskFlag
+                })
+            }else {
+                alert("还没有接口可以建立任务。")
+            }
         }
     }
     checkAPI (e) {
