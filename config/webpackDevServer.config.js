@@ -6,18 +6,14 @@ const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMi
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const config = require('./webpack.config.dev');
 const paths = require('./paths');
-const findPath = require('./findState');
-const addState = require('./addState');
-const mkdirs = require("./mkdirs");
-const replaceReg = require("./replaceReg");
-const clearArr = require("./clearArr");
+const findPath = require('./configTool/findState');
+const addState = require('./configTool/addState');
 const fs = require('fs');
 const Path = require("path");
-const chai = require("chai");
 const execFile = require("child_process").exec;
 const axios = require("axios");
-const taskManager = require("./taskManager");
-const singlePath = require("./singlePath");
+const taskManager = require("./configTool/taskManager");
+const singlePath = require("./configTool/singlePath");
 const bodyParser = require('body-parser');
 const BASE_URL = Path.join(__dirname, "../");
 
@@ -51,7 +47,6 @@ App.post("/task/:uuid", (req, ress)=>{
             // 有具体日期，目标 返回任务html
             if (err) throw err;
             // ress.setHeader('Content-Type', 'text/html; charset=UTF-8');
-            // ress.
             ress.sendFile (BASE_URL+ "test_task/" + para + query_date + ".html");
         }else {
             var person = taskData[para].person;
@@ -425,7 +420,7 @@ module.exports = function(proxy, allowedHost) {
                             ...variable
                         ]
                     };
-                    if (JSON.stringify(objdata) === "{}" || objdata === undefined) {
+                    if (JSON.stringify(objdata) === "{}") {
                         fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");

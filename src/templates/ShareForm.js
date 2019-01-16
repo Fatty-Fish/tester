@@ -13,16 +13,8 @@ class ShareForm extends Component {
         this.state = {
 
         };
-        this.clickCheckbox = this.clickCheckbox.bind(this);
         this.van = this.van.bind(this);
         this.hidePeople = this.hidePeople.bind(this);
-    }
-    clickCheckbox (e) {
-        // var val = $(e.target).val();
-        // var checked = $(e.target).prop("checked");
-        // // console.log(val, checked); person true/false
-        //
-        // this.props.changeAuth(val,checked)
     }
     van (e) {
         e.stopPropagation();

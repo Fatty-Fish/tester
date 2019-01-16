@@ -95,7 +95,6 @@ class Case extends Component {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // this.props.changeShow(this.props.k, "test");
         this.setState({
             show: "test"
         })
@@ -104,7 +103,6 @@ class Case extends Component {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // this.props.changeShow(this.props.k, "panel");
         this.setState({
             show: "panel"
         })
@@ -116,9 +114,7 @@ class Case extends Component {
         var global = this.state.global;
         for (var i = 0; i < len; i++) {
             if (varList[i].name === selectName) {
-                this.props.changeSelfVar(this.props.k, i)
-
-
+                this.props.changeSelfVar(this.props.k, i);
                 this.setState({
                     valSelect: i,
                     varContent: [
@@ -138,21 +134,9 @@ class Case extends Component {
     }
     setVariable (e) {
         e.stopPropagation();
-        // axios({
-        //     method: "get",
-        //     url: "/new",
-        //     params: {
-        //         person: "person0"
-        //     },
-        //     contentType:"application/json",
-        // }).then((res)=> {
-        //     var caseList = JSON.parse(res.data);
-        //     // console.log(caseList.variable)
-            this.setState({
-                varSet: true,
-                // varList: caseList.variable
-            })
-        // });
+        this.setState({
+            varSet: true,
+        })
     }
     saveChange () {
         var arr = this.props.k.split("/");
@@ -396,7 +380,6 @@ class Case extends Component {
         }).then((res)=> {
             // 每次测试清空报告
             $("#mocha").html("");
-            // $("#mocha-report").html("");
             // 后置脚本
             pm.response = {
                 json: ()=> {
@@ -405,12 +388,8 @@ class Case extends Component {
             };
             pm.assert = chai.assert;
             // 没有textTest_val时，eval报错，不继续执行。
-            // this.setState({
-            //     result: JSON.stringify(res.data, null, 4)
-            // });
             if (this.state.textTest_val) {
                 var casename = this.props.k;
-                // describe('#indexOf()', function() {it('should return -1 when the value is not present', function() {})})
                 str = "mocha.setup('bdd');describe('测试报告', function() {it('" + casename + "', function() {" +  this.state.textTest_val + "})});mocha.run();";
                 var Runner = eval("mocha.setup('bdd');");
                 // console.log(Runner)
@@ -434,25 +413,14 @@ class Case extends Component {
             // console.log(res)
             // 希望result 在没有新请求时，被记录。
             this.props.changeResult(this.props.k, JSON.stringify(res, null, 4))
-            // this.setState({result: JSON.stringify(res, null, 4)});
         });
         // 执行pre-script
         eval(this.state.text_val);
     }
     changeMethod (e) {
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
-        // if (from === "newCase") {
-        //     this.setState({
-        //         method: e.target.value
-        //     });
-        // }else {
-            this.props.changeMethod(this.props.k, e.target.value);
-        // }
+        this.props.changeMethod(this.props.k, e.target.value);
     }
     changeUrl (e) {
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
         var url = e.target.value;
         if (url.indexOf("?") >= 0) {
                 var reg = /(\w+):\/\/([^/:]+)?([^# ]*)/;
@@ -492,128 +460,57 @@ class Case extends Component {
                 "key": "",
                 "value" : ""
             });
-            // if (from === "newCase") {
-            //     this.setState({
-            //         paramList: query
-            //     });
-            // }else {
-                this.props.changeContent(this.props.k, "paramList", query);
-            // }
+            this.props.changeContent(this.props.k, "paramList", query);
         }
-        // if (from === "newCase") {
-        //     this.setState({
-        //         url: url
-        //     });
-        // }else {
-            this.props.changeUrl(this.props.k, url)
-        // }
+        this.props.changeUrl(this.props.k, url)
     }
     jumpToHeaders (e) {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
-        // if (from === "newCase") {
-        //     this.setState({
-        //         showTable: "Headers"
-        //     })
-        // }else {
-            this.props.changeShowTable(this.props.k, "Headers")
-        // }
+        this.props.changeShowTable(this.props.k, "Headers")
     }
     jumpToBody (e) {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
-        // if (from === "newCase") {
-        //     this.setState({
-        //         showTable: "Body"
-        //     })
-        // }else {
             this.props.changeShowTable(this.props.k, "Body")
-        // }
     }
     jumpToParam (e) {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
-        // if (from === "newCase") {
-        //     this.setState({
-        //         showTable: "Param"
-        //     })
-        // }else {
             this.props.changeShowTable(this.props.k, "Param")
-        // }
     }
     jumpToPreScript (e) {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
-        // if (from === "newCase") {
-        //     this.setState({
-        //         showTable: "Param"
-        //     })
-        // }else {
         this.props.changeShowTable(this.props.k, "preScriptShow")
-        // }
     }
     jumpToTestScript (e) {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
-        // if (from === "newCase") {
-        //     this.setState({
-        //         showTable: "Param"
-        //     })
-        // }else {
         this.props.changeShowTable(this.props.k, "testScriptShow")
     }
     addLine (e) {
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
         var type = e.target ? $(e.target).parent().parent().attr("class") : e;
         if (type === "header") {
             var headersList = this.state.headersList;
             headersList.push({key: "", value: ""});
-             // if (from === "newCase") {
-             //     this.setState({
-             //         headersList: headersList
-             //     });
-             // }else {
                  this.props.changeContent(this.props.k, "headersList", headersList);
-             // }
-            return;
+            // return;
         }else if (type === "body") {
             var bodyList = this.state.bodyList;
             bodyList.push({key: "", value: ""});
-             // if (from === "newCase") {
-             //     this.setState({
-             //         bodyList: bodyList
-             //     });
-             // }else {
                  this.props.changeContent(this.props.k, "bodyList", bodyList);
-             // }
-            return;
+            // return;
         }else if (type === "param") {
             var paramList = this.state.paramList;
             paramList.push({key: "", value: ""});
-            // if (from === "newCase") {
-            //     this.setState({
-            //         paramList: paramList
-            //     });
-            // }else {
                 this.props.changeContent(this.props.k, "paramList", paramList);
-            // }
-            return;
+            // return;
         }
     }
     addHeaders (e) {
@@ -624,25 +521,17 @@ class Case extends Component {
     addBody (e) {
         var bodyList = this.state.bodyList;
         bodyList.push({key: "", value: ""});
-        // this.setState({
-        //     bodyList: bodyList
-        // });
         this.addLine("body");
     }
     addParam (e) {
         var paramList = this.state.paramList;
         paramList.push({key: "", value: ""});
-        // this.setState({
-        //     paramList: paramList
-        // });
         this.addLine("param");
     }
     disableFn(e) {
         var type,
             index,
             flag;
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
         if (e.target.nodeName.toLowerCase() === "i") {
             type = $(e.target).parent().parent().attr("class");
             index = $(e.target).parent().parent().index();
@@ -660,20 +549,11 @@ class Case extends Component {
             this.state.disableList[type].push(index);
             flag === "i" ? $(e.target).parent().css({color: "#fff", background: "#d4d4d4"}) :  $(e.target).css({color: "#fff", background: "#d4d4d4"});
         }
-        // type = param 需要修改url
-        // if (from === "newCase") {
-        //     this.setState({
-        //         disableList: this.state.disableList
-        //     })
-        // }else {
             this.props.changeAble(this.props.k, this.state.disableList)
-        // }
     }
     delLine (e) {
         var type,
             index;
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
         if (e.target.nodeName.toLowerCase() === "i") {
             type = $(e.target).parent().parent().attr("class");
             index = $(e.target).parent().parent().index();
@@ -692,15 +572,8 @@ class Case extends Component {
             }
             var disablelist = this.state.disableList;
             disablelist.header = disHeader;
-             // if (from === "newCase") {
-             //     this.setState({
-             //         headersList: headersList,
-             //         disableList: disablelist
-             //     });
-             // }else {
                  this.props.delCaseLine(this.props.k,"headersList", headersList, disablelist);
-             // }
-            return;
+            // return;
         }else if (type === "body") {
             var BodyList = this.state.bodyList;
             var disBody = this.state.disableList.body;
@@ -711,15 +584,8 @@ class Case extends Component {
             }
             disablelist = this.state.disableList;
             disablelist.body = disBody;
-             // if (from === "newCase") {
-             //     this.setState({
-             //         bodyList: BodyList,
-             //         disableList: disablelist
-             //     });
-             // }else {
                  this.props.delCaseLine(this.props.k,"bodyList", BodyList, disablelist);
-             // }
-            return;
+            // return;
         }else if (type === "param") {
             var ParamList = this.state.paramList;
             var disParam = this.state.disableList.param;
@@ -730,56 +596,29 @@ class Case extends Component {
             }
             disablelist = this.state.disableList;
             disablelist.param = disParam;
-            // if (from === "newCase") {
-            //     this.setState({
-            //         paramList: ParamList,
-            //         disableList: disablelist
-            //     });
-            // }else {
                 this.props.delCaseLine(this.props.k,"paramList", ParamList, disablelist);
-            // }
-            return;
+            // return;
         }
     }
     changeFn (e, name) {
-        // var arr = this.props.k.split("/");
-        // var from = arr[0];
         var type = $(e.target).parent().parent().attr("class");
         var index = $(e.target).parent().parent().index();
         var val = e.target.value;
         if (type === "header") {
             var headerList = this.state.headersList;
             headerList[index][name] = val;
-             // if (from === "newCase") {
-             //     this.setState({
-             //         headersList: headerList
-             //     });
-             // }else {
                  this.props.changeContent(this.props.k, "headersList", headerList);
-             // }
-            return;
+            // return;
         }else if (type === "body") {
             var bodyList = this.state.bodyList;
             bodyList[index][name] = val;
-            // if (from === "newCase") {
-            //     this.setState({
-            //         bodyList: bodyList
-            //     });
-            // }else {
                 this.props.changeContent(this.props.k, "bodyList", bodyList);
-            // }
-            return
+            // return
         }else if (type === "param") {
             var paramList = this.state.paramList;
             paramList[index][name] = val;
-            // if (from === "newCase") {
-            //     this.setState({
-            //         paramList: paramList
-            //     });
-            // }else {
                 this.props.changeContent(this.props.k, "paramList", paramList);
-            // }
-            return;
+            // return;
         }
     }
     changeKey (e) {
@@ -854,7 +693,6 @@ class Case extends Component {
         }
     };
     changeVarName (varlist) {
-        // var varList = this.state.varList;
         this.setState({
             varList: varlist
         });
@@ -882,14 +720,6 @@ class Case extends Component {
             varList: newList,
             varContent: cont
         });
-    }
-    componentDidUpdate () {
-        // 把case组件里最新的state更新到父级APP组件的state里（为了保证父组件export时，是最新的method，URL，header等，且case组件能自由监听变化method，URL。。。）
-        // var key = this.props.k;
-        // var newState = this.state;
-        // this.props.stateFn(newState, key);
-
-        // 提取Case后不需要了
     }
     componentWillReceiveProps(nextProps) {
         var plen = nextProps.caseRender.paramList.length - 1;
@@ -934,7 +764,6 @@ class Case extends Component {
             },
             contentType:"application/json",
         }).then((res)=> {
-            // var caseList = JSON.parse(res.data);
             var caseList = res.data;
 
             var variable = caseList.variable;
@@ -966,7 +795,6 @@ class Case extends Component {
         var text_val = this.state.text_val;
         var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;
-        var varIndex = this.state.valSelect;
         if (varSelect) {
             var selectVar = varSelect[this.state.valSelect].name;
             var varOptions = varSelect.map((ele, index)=> {

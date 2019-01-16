@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {saveAs}  from "file-saver";
-import $ from "jquery";
 import '../css/App.css';
 import Tool from "./Tool"
 import List from "./List"
@@ -9,7 +8,6 @@ import Case from "./Case";
 import WillSave from "./WillSave"
 import IfSure from "./IfSure";
 import ShareForm from "./ShareForm"
-// import mocha from "mocha"
 import axios from "axios";
 // case模板对象
 const CASE_TEMP = function () {
@@ -217,7 +215,7 @@ class App extends Component {
                             "type": "text/javascript"
                         }
                     }]
-            }
+            };
             // console.log(obj)
             caseList[name] = {
                 "info": {
@@ -226,7 +224,7 @@ class App extends Component {
                     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
                 },
                 "item": [obj]
-            }
+            };
             // console.log(caseList)
             this.changeActiveCase(this.state.saveFlag);
             // console.log(this.state.saveFlag)
@@ -426,9 +424,9 @@ class App extends Component {
             var replace = window.confirm(name + "文件已经存在，替换？");
             if (replace) {
                 // 替换
-                var newObj = {};
+                newObj = {};
                 this.storeChange(obj, newObj);
-                var caseStore = this.state.caseStore;
+                caseStore = this.state.caseStore;
                 caseList[name] = obj;
                 caseStore[name] = newObj;
                 axios({
@@ -442,7 +440,7 @@ class App extends Component {
                     if (res) {
                         //
                     }
-                })
+                });
                 this.setState({
                     caseList: caseList,
                     caseStore :caseStore
@@ -469,7 +467,7 @@ class App extends Component {
                 if (res) {
                     //
                 }
-            })
+            });
             this.setState({
                 caseList: caseList,
                 caseStore :caseStore
@@ -491,26 +489,6 @@ class App extends Component {
             newCaseStore["newCase"].length = len + 1;
             newActiveCase.push("newCase/" + len);
         }
-        // console.log(77777)
-        // var newCaseList = this.state.caseList;
-        // newCaseList.item.push({
-        //     name: "newCase",
-        //     request: {
-        //         body: {
-        //             mode: "raw",
-        //             raw: "",
-        //             formdata: [{key: "", value: ""}]
-        //         },
-        //         header: [{key: "", value: ""}],
-        //         method: "GET",
-        //         url: {
-        //             host: [],
-        //             path: [],
-        //             raw: ""
-        //         }
-        //     },
-        //     response: []
-        // });
         this.setState({
             activeCase: newActiveCase,
             activeIndex: acLen,
@@ -813,7 +791,7 @@ class App extends Component {
                     if (caseList[prop].info.name === fromArr[0]) {
                         caselist = caseList[prop];
                         var activelist = this.state.activeCase;
-                        var activeindex = this.state.activeIndex;
+                        // var activeindex = this.state.activeIndex;
                         if (caselist.info.name === name) {
                             delete caseList[fromArr[0]];
                             activelist = activelist.filter((ele, index)=> {
@@ -952,7 +930,7 @@ class App extends Component {
         // 占位
         this.changeFarm(this.state.caseList[fromArr[0]], "/", from);
         var caseList = this.state.caseList[fromArr[0]];
-        var fromArr = from.split("/");
+        fromArr = from.split("/");
         var fromName = fromArr.shift();
         var newCaseItem = this.renameCase(caseList.item, name, newName, fromArr.join("/"));
         var newCaseList = {
@@ -997,9 +975,6 @@ class App extends Component {
                   fromArr.shift();
                   arr[i].item = this.findDirName(old, now, arr[i].item, fromArr.join("/"));
               }
-              // else if (arr[i].item) {
-              //     arr[i].item = this.findDirName(old, now, arr[i].item);
-              // }
           }
       }else if (fromlen === 3) {
           len = arr.length;
@@ -1305,7 +1280,7 @@ class App extends Component {
                   if (from === arr[i].name) {
                       arr[i] = {};
                   }else if(arr[i].item) {
-                      var fromArr = from.split("/");
+                      fromArr = from.split("/");
                       fromArr.shift();
                       this.findCase(name, changeCase, value, arr[i].item, fromArr.join("/"));
                   }
@@ -1477,12 +1452,7 @@ class App extends Component {
                     // 增加变量
 
 
-                    // var val = ele.request.valSelect;
-                        // var valSelect = val ? val : "Global"
                         url = url.replace("{{url}}", "http://test-activity.changyou.com");
-                        // if(path) {
-                        //     url = url + "/" + path.join("/");
-                        // }
                         newObj[prop + "/" + ele.name] = {
                             bodyList : body || [],
                             disableList : {
@@ -1570,7 +1540,7 @@ class App extends Component {
             show: "panel",
             url : url,
             auth: auth
-        }
+        };
         // 存入storeCase
         var caseObj = this.state.caseStore;
         if (caseObj.hasOwnProperty(per)) {
@@ -1585,14 +1555,6 @@ class App extends Component {
         })
     }
     sharechange (caseList, shareTo) {
-        // 改变自己state,并上传
-        // var caseList = this.state.caseList;
-        // var len = caseList.share.length;
-        // for (var i = 0; i <len; i++) {
-        //     if (caseList.share[i].name === shareTo) {
-        //         caseList.share[i].item = shareitem
-        //     }
-        // }
         this.setState({
             caseList: caseList
         });
@@ -1635,7 +1597,6 @@ class App extends Component {
       if (checked) {
           // 分享
           //  "item":[{"r":[]},{"w":[]}] 自己
-          // var shareArr = caseList.share;
           for (var i = 0; i < shareLen; i++) {
               if (caseList.share[i].name === val) {
                   if (auth === "eye") {
@@ -1644,7 +1605,6 @@ class App extends Component {
                       eyePerson = eyeAuth;
                       editPerson = caseList.share[i].item[1].w;
                       caseList.share[i].item[0] = {"r": eyeAuth};
-                      // caseList.share[i].item
                   }else {
                       // edit
                       var editAuth = caseList.share[i].item[1].w;
@@ -1745,13 +1705,11 @@ class App extends Component {
     }
     refresh (arr) {
       var caseStore = this.caseStoreFn(arr);
-      // var newArr = arr.variable;
       delete arr.variable;
       this.setState({
             person: this.props.per,
             caseList: arr,
             caseStore: caseStore,
-          // variable: newArr
         })
     }
     importCaseFn (item, arr, obj) {
@@ -1768,12 +1726,6 @@ class App extends Component {
           }
       }
     }
-    // varChangeNm(varList) {
-    //   console.log(varList)
-    //   this.setState({
-    //       variable: varList
-    //   })
-    // }
     importCase (obj, from) {
         var caseList = this.state.caseList;
         if (!from) {
@@ -1794,9 +1746,6 @@ class App extends Component {
         }
         // 也更新caseStore
         this.refresh(caseList)
-        // this.setState({
-        //     caseList: caseList
-        // });
         axios({
             url: "/surechange",
             method: "post",
@@ -1812,7 +1761,6 @@ class App extends Component {
         });
     }
     componentWillMount() {
-      // var per = this.props.perID;
       // console.log(per)
         axios({
             method: "get",
@@ -1856,12 +1804,6 @@ class App extends Component {
                 var caseListRender = this.state.activeCase.map((ele, index) => {
                 var arr = ele.split("/");
                 var prop = arr[0]; // newCase
-                    // var file;
-                    // if (prop === "newCase") {
-                    //     file = arr[1]
-                    // }else {
-                    //     file = ele
-                    // }
                     var pre = this.state.preText;
                     var test = this.state.testText;
                 return acIndex === index ? (

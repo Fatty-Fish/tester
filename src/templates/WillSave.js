@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import $ from "jquery";
 import List from "./List"
 
 import 'bootstrap/dist/js/bootstrap.js';

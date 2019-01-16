@@ -25,7 +25,6 @@ class Tool extends Component {
         this.sureShare = this.sureShare.bind(this);
         this.shareEdit = this.shareEdit.bind(this);
         this.saveAs = this.saveAs.bind(this);
-        // this.lightTask = this.lightTask.bind(this);
         this.saveAsRoot = this.saveAsRoot.bind(this);
         this.cancelSave = this.cancelSave.bind(this);
         this.showShareUl = this.showShareUl.bind(this);
@@ -101,25 +100,21 @@ class Tool extends Component {
         var sharearr = [];
         sharearr.push({"r": eyePerson});
         sharearr.push({"w": editPerson});
-        // var a = this.props.sharechange(sharearr, shareTo);
         this.props.sharechange(sharearr, shareTo);
         //改变shareto的shared
-        // if (a) {
-        console.log(this.props.per)
-            axios({
-                method: "post",
-                url: "/sureShare",
-                data: {
-                    host: this.props.per,
-                    r: eyePerson,
-                    w: editPerson,
-                    shareTo: shareTo
-                },
-                contentType:"application/json",
-            }).then ((res)=> {
-                return true
-            });
-        // }
+        axios({
+            method: "post",
+            url: "/sureShare",
+            data: {
+                host: this.props.per,
+                r: eyePerson,
+                w: editPerson,
+                shareTo: shareTo
+            },
+            contentType:"application/json",
+        }).then ((res)=> {
+            return true
+        });
     }
     changeAuth(val,checked) {
         console.log(val,checked)
@@ -134,31 +129,6 @@ class Tool extends Component {
         }else {
             this.props.changeShowPeople(true, "eye", from);
         }
-
-
-        // this.showPeople(from, person);
-        // var fromArr = [].concat(from);
-        // if (dis) {
-        //     // 取消分享
-        //     var statefromArr = this.state[person];
-        //     for (var i = 0; i < fromArr.length; i++) {
-        //         var index = statefromArr.indexOf(fromArr[i]);
-        //         if (index >= 0) {
-        //             statefromArr.splice(index, 1);
-        //         }
-        //     }
-        //     this.setState({
-        //         [person]: statefromArr
-        //     })
-        // }else {
-        //     if (this.state[person]) {
-        //         var foreFromArr = this.state[person];
-        //         var newFromArr = [...new Set(foreFromArr.concat(fromArr))];
-        //     }
-        //     this.setState({
-        //         [person]: newFromArr || fromArr
-        //     })
-        // }
     }
     shareEdit (from, person, dis) {
         var flag = this.state.showPeople;
@@ -167,30 +137,6 @@ class Tool extends Component {
         }else {
             this.props.changeShowPeople(true, "edit", from);
         }
-
-
-        // var fromArr = [].concat(from);
-        // if (dis) {
-        //     // 取消分享
-        //     var statefromArr = this.state[person + "edit"];
-        //     for (var i = 0; i < fromArr.length; i++) {
-        //         var index = statefromArr.indexOf(fromArr[i]);
-        //         if (index >= 0) {
-        //             statefromArr.splice(index, 1);
-        //         }
-        //     }
-        //     this.setState({
-        //         [person + "edit"]: statefromArr
-        //     })
-        // }else {
-        //     if (this.state[person + "edit"]) {
-        //         var foreFromArr = this.state[person +"edit"];
-        //         var newFromArr = [...new Set(foreFromArr.concat(fromArr))];
-        //     }
-        //     this.setState({
-        //         [person + "edit"]: newFromArr || fromArr
-        //     })
-        // }
     }
     reader () {
         var Files = document.getElementById("myFile").files;
@@ -199,25 +145,10 @@ class Tool extends Component {
         trueFiles.forEach((trueFile, index)=> {
             if(trueFile && trueFile.type === "application/json") {
                 var fr=new FileReader();
-                // var that = this;
                 fr.readAsText(trueFile);
                 fr.onload=function(){
                     var obj = JSON.parse(this.result);
                     importObj.push(obj)
-                    // if(obj) {
-                    //     obj = obj.item[0];
-                    //     var name, bodyList,headerList,method,url,paramList,query;
-                    //     name = obj.name;
-                    //     if(name) {
-                    //         query = obj.request.url.query;
-                    //         bodyList= obj.request.body.formdata || [{key: "", value: ""}];
-                    //         headerList = obj.request.header || [{key: "", value: ""}];
-                    //         method = obj.request.method || "GET";
-                    //         url = obj.request.url.raw ? "http://" + obj.request.url.raw : "";
-                    //         paramList = query ? query : [{key: "", value: ""}];
-                    //     }
-                    //     that.addCaseState(name, bodyList,headerList,method,url,paramList);
-                    // }
                 };
             }else {
                 alert("file type not match")
@@ -254,17 +185,6 @@ class Tool extends Component {
         this.setState({
             saveFrame: false
         });
-        // var rootObj = {
-        //     info: {
-        //         "_postman_id": "aa2e99c6-aa0f-4bcc-9d6a-2a0e3ce86e05",
-        //         "name": name,
-        //         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-        //     },
-        //     item: [{
-        //         name: name,
-        //         item: this.state.importObj.item
-        //     }]
-        // }
     }
     taskPlay (e) {
         var flag = $(e.target).css("color");
@@ -301,40 +221,22 @@ class Tool extends Component {
         var flag = this.state.showPeople;
         if (flag) {
             this.props.changeShowPeople(false, "","");
-            // this.setState({
-            //     showPeople: false,
-            //     auth: "",
-            //     pathArr: ""
-            // })
         }else {
             this.props.changeShowPeople(true, auth,pathArr);
-            // this.setState({
-            //     showPeople: true,
-            //     auth: auth,
-            //     pathArr: pathArr
-            // })
         }
     }
     addTaskItem(e) {
         var itemName, addedItem, index;
-        // var task_runner = this.state.task_runner;
-        // console.log(task_runner)
-        // var taskN = this.state.taskName;
-        // var Tlen = taskN.length;
-        // var taskName = taskN[Tlen];
         if (e.target.nodeName.toLowerCase() === "i") {
             itemName = $(e.target).parent().attr("title");
             if ($(e.target).css("color") === "rgb(0, 0, 0)") {
                 //new add
-                // task_runner[taskName].path.push(itemName);
-                // console.log(task_runner)
                 addedItem = this.state.addedItem || [];
                 addedItem.push(itemName);
                 this.setState({
                     addedItem: addedItem
                 });
                 $(e.target).css({"color": "white"});
-                // this.props.taskRunnerChange(task_runner);
             }else {
                 // remove item
                 addedItem = this.state.addedItem || [];
@@ -351,15 +253,12 @@ class Tool extends Component {
             var elementI = $(e.target).find("i");
             if (elementI.css("color") === "rgb(0, 0, 0)") {
                 //new add
-                // task_runner[taskName].path.push(itemName);
-                // console.log(task_runner)
                 addedItem = this.state.addedItem || [];
                 addedItem.push(itemName);
                 this.setState({
                     addedItem: addedItem
                 });
                 elementI.css({"color": "white"});
-                // this.props.taskRunnerChange(task_runner);
             }else {
                 // remove item
                 addedItem = this.state.addedItem || [];
@@ -419,6 +318,11 @@ class Tool extends Component {
         }
         var task_runner = this.state.task_runner;
         delete task_runner[remvname];
+        this.setState({
+            taskContent: [],
+            taskUid: "",
+            taskContFlag: false
+        });
         this.props.taskRunnerChange(task_runner);
     }
     showTaskList (e) {
@@ -430,8 +334,6 @@ class Tool extends Component {
                 width:null
             })
         }else {
-            // var pwidth = width + 169 * 3;
-            // $(".pathPanel").css({"max-width": pwidth +"px"});
             this.setState({
                 height: height,
                 width: width
@@ -463,7 +365,6 @@ class Tool extends Component {
             // 激活
             // state ， json
             task_runner[taskName].path.push(path);
-            // console.log(task_runner)
             $(e.target).css({"color": "white"});
             this.props.taskRunnerChange(task_runner);
         }else {
@@ -516,9 +417,6 @@ class Tool extends Component {
         }
         var width = $(".path-list").width();
         var height = $(".path-list").height();
-        // var pwidth = width + 160 * 3;
-        // $(".pathPanel").css({"max-width": pwidth +"px"})
-
         this.setState({
             ...obj,
             task_runner: task_runner,
@@ -551,23 +449,7 @@ class Tool extends Component {
     render () {
         // console.log("Tool")
         var task_runner = this.state.task_runner;
-        // var shareFlag = this.state.share;
-        var shareList = this.props.caseList.share;
-        // console.log(this.props.caseList)
-        // var shareArr = shareList.map((ele, index)=> {
-        //     var rarr = ele.item[0].r;
-        //     var warr = ele.item[1].w;
-        //     return (<div key={index}>
-        //         <div className="shareDiv" onClick={this.showShareUl}>{ele.name}</div>
-        //         <ul className="shareUl"><div className="sureShare" affix={ele.name} onClick={this.sureShare}>确定</div>
-        //             <List per={this.props.per} rarr={rarr} warr={warr} shareEdit={this.shareEdit} shareEye={this.shareEye} person={ele.name} fromShare="fromShare" caseList={this.props.caseList}></List></ul>
-        //     </div>)
-        // });
-
         var taskN = this.state.taskName; // []
-        var taskArr = "";
-        var width = this.state.width;
-        var height = this.state.height;
         var taskPathArr = this.state.taskPathArr;
         var taskArr = taskN.map((ele, index)=> {
             var checkedAPI = task_runner[ele];
@@ -578,31 +460,6 @@ class Tool extends Component {
 
             </ul>
         });
-        // if (width) {
-        //     taskArr = taskN.map((ele, index)=> {
-        //         var checkedAPI = task_runner[ele];
-        //         var uuid = checkedAPI.taskUuid;
-        //         var checkedPathArr = checkedAPI.path;
-                var checklist = taskPathArr.map((ele, index) => {
-                    // if (checkedPathArr.indexOf(ele) === -1) {
-                    //     // 不存在 未勾选
-                        return (<li key={index} className={ele}><i className="glyphicon glyphicon-ok-sign"></i></li>);
-                    // }else {
-                    //     return (<li key={index} className={ele}><i className="glyphicon glyphicon-ok-sign" style={{color: "white"}}></i></li>);
-                    // }
-                });
-                // console.log(width + index * 125 + "px")
-                // return (<ul key={ele} className={"task-item item" + index} style={{marginLeft: width + index * 168 + "px", marginTop: -height + 30 + "px"}}>
-                //     <ul className="task-name">
-                //         <li className="uuidName">{uuid}</li>
-                //         <li className={ele}><span className="taskname-span">{ele}</span><i style={{color: "white"}} className="glyphicon glyphicon-remove-sign" onClick={this.removeTask}></i><i style={{color: "white"}} className="glyphicon glyphicon-play" onClick={this.taskPlay}></i></li>
-                //     </ul>
-                //     <ul className="check-list" onClick={this.checkAPI}>
-                //         {checklist}
-                //     </ul>
-                // </ul>)
-            // });
-        // }
         var pathList = taskPathArr.map((ele, index)=> {
             var eleArr = ele.split("/");
             eleArr.splice(0, 1);
@@ -626,10 +483,6 @@ class Tool extends Component {
                         {this.state.taskFlag ? <div className="pathPanel" onClick={this.hideTask}>
                             <ul className="new-task">
                                 <ul className="path-list">
-                                    {/*<ul className="task-nav">*/}
-                                        {/*<li onClick={this.newTask}>新建</li>*/}
-                                        {/*<li onClick={this.showTaskList}>查看任务列表</li>*/}
-                                    {/*</ul>*/}
                                         <li className="apilistName">接口列表</li>
                                         <ul className="task-list">
                                             {pathList}

@@ -191,7 +191,6 @@ class VarSet extends Component {
     }
     inputBlur (e) {
         $(e.target).css({display: "none"});
-        // $(e.target).parent().find(".varname").text($(e.target).val());
         $(e.target).parent().find(".varname").css({display: "inline-block"});
     }
     reader () {
@@ -286,10 +285,6 @@ class VarSet extends Component {
                 return;
             }
         }
-        // varList.push({
-        //     name: name,
-        //     values:
-        // })
     }
     addVarLine (e) {
         // button add
@@ -323,7 +318,6 @@ class VarSet extends Component {
                 from: "self-added"
             }
         });
-        // console.log(this.state)
     }
     sureAdd(e) {
         e.stopPropagation();
@@ -442,7 +436,6 @@ class VarSet extends Component {
                         {this.state.tableShow ? "" : (<button className="varBtn btn" onClick={this.addVar}>新增环境</button>)}
                         {this.state.tableShow ? (<button className="varBtn btn" onClick={this.saveThisSingle}>保存这个</button>) : ""}
                         {this.state.tableShow ? (<button className="varBtn btn" onClick={this.addVarLine}>再来一行</button>) : ""}
-                        {/*{this.state.tableShow ? (<button className="varBtn btn" onClick={this.updateVar}>保存</button>) : ""}*/}
                         {this.state.tableShow ? "" : (<div className="varBtn">
                             <button className="btn" id="chooseVar" onClick={this.ImportBtn}>导入新的</button>
                             <input style={{display:"none"}} type="file" accept=".json" multiple id="varFile" onChange={this.reader}/>

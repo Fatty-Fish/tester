@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import $ from "jquery";
 import axios from "axios";
-import ShareForm from "./ShareForm"
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
@@ -31,7 +30,6 @@ import "../css/List.css";
                             if (ulclass === "shareUl") {
                                 var ul  = $(pthis).parent().parent();
                                 ul.css({display: "none"});
-                                // ul.parent().parent().css({display: "none"});
                             }
                         }
                     };
@@ -42,9 +40,6 @@ import "../css/List.css";
         }
     })
 })($);
-
-
-// $(".list").myDrag("hhh");
 
 class List extends Component {
     constructor (props) {
@@ -58,7 +53,6 @@ class List extends Component {
         this.renameFn = this.renameFn.bind(this);
         this.inputName = this.inputName.bind(this);
         this.inputBlur = this.inputBlur.bind(this);
-        // this.acCaseFn = this.acCaseFn.bind(this);
         this.exportFn = this.exportFn.bind(this);
 
         this.renameDir = this.renameDir.bind(this);
@@ -71,145 +65,41 @@ class List extends Component {
         this.showShare = this.showShare.bind(this);
         this.shareEye = this.shareEye.bind(this);
         this.shareEdit = this.shareEdit.bind(this);
-        // this.leaveShare = this.leaveShare.bind(this);
     }
-    // leaveShare (e) {
-    //     var pclass = $(e.target).parent().attr("class");
-    //     if (pclass === "shareUl") {
-    //         var ppdiv = $(e.target).parent().parent();
-    //         ppdiv.find(".shareUl").css({display: "none"});
-    //         ppdiv.parent().css({display: "none"})
-    //     }
-    // }
     shareEye (e) {
-        // var person =
         // console.log(this.props.shareList);
         e.stopPropagation();
         var oUl = $(e.target).parent().parent().parent();
         // 点击文件夹
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "div") {
-            // console.log($(e.target).css("color"))
-            // if ($(e.target).css("color") === "rgb(69, 66, 66)") {
-                // 变为白色
-                // console.log()
-                // oUl.find(".glyphicon-eye-open").css({color: "white"});
-                // var ulArr = Array.prototype.slice.call(oUl.parent().children().find(".glyphicon-eye-open"), 0);
-                // var arr = ulArr.filter((ele, index)=>{
-                //     if (index > 0) {
-                //         return $(ele).css("color") === "rgb(69, 66, 66)"
-                //     }
-                // });
-                // if (arr.length === 0) {
-                //     oUl.parent().find(".glyphicon-eye-open").css({color: "white"});
-                // }
                 var liArr = Array.prototype.slice.call(oUl.find("li"), 0);
                 var itemArr = [];
                 liArr.forEach((ele, index)=> {
-                    itemArr.push($(ele).attr("from"));
+                    itemArr.push($(ele).attr("title"));
                 });
-                itemArr.push($(e.target).parent().parent().attr("from"));
-
-                // this.props.showPeople(itemArr, "eye");
+                itemArr.push($(e.target).parent().parent().attr("title"));
 
                 this.props.shareEye(itemArr, this.props.person);
-            // }else {
-                // 变为灰色
-                // oUl.find(".glyphicon-eye-open").css({color: "#454242"});
-                //  if (oUl.parent().children("ul").length === 1) {
-                //      oUl.parent().children("div").find(".glyphicon-eye-open").css({color: "#454242"})
-                //  }
-                // var disliArr = Array.prototype.slice.call(oUl.find("li"), 0);
-                // var disitemArr = [];
-                // disliArr.forEach((ele, index)=> {
-                //     disitemArr.push($(ele).attr("from"));
-                // });
-                // disitemArr.push($(e.target).parent().parent().attr("from"));
-                // this.props.shareEye(disitemArr , this.props.person, "dis");
-            // };
         }
         // 点击文件
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "li") {
-            var eyeArr,EyeArr, grayEye;
-            // if ($(e.target).css("color") === "rgb(69, 66, 66)") {
-                // $(e.target).css({color: "white"});
-                // eyeArr = $(e.target).parent().parent().parent().find(".glyphicon-eye-open");
-                // EyeArr = Array.prototype.slice.call(eyeArr, 0);
-                // grayEye = EyeArr.filter((ele, index)=> {
-                //     if (index > 0) {
-                //         return $(ele).css("color") === "rgb(69, 66, 66)"
-                //     }
-                // });
-                // if (grayEye.length > 0) {
-                    this.props.shareEye($(e.target).parent().parent().attr("from"), this.props.person)
-
-                // }else {
-                //     $(e.target).parent().parent().parent().find(".glyphicon-eye-open").css({color: "white"});
-                //     var fileliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"));
-                //     var fileItemArr = [];
-                //     fileliArr.forEach((ele, index)=> {
-                //         fileItemArr.push($(ele).attr("from"));
-                //     });
-                //     this.props.shareEye(fileItemArr, this.props.person)
-                // }
-            // }else {
-            //     $(e.target).css({color: "#454242"});
-            //     $(e.target).parent().parent().parent().children(":first").find(".glyphicon-eye-open").css({color: "#454242"});
-            //     this.props.shareEye($(e.target).parent().parent().attr("from"), this.props.person, "dis")
-            // }
+            this.props.shareEye($(e.target).parent().parent().attr("title"), this.props.person)
         }
     }
     shareEdit (e) {
         e.stopPropagation();
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "div") {
-            // if ($(e.target).css("color") === "rgb(168, 168, 168)") {
-                // $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "white"});
                 var liArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"), 0);
                 var itemArr = [];
                 liArr.forEach((ele, index)=> {
-                    itemArr.push($(ele).attr("from"));
+                    itemArr.push($(ele).attr("title"));
                 });
-                itemArr.push($(e.target).parent().parent().attr("from"));
+                itemArr.push($(e.target).parent().parent().attr("title"));
                 this.props.shareEdit(itemArr , this.props.person);
-            // }else {
-                // $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "#a8a8a8"});
-                // var disliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"), 0);
-                // var disitemArr = [];
-                // disliArr.forEach((ele, index)=> {
-                //     disitemArr.push($(ele).attr("from"));
-                // });
-                // disitemArr.push($(e.target).parent().parent().attr("from"));
-                // this.props.shareEdit(disitemArr , this.props.person, "dis");
-            // };
         }
         // 点击文件
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "li") {
-            var eyeArr,EyeArr, grayEye;
-            // if ($(e.target).css("color") === "rgb(168, 168, 168)") {
-                // $(e.target).css({color: "white"});
-                // eyeArr = $(e.target).parent().parent().parent().find(".glyphicon-pencil");
-                // EyeArr = Array.prototype.slice.call(eyeArr, 0);
-                // grayEye = EyeArr.filter((ele, index)=> {
-                //     if (index > 0) {
-                //         return $(ele).css("color") === "rgb(168, 168, 168)"
-                //     }
-                // });
-                // if (grayEye.length > 0) {
-                    this.props.shareEdit($(e.target).parent().parent().attr("from"), this.props.person)
-                //
-                // }else {
-                //     $(e.target).parent().parent().parent().find(".glyphicon-pencil").css({color: "white"});
-                //     var fileliArr = Array.prototype.slice.call($(e.target).parent().parent().parent().find("li"));
-                //     var fileItemArr = [];
-                //     fileliArr.forEach((ele, index)=> {
-                //         fileItemArr.push($(ele).attr("from"));
-                //     });
-                //     this.props.shareEdit(fileItemArr, this.props.person)
-                // }
-            // }else {
-            //     $(e.target).css({color: "#a8a8a8"});
-                // $(e.target).parent().parent().parent().children(":first").find(".glyphicon-pencil").css({color: "#a8a8a8"});
-                // this.props.shareEdit($(e.target).parent().parent().attr("from"), this.props.person, "dis")
-            // }
+            this.props.shareEdit($(e.target).parent().parent().attr("title"), this.props.person)
         }
     }
     findPath (oDiv, str) {
@@ -224,14 +114,14 @@ class List extends Component {
         var oDiv = $(e.target).parent();
         var str = "";
         str = this.findPath(oDiv, str);
-        var from = oDiv.attr("from");
+        var from = oDiv.attr("title");
         $(".save-wrapper .list").find(".activeDir").removeClass("activeDir");
         oDiv.find(".glyphicon-saved").addClass("activeDir");
         this.props.activeDir(str, from)
     }
     deleteFn (e) {
         var name = $(e.target).parent().attr("unique");
-        var from = $(e.target).parent().attr("from");
+        var from = $(e.target).parent().attr("title");
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
@@ -249,7 +139,7 @@ class List extends Component {
             var span = parent.find(".content");
             span.css({"visibility": "hidden"});
             renameInput.css({"visibility": "visible"});
-            this.props.acName(parent.attr("unique"), parent.attr("from"));
+            this.props.acName(parent.attr("unique"), parent.attr("title"));
         }
     }
     inputName (e) {
@@ -257,7 +147,7 @@ class List extends Component {
         e.stopPropagation();
         var val = e.target.value;
         var name = $(e.target).parent().attr("unique");
-        var from = $(e.target).parent().attr("from");
+        var from = $(e.target).parent().attr("title");
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
@@ -277,7 +167,7 @@ class List extends Component {
         e.stopPropagation();
         if(e.target.className === "glyphicon glyphicon-download-alt") {
             var name = $(e.target).parent().attr("unique");
-            var from = $(e.target).parent().attr("from");
+            var from = $(e.target).parent().attr("title");
             var fromSave = this.props.fromSave;
             var fromShare = this.props.fromShare;
             if (!fromSave && !fromShare) {
@@ -287,7 +177,7 @@ class List extends Component {
     }
     deleteDirFn(e) {
         var name = $(e.target).parent().find("span").text();
-        var from = $(e.target).parent().attr("from");
+        var from = $(e.target).parent().attr("title");
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
@@ -311,7 +201,7 @@ class List extends Component {
         e.stopPropagation();
         var val = e.target.value;
         var name = $(e.target).prev().text();
-        var from = $(e.target).parent().attr("from");
+        var from = $(e.target).parent().attr("title");
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
@@ -327,17 +217,11 @@ class List extends Component {
         span.css({"visibility": "visible"});
         $(e.target).css({"visibility": "hidden"});
     }
-    // acCaseFn (e) {// 没用
-    //     if ($(e.target).hasClass("outer")) {
-    //         // 防止li和i冒泡上来的事件***
-    //         this.props.acCaseFn($(e.target).index());
-    //     }
-    // }
     exportDirFn (e) {
         e.preventDefault();
         e.stopPropagation();
         var name = $(e.target).parent().find("span").text();
-        var from = $(e.target).parent().attr("from");
+        var from = $(e.target).parent().attr("title");
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
@@ -371,9 +255,9 @@ class List extends Component {
             var w = this.props.warr ? this.props.warr.indexOf(name)>= 0 ? true : false : "";
             var temp = this.renderListFn(list.item, list.info.name, r, w);
             return (<ul key={name}>
-                <div onClick={this.showChildren} from={name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{list.info.name}</span><input
+                <div onClick={this.showChildren} title={name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{list.info.name}</span><input
                     type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={list.info.name}/>{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> : ""}{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i> : ""}
-                    {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: r||w ? "white" : "#454242"}} from={name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: w ? "white" : "#454242"}} from={name} onClick={this.shareEdit}></i></div>) : ""}</div>
+                    {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: r||w ? "white" : "#454242"}} title={name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: w ? "white" : "#454242"}} title={name} onClick={this.shareEdit}></i></div>) : ""}</div>
                 {temp}
             </ul>)
         } else if (list.length >= 0){
@@ -384,9 +268,9 @@ class List extends Component {
                     var te = this.renderListFn(ele.item, name + "/" + ele.name, arr||ulr, arw||ulw);
                     // temp
                     return (<ul key={index}>
-                        <div onClick={this.showChildren} from={name + "/" + ele.name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{ele.name}</span><input
+                        <div onClick={this.showChildren} title={name + "/" + ele.name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{ele.name}</span><input
                             type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={ele.name}/>{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> : ""} {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i> : ""}
-                            {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: arr || ulr || ulw ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || ulw ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</div>
+                            {this.props.fromSave ? <i className="glyphicon glyphicon-saved" onClick={this.activeDir}></i> : ""}{this.props.fromShare ? (<div className="dirShare"><i className="glyphicon glyphicon-eye-open" style={{color: arr || ulr || ulw ? "white" : "#454242"}} title={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || ulw ? "white" : "#454242"}} title={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</div>
                         {te}
                     </ul>)
                 }else if (ele.request) {
@@ -394,8 +278,8 @@ class List extends Component {
                     // console.log(ele.name);
                     var r = this.props.rarr ? this.props.rarr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
                     var w = this.props.rarr ? this.props.warr.indexOf(name + "/" + ele.name) >= 0 ? true : false : "";
-                    return (<li onClick={this.clickLi} from={name + "/" + ele.name} unique={ele.name} key={index} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
-                        type="text" className="renameInput" onChange={this.inputName} onBlur={this.inputBlur} value={ele.name}/> {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteFn}></i> : ""} {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportFn}></i> : ""}{this.props.fromShare ? (<div><i className="glyphicon glyphicon-eye-open" style={{color:  arr || r||w ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || w ? "white" : "#454242"}} from={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</li>)
+                    return (<li onClick={this.clickLi} title={name + "/" + ele.name} unique={ele.name} key={index} className="outer"><span className="content" onDoubleClick={this.renameFn}>{ele.name}</span><input
+                        type="text" className="renameInput" onChange={this.inputName} onBlur={this.inputBlur} value={ele.name}/> {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteFn}></i> : ""} {!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportFn}></i> : ""}{this.props.fromShare ? (<div><i className="glyphicon glyphicon-eye-open" style={{color:  arr || r||w ? "white" : "#454242"}} title={name + "/" + ele.name} onClick={this.shareEye}></i><i className="glyphicon glyphicon-pencil" style={{color: arw || w ? "white" : "#454242"}} title={name + "/" + ele.name} onClick={this.shareEdit}></i></div>) : ""}</li>)
                 }
             });
             return tem
@@ -405,26 +289,29 @@ class List extends Component {
     }
     clickLi(e) {
         // 每次点击li，请求服务器最新数据
-        var fromSave = this.props.fromSave;
-        var fromShare = this.props.fromShare;
-        if (!fromSave && !fromShare) {
-            var target = e.target;
-            axios({
-                method: "get",
-                url: "/new",
-                params: {
-                    person: this.props.per
-                },
-                contentType:"application/json",
-            }).then((res)=> {
-                // this.props.refresh(JSON.parse(res.data));
-                this.props.refresh(res.data)
-                if (target.className === "outer") {
-                    this.props.acName($(target).attr("unique"), $(target).attr("from"));
-                }else if (target.className === "content") {
-                    this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("from"));
-                }
-            });
+        // 阻止冒泡泡
+        if (e.target.nodeName.toLowerCase() !== "i") {
+            var fromSave = this.props.fromSave;
+            var fromShare = this.props.fromShare;
+            if (!fromSave && !fromShare) {
+                var target = e.target;
+                axios({
+                    method: "get",
+                    url: "/new",
+                    params: {
+                        person: this.props.per
+                    },
+                    contentType:"application/json",
+                }).then((res)=> {
+                    // this.props.refresh(JSON.parse(res.data));
+                    this.props.refresh(res.data);
+                    if (target.className === "outer") {
+                        this.props.acName($(target).attr("unique"), $(target).attr("title"));
+                    }else if (target.className === "content") {
+                        this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("title"));
+                    }
+                });
+            }
         }
     }
     showShare (e) {
@@ -433,7 +320,7 @@ class List extends Component {
         if (! this.props.fromShare) {
             var per = $(e.target).parent().find(".content").text();
             var path = $(e.target).text();
-            var auth = $(e.target).attr("auth");
+            var auth = $(e.target).attr("title");
             axios({
                 method: "get",
                 url: "/new",
@@ -451,7 +338,7 @@ class List extends Component {
     renderShareFn (shared, share) {
         var shareList =  shared.map((ele, index)=> {
             var itemlist = ele.item.map((prop, num)=> {
-                return (<li onClick={this.showShare} className="outer" key={num} auth={prop.auth}>{prop.path}</li>)
+                return (<li onClick={this.showShare} className="outer" key={num} title={prop.auth}>{prop.path}</li>)
             });
             return (<ul key={index}>
                 <div onClick={this.showChildren} className="glyphicon glyphicon-triangle-right"><span className="content">{ele.name}</span>
@@ -467,9 +354,6 @@ class List extends Component {
     }
     componentDidMount() {
         $(".resize").myDrag("hhh");
-    }
-    componentWillReceiveProps(nextProps, nextContext) {
-
     }
 
     render (){

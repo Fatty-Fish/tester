@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import $ from "jquery";
-
 
 import 'bootstrap/dist/js/bootstrap.js';
 import 'bootstrap/dist/css/bootstrap.css';

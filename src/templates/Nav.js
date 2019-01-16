@@ -22,18 +22,6 @@ class Nav extends Component {
             this.props.acCaseFn($(e.target).index(), $(e.target).attr("from"));
         }
     }
-
-    // shouldComponentUpdate(nextProps, nextState, nextContext) {
-       //  var nextStr = nextProps.caseList.toString();
-       //  var Str = this.props.caseList.toString();
-       //  console.log(nextStr, Str)
-       // if (nextStr === Str && nextProps.activeCase === this.props.activeCase) {
-       //     return false;
-       // }
-        // console.log(nextProps.caseList);
-        // console.log(this.props.caseList);
-        // return true
-    // }
     render () {
         // console.log("Nav")
         var activeCase = this.props.activeCase;
