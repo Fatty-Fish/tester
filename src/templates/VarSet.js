@@ -80,7 +80,7 @@ class VarSet extends Component {
         e.stopPropagation();
         var val = $(e.target).val();
         // values index
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var name = this.state.varName;
         var newVar = this.findVar(name);
         newVar.values[index].key = val;
@@ -90,7 +90,7 @@ class VarSet extends Component {
         e.stopPropagation();
         var val = $(e.target).val();
         // values index
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var name = this.state.varName;
         var newVar = this.findVar(name);
         newVar.values[index].value = val;
@@ -98,7 +98,7 @@ class VarSet extends Component {
     }
     cancelForward (e) {
         e.stopPropagation();
-        var from = $(e.target).attr("posi");
+        var from = $(e.target).attr("title");
         if (from === "table") {
             this.setState({
                 tableShow: false
@@ -110,7 +110,7 @@ class VarSet extends Component {
     }
     enterVar (e) {
         if(e.target.nodeName.toLowerCase() === "li") {
-            var varName = $(e.target).attr("varname");
+            var varName = $(e.target).attr("title");
             this.setState({
                 tableShow: true,
                 varName: varName
@@ -129,7 +129,7 @@ class VarSet extends Component {
         }
     }
     shareVar (e) {
-        var varNm = $(e.target).parent().attr("varName");
+        var varNm = $(e.target).parent().attr("title");
         var variable = this.findVar(varNm);
         variable.name = "person0-" + variable.name;
         axios({
@@ -145,13 +145,13 @@ class VarSet extends Component {
         })
     }
     downloadVar (e) {
-        var varNm = $(e.target).parent().attr("varName");
+        var varNm = $(e.target).parent().attr("title");
         var obj = this.findVar(varNm);
         var blob = new Blob([JSON.stringify(obj, null, 4)]);
         saveAs(blob, "person0-" + varNm + ".json");
     }
     removeVar (e) {
-        var varNm = $(e.target).parent().attr("varName");
+        var varNm = $(e.target).parent().attr("title");
         var index = this.findVarIndex(varNm);
         this.props.removeVar(index);
         var varSet = this.props.varList;
@@ -166,7 +166,7 @@ class VarSet extends Component {
         e.stopPropagation();
         $(e.target).parent().find("input").css({display: "inline-block"});
         $(e.target).css({display: "none"});
-        var foreName = $(e.target).parent().attr("varName");
+        var foreName = $(e.target).parent().attr("title");
         var index = this.findVarIndex(foreName);
         this.setState({
             changeIndex: index
@@ -218,7 +218,7 @@ class VarSet extends Component {
     }
     disableVar (e) {
         e.stopPropagation();
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var name = this.state.varName;
         var newVar = this.findVar(name);
         var color = $(e.target).css("color");
@@ -232,7 +232,7 @@ class VarSet extends Component {
     }
     disableaddVar (e) {
         e.stopPropagation();
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var newVar = this.state.variable;
         var color = $(e.target).css("color");
         if (color === "rgb(255, 255, 255)") {
@@ -249,7 +249,7 @@ class VarSet extends Component {
         e.stopPropagation();
         var val = $(e.target).val();
         // values index
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var newVar = this.state.variable;
         newVar.values[index].key = val;
         this.setState({
@@ -260,7 +260,7 @@ class VarSet extends Component {
         e.stopPropagation();
         var val = $(e.target).val();
         // values index
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var newVar = this.state.variable;
         newVar.values[index].value = val;
         this.setState({
@@ -268,7 +268,7 @@ class VarSet extends Component {
         })
     }
     minaddVarLine (e) {
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var newVar = this.state.variable;
         newVar.values.splice(index, 1);
         this.setState({
@@ -303,7 +303,7 @@ class VarSet extends Component {
     }
     minVarLine (e) {
         // i min
-        var index = $(e.target).parent().parent().attr("var");
+        var index = $(e.target).parent().parent().attr("title");
         var name = this.state.varName;
         var newVar = this.findVar(name);
         newVar.values.splice(index, 1);
@@ -359,7 +359,7 @@ class VarSet extends Component {
                 }
             }
             var varTrCont = varTr.map((ele, index)=> {
-                return (<tr key={index} var={index}>
+                return (<tr key={index} title={index}>
                     <td className="btn"><i className="glyphicon glyphicon-ok" style={{color: ele.enabled || ele.enable? "white" : "#767676"}} onClick={this.disableVar}></i></td>
                     <td><input className="form-control" type="text" onChange={this.changeVarKey} value={ele.key}/></td>
                     <td><input className="form-control" type="text" onChange={this.changeVarValue} value={ele.value}/></td>
@@ -368,13 +368,13 @@ class VarSet extends Component {
             })
         }
         var varsetoutRender = varSet.map((ele, index)=> {
-            return (<li className="outVar" varname={ele.name} onClick={this.enterVar} key={index}><span className="varfrom">{"from " + ele.from}</span><span className="varname" onDoubleClick={this.changeVarName}>{ele.name}</span><input
+            return (<li className="outVar" title={ele.name} onClick={this.enterVar} key={index}><span className="varfrom">{"from " + ele.from}</span><span className="varname" onDoubleClick={this.changeVarName}>{ele.name}</span><input
                 type="text" style={{display: "none"}} value={ele.name} onBlur={this.inputBlur} onChange={this.inputName}/><i className="glyphicon glyphicon-share" onClick={this.shareVar}></i><i className="glyphicon glyphicon-save-file" onClick={this.downloadVar}></i><i className="glyphicon glyphicon-remove" onClick={this.removeVar}></i></li>)
         });
         var newVariable = this.state.variable;
         if (newVariable) {
             newVariable = newVariable.values.map((ele, index) => {
-                return (<tr key={index} var={index}>
+                return (<tr key={index}>
                     <td className="btn"><i className="glyphicon glyphicon-ok"
                                            style={{color: ele.enabled || ele.enable ? "white" : "#767676"}}
                                            onClick={this.disableaddVar}></i></td>
@@ -440,7 +440,7 @@ class VarSet extends Component {
                             <button className="btn" id="chooseVar" onClick={this.ImportBtn}>导入新的</button>
                             <input style={{display:"none"}} type="file" accept=".json" multiple id="varFile" onChange={this.reader}/>
                         </div>)}
-                        <button className="varBtn btn" posi={this.state.tableShow ? "table" : "varset"} onClick={this.cancelForward}>返回</button>
+                        <button className="varBtn btn" title={this.state.tableShow ? "table" : "varset"} onClick={this.cancelForward}>返回</button>
                     </div>
                 </div>
             </div>

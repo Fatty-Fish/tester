@@ -365,6 +365,7 @@ class Case extends Component {
                 }
             }
         };
+        console.log(url)
         axios({
             method: "post",
             url: "/",
@@ -743,7 +744,6 @@ class Case extends Component {
     };
     componentWillMount() {
         var varSelect = this.props.caseRender.valSelect;
-
         var plen = this.props.caseRender.paramList.length - 1;
         var hlen = this.props.caseRender.headersList.length - 1;
         var blen = this.props.caseRender.bodyList.length - 1;
@@ -756,16 +756,16 @@ class Case extends Component {
         if(JSON.stringify(this.props.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
             this.props.caseRender.bodyList.push({key: "", value: ""})
         }
-        axios({
-            method: "get",
-            url: "/new",
-            params: {
-                person: this.props.per
-            },
-            contentType:"application/json",
-        }).then((res)=> {
-            var caseList = res.data;
-
+        // axios({
+        //     method: "get",
+        //     url: "/new",
+        //     params: {
+        //         person: this.props.per
+        //     },
+        //     contentType:"application/json",
+        // }).then((res)=> {
+        //     var caseList = res.data;
+            var caseList = this.props.caseList;
             var variable = caseList.variable;
             var len = variable.length;
             var index;
@@ -787,7 +787,7 @@ class Case extends Component {
                 text_val: this.props.preText,
                 textTest_val: this.props.testText
             });
-        });
+        // });
     }
 
     render () {
@@ -802,6 +802,7 @@ class Case extends Component {
             });
         }
         var seen = this.props.style;
+        // console.log(this.props.caseName)
         var caseNamearr = this.props.caseName.split("/");
         var caseName =caseNamearr[caseNamearr.length - 1];
         if (Number(caseName) || (Number(caseName) == 0)) {
@@ -809,9 +810,10 @@ class Case extends Component {
         }else if (caseName === "r" || caseName === "w") {
             caseNamearr.splice(caseNamearr.length - 1, 1);
             caseName = caseNamearr.join("/")
-        }else {
-            caseName = this.props.caseName;
         }
+        // else {
+        //     caseName = this.props.caseName;
+        // }
         var method,url,raw,disparamList,paramsList,len,paramStr,headersShow,bodyShow,paramShow,preScriptShow, testScriptShow,headerFlag,disHeader,HeadersList,
             bodyFlag,disBody,BodyList,paramFlag,disParam,ParamList;
              method = this.props.caseRender.method;

@@ -616,7 +616,9 @@ class App extends Component {
             }
         }
     whetherSave (name, from) {
-            var forsure = window.confirm("是否保存对" + name + "的更改?");
+            var tochangeArr = name.split("/");
+            var tochangeName = tochangeArr[tochangeArr.length - 1]
+            var forsure = window.confirm("是否保存对" + tochangeName + "的更改?");
             if(forsure) {
                 var casefromList = this.state.caseList;
                 this.changeFarm(casefromList[from], from, name);
@@ -780,19 +782,21 @@ class App extends Component {
     }
     // 删除文件夹
     delDirFn (name, from) {
-        var forsure = window.confirm("是否真的删除" + (from + "/" + name) + "文件夹？");
+      console.log(name, from)
+        var forsure = window.confirm("是否真的删除" + name + "文件夹？");
         if(forsure) {
             var caseList = this.state.caseList;
             var fromArr = from.split("/");
-            // console.log(fromArr[0])// haiaaaa
+            // console.log(fromArr)// haiaaaa
             var caselist;
             for (var prop in caseList) {
                 if (prop !== "shared" && prop !== "share" && prop !== "variable" && prop !== "task_runner") {
-                    if (caseList[prop].info.name === fromArr[0]) {
+                    if (prop === fromArr[0]) {
                         caselist = caseList[prop];
                         var activelist = this.state.activeCase;
                         // var activeindex = this.state.activeIndex;
                         if (caselist.info.name === name) {
+                            //删除顶层文件夹
                             delete caseList[fromArr[0]];
                             activelist = activelist.filter((ele, index)=> {
                                 var arr = ele.split("/")[0];
@@ -809,12 +813,22 @@ class App extends Component {
                                 caseStore: caseStore
                             });
                         } else {
+                            console.log(this.state.activeCase);
+                            console.log(from)
                             caseList[prop].item = this.deleteDirFn(caselist.item, name, from);
                             caseStore = this.caseStoreFn(caseList);
-                            this.setState({
-                                caseList: caseList,
-                                caseStore: caseStore
-                            })
+                            // 更新activeCase
+                            var acLen = activelist.length;
+                            for (var i = 0; i < acLen; i++) {
+                                if (activelist[i].indexOf(from) === 0) {
+                                    this.changeActiveCase(i);
+                                }
+                            }
+                            this.refresh(caseList)
+                            // this.setState({
+                            //     caseList: caseList,
+                            //     caseStore: caseStore
+                            // })
                         }
                         axios({
                             url: "/surechange",
@@ -959,9 +973,10 @@ class App extends Component {
         var activeCase = this.state.activeCase;
         var acIndex = this.state.activeIndex;
         activeCase[acIndex] = newNameStr;
+        this.refresh(caselist);
         this.setState({
-            caseStore: store,
-            caseList: caselist,
+            // caseStore: store,
+            // caseList: caselist,
             activeCase: activeCase
         })
     }
@@ -989,6 +1004,7 @@ class App extends Component {
     renameDirFn(name, newName, from) {
       var fromArr = from.split("/");
       var arr = this.state.caseList[fromArr[0]];
+      console.log(fromArr[0])
         var arrList = this.state.caseList;
         var newArr;
         if (arr.info.name === name) {
@@ -1026,10 +1042,11 @@ class App extends Component {
                 //
             }
         });
-        this.setState({
-            caseList: arrList,
-            // caseStore: caseStore
-        })
+        this.refresh(arrList);
+        // this.setState({
+        //     caseList: arrList,
+        //     // caseStore: caseStore
+        // })
     }
     acCaseFn (index) {
         this.setState({
@@ -1391,6 +1408,7 @@ class App extends Component {
     changeAcName(name, from, auth) {
       var newActiveCase = this.state.activeCase;
       var acSet = new Set(newActiveCase);
+      // 增加case ，case会再次请求
       if (acSet.has(from)) {
           var index = newActiveCase.indexOf(from);
           this.setState({
@@ -1408,7 +1426,8 @@ class App extends Component {
     }
     storeChange (obj, newObj, prop) {
         if (obj.info) {
-            this.storeChange(obj.item, newObj, obj.info.name);
+            // this.storeChange(obj.item, newObj, obj.info.name);
+            this.storeChange(obj.item, newObj, prop);
         }else if (JSON.stringify(obj) !== "{}") {
             obj.map((ele)=> {
                 if(ele.item) {
@@ -1694,7 +1713,8 @@ class App extends Component {
             if (prop !== "shared" && prop !== "share" && prop !== "variable" && prop !== "task_runner") {
                 var obj = {};
                 this.storeChange(arr[prop], obj, prop);
-                newObj[arr[prop].info.name] = obj
+                // newObj[arr[prop].info.name] = obj
+                newObj[prop] = obj;
             }
         }
         var newCase = this.state.caseStore.newCase || {};
@@ -1705,7 +1725,8 @@ class App extends Component {
     }
     refresh (arr) {
       var caseStore = this.caseStoreFn(arr);
-      delete arr.variable;
+      // 不用删除variable
+      // delete arr.variable;
       this.setState({
             person: this.props.per,
             caseList: arr,
@@ -1777,7 +1798,6 @@ class App extends Component {
     }
 
     render() {
-      // console.log(this.state);
         var taskPathArr = [];
         var shareList = this.state.caseList.share;
         var caseStore = this.state.caseStore;
@@ -1807,7 +1827,7 @@ class App extends Component {
                     var pre = this.state.preText;
                     var test = this.state.testText;
                 return acIndex === index ? (
-                    <Case per={this.props.per} preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} changeSelfVar={this.changeSelfVar} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
+                    <Case per={this.props.per} preText={pre ? pre[ele] : ""} testText={test ? test[ele] : ""} changeSelfVar={this.changeSelfVar} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseList={this.state.caseList} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele} style={true}>
                     </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele}>
                 </Case>)
             });

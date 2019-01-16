@@ -202,6 +202,7 @@ class List extends Component {
         var val = e.target.value;
         var name = $(e.target).prev().text();
         var from = $(e.target).parent().attr("title");
+        console.log(from)
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
@@ -253,7 +254,8 @@ class List extends Component {
         if (list.info) {
             var r = this.props.rarr ? this.props.rarr.indexOf(name)>= 0 ? true : false : "";
             var w = this.props.warr ? this.props.warr.indexOf(name)>= 0 ? true : false : "";
-            var temp = this.renderListFn(list.item, list.info.name, r, w);
+            // var temp = this.renderListFn(list.item, list.info.name, r, w);
+            var temp = this.renderListFn(list.item, name, r, w);
             return (<ul key={name}>
                 <div onClick={this.showChildren} title={name} className="glyphicon glyphicon-triangle-right"><span onClick={this.renameDir} className="content">{list.info.name}</span><input
                     type="text" className="dirInput" onChange={this.inputDirName} onBlur={this.inputDirBlur} value={list.info.name}/>{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-trash" onClick={this.deleteDirFn}></i> : ""}{!this.props.fromShare && !this.props.fromSave ? <i className="glyphicon glyphicon-download-alt" onClick={this.exportDirFn}></i> : ""}
