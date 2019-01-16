@@ -365,7 +365,6 @@ class Case extends Component {
                 }
             }
         };
-        console.log(url)
         axios({
             method: "post",
             url: "/",
@@ -756,6 +755,7 @@ class Case extends Component {
         if(JSON.stringify(this.props.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
             this.props.caseRender.bodyList.push({key: "", value: ""})
         }
+        // 同步了App组件，不用再次请求
         // axios({
         //     method: "get",
         //     url: "/new",

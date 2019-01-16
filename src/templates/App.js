@@ -782,7 +782,6 @@ class App extends Component {
     }
     // 删除文件夹
     delDirFn (name, from) {
-      console.log(name, from)
         var forsure = window.confirm("是否真的删除" + name + "文件夹？");
         if(forsure) {
             var caseList = this.state.caseList;
@@ -813,8 +812,6 @@ class App extends Component {
                                 caseStore: caseStore
                             });
                         } else {
-                            console.log(this.state.activeCase);
-                            console.log(from)
                             caseList[prop].item = this.deleteDirFn(caselist.item, name, from);
                             caseStore = this.caseStoreFn(caseList);
                             // 更新activeCase
@@ -1004,7 +1001,6 @@ class App extends Component {
     renameDirFn(name, newName, from) {
       var fromArr = from.split("/");
       var arr = this.state.caseList[fromArr[0]];
-      console.log(fromArr[0])
         var arrList = this.state.caseList;
         var newArr;
         if (arr.info.name === name) {

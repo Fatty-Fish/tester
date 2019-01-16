@@ -202,7 +202,6 @@ class List extends Component {
         var val = e.target.value;
         var name = $(e.target).prev().text();
         var from = $(e.target).parent().attr("title");
-        console.log(from)
         var fromSave = this.props.fromSave;
         var fromShare = this.props.fromShare;
         if (!fromSave && !fromShare) {
