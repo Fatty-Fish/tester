@@ -124,5 +124,6 @@
     "presets": [
       "react-app"
     ]
-  }
+  },
+  "homepage" : "http://Fatty-Fish.github.io/myapp"
 }
