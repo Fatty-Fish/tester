@@ -1,3 +1,59 @@
+# test 接口测试
+## 项目目录解析
+### build
+压缩编译后的文件
+#### static
+压缩编译后的src文件夹的东西
+#### asset-manifest.json 
+静态资源映射
+#### manifest.json
+基本信息
+#### precache-manifest.6cd24037b306b8a18219eace8f77bfdb.js
+离线缓存数据
+#### service-worker.js
+离线缓存。
+### config
+配置文件
+#### configTool
+配置脚本用到的工具函数
+#### jest
+文件转换器，不知道为什么要转换
+#### env.js
+好像是配置环境变量
+#### paths.js
+配置路径
+#### webpack.config.dev.js
+开发环境配置
+#### webpack.config.prod.js
+生产环境配置
+#### webpackDevServer.config.js
+微服务器配置（一个webpack，一个express）
+### node_modules 
+所有node模块依赖的工具包
+### public
+静态资源1
+#### storage
+任务信息(task_uuid.json)，使用者信息(ip+ * .json),(ip_address.json)
+#### test-task
+测试报告
+### scripts
+启动脚本，*** 生产，开发，测试***
+### src                     
+源码资源
+#### css
+#### templates
+#### index.js
+连接HTML和资源脚本
+#### serviceWorker.js
+本地缓存服务
+### .gitignore 文件。
+这个是用来定义那些在提交到git时要忽略的文件
+### package.json
+用来声明项目的各种模块安装版本信息，脚本信息，执行命令等
+### package-lock.json 文件。
+记录当前状态下实际安装的各个npm package的具体来源和版本号。
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
