@@ -33,12 +33,12 @@ App.all("*", function(req, res, next) {             //设置跨域访问
     next();
 });
 App.use(bodyParser());
-App.use(express.static(BASE_URL + "test_task"));
+App.use(express.static(BASE_URL + "public/test_task"));
 // post
 App.post("/task/:uuid", (req, ress)=>{
     var query_date = req.query.date;
     var para = req.params.uuid;
-    fs.readFile("storage/task_uuid.json", "utf8", (err, data)=> {
+    fs.readFile("public/storage/task_uuid.json", "utf8", (err, data)=> {
         // get path person
         if (err) throw err;
         var taskData = JSON.parse(data);
@@ -47,7 +47,7 @@ App.post("/task/:uuid", (req, ress)=>{
             // 有具体日期，目标 返回任务html
             if (err) throw err;
             // ress.setHeader('Content-Type', 'text/html; charset=UTF-8');
-            ress.sendFile (BASE_URL+ "test_task/" + para + query_date + ".html");
+            ress.sendFile (BASE_URL+ "public/test_task/" + para + query_date + ".html");
         }else {
             var person = taskData[para].person;
             var uuidname = taskData[para].name;
@@ -60,7 +60,7 @@ App.post("/task/:uuid", (req, ress)=>{
             var hours = nowDate.getHours() < 10 ? ("0" + nowDate.getHours()) : nowDate.getHours();
             var minutes = nowDate.getMinutes() < 10 ? ("0" + nowDate.getMinutes()) : nowDate.getMinutes();
             var dateStr = year + month + day + hours + minutes;
-            fs.readFile("storage/" + person + ".json", "utf8", (err, data)=> {
+            fs.readFile("public/storage/" + person + ".json", "utf8", (err, data)=> {
                 if (err) throw err;
                 var configArr = []; // 单个接口测试所需配置
                 taskFnArr = path.map((ele, index)=> {
@@ -234,7 +234,7 @@ App.post("/task/:uuid", (req, ress)=>{
         <!-- load your test files here -->
 
 <script>mocha.run();</script></body></html>`;
-                        fs.writeFile("test_task/" + uuidname + dateStr + ".html", htmlStr, "utf8", (err)=> {
+                        fs.writeFile("public/test_task/" + uuidname + dateStr + ".html", htmlStr, "utf8", (err)=> {
                             if (err) throw err;
                             var jsStr = `const chai = require("chai");
                             ${testStr}
@@ -375,7 +375,7 @@ module.exports = function(proxy, allowedHost) {
             var obj = req.body.newData;
             // console.log(obj)
             var runner = req.body.runner;
-            fs.readFile("storage/" + per + ".json","utf8", (err, data)=> {
+            fs.readFile("public/storage/" + per + ".json","utf8", (err, data)=> {
                 var objdata = JSON.parse(data);
 
                 if (err) throw err;
@@ -385,12 +385,12 @@ module.exports = function(proxy, allowedHost) {
                     var test = req.body.TestText;
                     var resState = addState(data, per, path, obj, pre, test);
                     if (JSON.stringify(resState) === "{}" || resState === undefined) {
-                        fs.writeFile("storage/" + per + ".json",data, "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + per + ".json",data, "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");
                         })
                     }else {
-                        fs.writeFile("storage/" + per + ".json", JSON.stringify(resState), "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + per + ".json", JSON.stringify(resState), "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");
                         })
@@ -400,19 +400,19 @@ module.exports = function(proxy, allowedHost) {
                     objdata.task_runner = runner;
                     // 改变自己json
                     if (JSON.stringify(objdata) === "{}" || objdata === undefined) {
-                        fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + per + ".json", data, "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");
                         })
                     }else {
-                        fs.writeFile("storage/" + per + ".json", JSON.stringify(objdata), "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + per + ".json", JSON.stringify(objdata), "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");
                         })
                     }
                     // 改变接口json
                     taskManager(runner, per);
-                }else {
+                }else if (typeof obj === "object") {
                     var variable = objdata.variable;
                     objdata = {
                         ...obj,
@@ -421,12 +421,12 @@ module.exports = function(proxy, allowedHost) {
                         ]
                     };
                     if (JSON.stringify(objdata) === "{}") {
-                        fs.writeFile("storage/" + per + ".json", data, "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + per + ".json", data, "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");
                         })
                     }else {
-                        fs.writeFile("storage/" + per + ".json", JSON.stringify(objdata), "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + per + ".json", JSON.stringify(objdata), "utf8", (err)=> {
                             if (err) throw err;
                             return result.json("ok");
                         })
@@ -437,7 +437,7 @@ module.exports = function(proxy, allowedHost) {
         app.post("/sureShare", (req, res)=> {
             console.log("sureshare");
             console.log(req.body.host);
-            fs.readFile("storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
+            fs.readFile("public/storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
                 if(err) throw err;
                 var dataobj = JSON.parse(data);
                 var shareArr = dataobj.shared;
@@ -463,12 +463,12 @@ module.exports = function(proxy, allowedHost) {
                             shared: shareArr
                         };
                         if (JSON.stringify(obj) === "{}" || obj === undefined) {
-                            fs.writeFile("storage/" + req.body.shareTo + ".json", data, "utf8", (err)=> {
+                            fs.writeFile("public/storage/" + req.body.shareTo + ".json", data, "utf8", (err)=> {
                                 if (err) throw err;
                                 return res.json("ok");
                             })
                         }else {
-                            fs.writeFile("storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
+                            fs.writeFile("public/storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
                                 if (err) throw err;
                                 return res.json("ok");
                             })
@@ -485,12 +485,12 @@ module.exports = function(proxy, allowedHost) {
                         shared: shareArr
                     };
                     if (JSON.stringify(obj) === "{}" || obj === undefined) {
-                        fs.writeFile("storage/" + req.body.shareTo + ".json", data, "utf8", (err)=> {
+                        fs.writeFile("public/storage/" + req.body.shareTo + ".json", data, "utf8", (err)=> {
                             if (err) throw err;
                             return res.json("ok");
                         })
                     }else {
-                        fs.writeFile("storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
+                        fs.writeFile("public/storage/" + req.body.shareTo + ".json", JSON.stringify(obj) ,"utf8", (err)=> {
                             if (err) throw err;
                             return res.json("ok");
                         })
@@ -501,17 +501,17 @@ module.exports = function(proxy, allowedHost) {
         app.post("/changeOthersVar", (req, result)=> {
             var person = req.body.person;
             var addVar = req.body.variable;
-            fs.readFile("storage/" + person + ".json", "utf8", (err, data)=> {
+            fs.readFile("public/storage/" + person + ".json", "utf8", (err, data)=> {
                 if (err) throw err;
                 var newData = JSON.parse(data);
                 newData.variable.push(addVar);
                 if (JSON.stringify(newData) === "{}" || newData === undefined) {
-                    fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
+                    fs.writeFile("public/storage/" + person + ".json", data, "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
                     })
                 }else {
-                    fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
+                    fs.writeFile("public/storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
                     })
@@ -522,17 +522,17 @@ module.exports = function(proxy, allowedHost) {
             var variable = req.body.variable;
             var person = req.body.self;
             var index = req.body.index;
-            fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
+            fs.readFile("public/storage/" + person + ".json","utf8", (err, data)=> {
                 if (err) throw err;
                 var newData = JSON.parse(data);
                 newData.variable[index] = variable;
                 if (JSON.stringify(newData) === "{}" || newData === undefined) {
-                    fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
+                    fs.writeFile("public/storage/" + person + ".json", data, "utf8", (err)=> {
                         if (err) throw err;
                         return result.json("ok");
                     })
                 }else {
-                    fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
+                    fs.writeFile("public/storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
                         if (err) throw  err;
                         return result.json("ok");
                     })
@@ -542,17 +542,17 @@ module.exports = function(proxy, allowedHost) {
         app.post("/changeSelfVar", (req, result)=> {
             var varList = req.body.varList;
             var person = req.body.self;
-           fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
+           fs.readFile("public/storage/" + person + ".json","utf8", (err, data)=> {
                if (err) throw err;
                 var newData = JSON.parse(data);
                 newData.variable = varList;
                if (JSON.stringify(newData) === "{}" || newData === undefined) {
-                   fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
+                   fs.writeFile("public/storage/" + person + ".json", data, "utf8", (err)=> {
                        if (err) throw err;
                        return result.json("ok");
                    })
                }else {
-                   fs.writeFile("storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
+                   fs.writeFile("public/storage/" + person + ".json", JSON.stringify(newData), "utf8", (err)=> {
                        if (err) throw  err;
                        return result.json("ok");
                    })
@@ -568,7 +568,7 @@ module.exports = function(proxy, allowedHost) {
             console.log(person);
 
             var path = req.query.path;
-          fs.readFile("storage/" + person + ".json","utf8", (err, data)=> {
+          fs.readFile("public/storage/" + person + ".json","utf8", (err, data)=> {
                 if (err) throw err;
                 if (!path) {
                     // 初始全部请求
@@ -580,7 +580,7 @@ module.exports = function(proxy, allowedHost) {
                         shareArrName.push(shareArr[k].name);
                     }
                     // console.log(666)
-                    fs.readFile("storage/ip_address.json", "utf8", (err, ipdata)=> {
+                    fs.readFile("public/storage/ip_address.json", "utf8", (err, ipdata)=> {
                         var ipAdd = JSON.parse(ipdata);
                         // console.log(ipAdd)
                         // ipAdd.ip  [{"ip":"10.12.28.36","name":"person0"}]
@@ -605,12 +605,12 @@ module.exports = function(proxy, allowedHost) {
                         // console.log(stateData)
 
                         if (JSON.stringify(stateData) === "{}" || stateData === undefined) {
-                            fs.writeFile("storage/" + person + ".json", data, "utf8", (err)=> {
+                            fs.writeFile("public/storage/" + person + ".json", data, "utf8", (err)=> {
                                 if (err) throw err;
                                 return res.json(data);
                             })
                         }else {
-                            fs.writeFile("storage/" + person + ".json", JSON.stringify(stateData), "utf8", (err)=> {
+                            fs.writeFile("public/storage/" + person + ".json", JSON.stringify(stateData), "utf8", (err)=> {
                                 if (err) throw err;
                                 // console.log(stateData)
                                 return res.json(stateData)
@@ -631,7 +631,7 @@ module.exports = function(proxy, allowedHost) {
               // 写入task_uuid文件
               // console.log(uuid);
 
-              fs.readFile("storage/task_uuid.json", "utf8", (err, data)=> {
+              fs.readFile("public/storage/task_uuid.json", "utf8", (err, data)=> {
                   if (err) throw err;
                   var task_uuid = JSON.parse(data);
                   console.log(uuid);
@@ -642,18 +642,18 @@ module.exports = function(proxy, allowedHost) {
                   };
                   // console.log(task_uuid)
                   if (JSON.stringify(task_uuid) === "{}" || task_uuid === undefined) {
-                      fs.writeFile("storage/task_uuid.json", data, "utf8", (err)=> {
+                      fs.writeFile("public/storage/task_uuid.json", data, "utf8", (err)=> {
                           if (err) throw err;
                           return res.json("ok");
                       })
                   }else {
-                      fs.writeFile("storage/task_uuid.json", JSON.stringify(task_uuid), "utf8", (err)=> {
+                      fs.writeFile("public/storage/task_uuid.json", JSON.stringify(task_uuid), "utf8", (err)=> {
                           if (err) throw err;
                       })
                   }
               });
               // 写入person文件
-              fs.readFile("storage/" + per +".json", "utf8", (er, dat)=> {
+              fs.readFile("public/storage/" + per +".json", "utf8", (er, dat)=> {
                   if (er) throw er;
                   var perdata = JSON.parse(dat);
                   perdata["task_runner"][name] = {
@@ -661,12 +661,12 @@ module.exports = function(proxy, allowedHost) {
                       path: []
                   };
                   if (JSON.stringify(perdata) === "{}" || perdata === undefined) {
-                      fs.writeFile("storage/" + per + ".json", dat, "utf8", (err)=> {
+                      fs.writeFile("public/storage/" + per + ".json", dat, "utf8", (err)=> {
                           if (err) throw err;
                           return res.json("ok");
                       })
                   }else {
-                      fs.writeFile("storage/" + per + ".json", JSON.stringify(perdata), "utf8", (err)=> {
+                      fs.writeFile("public/storage/" + per + ".json", JSON.stringify(perdata), "utf8", (err)=> {
                           if (err) throw err;
                           return res.json(uuid);
                       })
@@ -693,7 +693,7 @@ module.exports = function(proxy, allowedHost) {
             let ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/);
             ip = ip ? ip.join('.') : null;
             var IPAddress = ip;
-            fs.readFile("storage/ip_address.json", "utf8", (err, data)=> {
+            fs.readFile("public/storage/ip_address.json", "utf8", (err, data)=> {
                 if (err) throw err;
                 var ipData = JSON.parse(data);
                 var ipArr = ipData.ip;
@@ -743,16 +743,16 @@ module.exports = function(proxy, allowedHost) {
                         task_runner: {}
                     };
                     // 新增数据
-                    fs.writeFile("storage/" + person + ".json", JSON.stringify(newPerson), "utf8", (err)=> {
+                    fs.writeFile("public/storage/" + person + ".json", JSON.stringify(newPerson), "utf8", (err)=> {
                         if (err) throw err;
                         if (JSON.stringify(ipData) === "{}" || ipData === undefined) {
-                            fs.writeFile("storage/ip_address.json", data, "utf8", (err)=> {
+                            fs.writeFile("public/storage/ip_address.json", data, "utf8", (err)=> {
                                 if (err) throw  err;
                             });
                             return res.json(null); // 创建失败，重新刷新, 覆盖创建失败的person
                         }else {
                             // 新增id标识
-                            fs.writeFile("storage/ip_address.json", JSON.stringify(ipData), "utf8", (err) => {
+                            fs.writeFile("public/storage/ip_address.json", JSON.stringify(ipData), "utf8", (err) => {
                                 if (err) throw  err;
                             });
                             return res.json({

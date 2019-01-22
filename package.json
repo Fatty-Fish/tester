@@ -53,6 +53,7 @@
     "react-bootstrap": "^0.32.4",
     "react-dev-utils": "^6.1.1",
     "react-dom": "^16.6.3",
+    "redux": "^4.0.1",
     "resolve": "1.8.1",
     "sass-loader": "7.1.0",
     "shineout": "^1.1.5",
@@ -68,7 +69,9 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -125,5 +128,8 @@
       "react-app"
     ]
   },
-  "homepage" : "http://Fatty-Fish.github.io/myapp"
+  "homepage": "http://Fatty-Fish.github.io/myapp",
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
+  }
 }

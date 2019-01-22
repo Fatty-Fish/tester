@@ -104,3 +104,4 @@ function addState (data, person, path, caseState, pre, test) {
     return obj;
 }
 module.exports = addState;
+// exports.addState = addState;

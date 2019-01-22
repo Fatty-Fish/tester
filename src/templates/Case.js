@@ -4,6 +4,7 @@ import  VarSet from "./VarSet";
 import axios from "axios";
 import mocha from "mocha"
 import chai from 'chai';
+import sureChangeTool from "./sureChangeTool"
 import "mocha/mocha.css"
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
@@ -149,20 +150,21 @@ class Case extends Component {
             }else {
                 // w
                 var obj = this.props.stateFarm(this.state);
-                axios({
-                    url: "/surechange",
-                    method: "post",
-                    data: {
-                        "newData": obj,
-                        "person": from,
-                        "tar": auth,
-                        "path": this.props.k,
-                        "preS": this.state.text_val || "",
-                        "testS": this.state.textTest_val || ""
-                    }
-                }).then((res) => {
-                    alert("保存成功~")
-                });
+                sureChangeTool(obj, false, from, auth, this.props.k, this.state.text_val || "",this.state.textTest_val || "");
+                // axios({
+                //     url: "/surechange",
+                //     method: "post",
+                //     data: {
+                //         "newData": obj,
+                //         "person": from,
+                //         "tar": auth,
+                //         "path": this.props.k,
+                //         "preS": this.state.text_val || "",
+                //         "testS": this.state.textTest_val || ""
+                //     }
+                // }).then((res) => {
+                //     alert("保存成功~")
+                // });
             }
         }else {
             if (from !== "newCase") {

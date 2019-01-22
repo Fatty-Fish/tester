@@ -9,7 +9,7 @@ axios({
     method:"get",
     url: "/ip"
 }).then((res)=> {
-    // console.log(res.data)
+    console.log(res)
     console.log(res.data.IPAddress);
     ReactDOM.render(<App IPAddress={res.data.IPAddress} per={res.data.person}/>, document.getElementById('root'));
 });

@@ -9,6 +9,7 @@ import WillSave from "./WillSave"
 import IfSure from "./IfSure";
 import ShareForm from "./ShareForm"
 import axios from "axios";
+import sureChangeTool from "./sureChangeTool"
 // case模板对象
 const CASE_TEMP = function () {
     this.bodyList =  [{key: "", value: ""}];
@@ -102,19 +103,20 @@ class App extends Component {
       this.setState({
           caseList: caseList
       });
-        axios({
-            url: "/surechange",
-            method: "post",
-            data: {
-                "runner": runner,
-                "person": this.props.per,
-            }
-        }).then((res) => {
-            if (res) {
-                //
-                return true
-            }
-        });
+        sureChangeTool("", runner, this.props.per);
+        // axios({
+        //     url: "/surechange",
+        //     method: "post",
+        //     data: {
+        //         "runner": runner,
+        //         "person": this.props.per,
+        //     }
+        // }).then((res) => {
+        //     if (res) {
+        //         //
+        //         return true
+        //     }
+        // });
     }
     PreChange (text, k) {
       var preText = this.state.preText || {};
@@ -232,19 +234,20 @@ class App extends Component {
                 caseList: caseList,
                 saveFlag: -1
             });
-            axios({
-                url: "/surechange",
-                method: "post",
-                data: {
-                    "newData": caseList,
-                    "person": this.props.per
-                }
-            }).then((res) => {
-                if (res) {
-                    //
-                    return true
-                }
-            });
+            sureChangeTool(caseList, false, this.props.per);
+            // axios({
+            //     url: "/surechange",
+            //     method: "post",
+            //     data: {
+            //         "newData": caseList,
+            //         "person": this.props.per
+            //     }
+            // }).then((res) => {
+            //     if (res) {
+            //         //
+            //         return true
+            //     }
+            // });
         }
     }
     saveAsFn (item, arr, name, obj, from) {
@@ -322,19 +325,19 @@ class App extends Component {
                         });
                         // caseStore
                         this.refresh(caseList);
-
-                        axios({
-                            url: "/surechange",
-                            method: "post",
-                            data: {
-                                "newData": caseList,
-                                "person": this.props.per
-                            }
-                        }).then((res) => {
-                            if (res) {
-                                //
-                            }
-                        });
+                        sureChangeTool(caseList, false, this.props.per);
+                        // axios({
+                        //     url: "/surechange",
+                        //     method: "post",
+                        //     data: {
+                        //         "newData": caseList,
+                        //         "person": this.props.per
+                        //     }
+                        // }).then((res) => {
+                        //     if (res) {
+                        //         //
+                        //     }
+                        // });
                         return;
                     }else {
                         return;
@@ -362,18 +365,19 @@ class App extends Component {
             });
             // caseStore
             this.refresh(caseList);
-            axios({
-                url: "/surechange",
-                method: "post",
-                data: {
-                    "newData": caseList,
-                    "person": this.props.per
-                }
-            }).then((res) => {
-                if (res) {
-                    //
-                }
-            });
+            sureChangeTool(caseList, false, this.props.per)
+            // axios({
+            //     url: "/surechange",
+            //     method: "post",
+            //     data: {
+            //         "newData": caseList,
+            //         "person": this.props.per
+            //     }
+            // }).then((res) => {
+            //     if (res) {
+            //         //
+            //     }
+            // });
         }else {
             // 保存sub文件夹下
             var sarr = arr.splice(len - 1, 1);
@@ -400,18 +404,19 @@ class App extends Component {
                 });
                 // caseStore
                 this.refresh(caseList);
-                axios({
-                    url: "/surechange",
-                    method: "post",
-                    data: {
-                        "newData": caseList,
-                        "person": this.props.per
-                    }
-                }).then((res) => {
-                    if (res) {
-                        //
-                    }
-                });
+                sureChangeTool(caseList, false, this.props.per)
+                // axios({
+                //     url: "/surechange",
+                //     method: "post",
+                //     data: {
+                //         "newData": caseList,
+                //         "person": this.props.per
+                //     }
+                // }).then((res) => {
+                //     if (res) {
+                //         //
+                //     }
+                // });
             }
         }
         // 更改state成功
@@ -429,18 +434,19 @@ class App extends Component {
                 caseStore = this.state.caseStore;
                 caseList[name] = obj;
                 caseStore[name] = newObj;
-                axios({
-                    url: "/surechange",
-                    method: "post",
-                    data: {
-                        "newData": caseList,
-                        "person": this.props.per
-                    }
-                }).then((res) => {
-                    if (res) {
-                        //
-                    }
-                });
+                sureChangeTool(caseList, false, this.props.per);
+                // axios({
+                //     url: "/surechange",
+                //     method: "post",
+                //     data: {
+                //         "newData": caseList,
+                //         "person": this.props.per
+                //     }
+                // }).then((res) => {
+                //     if (res) {
+                //         //
+                //     }
+                // });
                 this.setState({
                     caseList: caseList,
                     caseStore :caseStore
@@ -456,18 +462,19 @@ class App extends Component {
             var caseStore = this.state.caseStore;
             caseList[name] = obj;
             caseStore[name] = newObj;
-            axios({
-                url: "/surechange",
-                method: "post",
-                data: {
-                    "newData": caseList,
-                    "person": this.props.per
-                }
-            }).then((res) => {
-                if (res) {
-                    //
-                }
-            });
+            sureChangeTool(caseList, false, this.props.per);
+            // axios({
+            //     url: "/surechange",
+            //     method: "post",
+            //     data: {
+            //         "newData": caseList,
+            //         "person": this.props.per
+            //     }
+            // }).then((res) => {
+            //     if (res) {
+            //         //
+            //     }
+            // });
             this.setState({
                 caseList: caseList,
                 caseStore :caseStore
@@ -622,18 +629,19 @@ class App extends Component {
             if(forsure) {
                 var casefromList = this.state.caseList;
                 this.changeFarm(casefromList[from], from, name);
-                axios({
-                    url: "/surechange",
-                    method: "post",
-                    data: {
-                        "newData": casefromList,
-                        "person": this.props.per
-                    }
-                }).then((res) => {
-                    if (res) {
-                        //
-                    }
-                })
+                sureChangeTool(casefromList, false, this.props.per);
+                // axios({
+                //     url: "/surechange",
+                //     method: "post",
+                //     data: {
+                //         "newData": casefromList,
+                //         "person": this.props.per
+                //     }
+                // }).then((res) => {
+                //     if (res) {
+                //         //
+                //     }
+                // })
             }
         }
     changeActiveCase (index, from) {
@@ -723,20 +731,21 @@ class App extends Component {
                         return ele = ele + ";"
                     });
                 }
-                axios({
-                    url: "/surechange",
-                    method: "post",
-                    data: {
-                        "newData": stateobj,
-                        "person": per,
-                        "tar": auth,
-                        "path": from,
-                        "preText": preArr,
-                        "TestText": testArr
-                    }
-                }).then((res) => {
-                    //ol
-                });
+                sureChangeTool(stateobj, false, per, auth, from, preArr, testArr);
+                // axios({
+                //     url: "/surechange",
+                //     method: "post",
+                //     data: {
+                //         "newData": stateobj,
+                //         "person": per,
+                //         "tar": auth,
+                //         "path": from,
+                //         "preText": preArr,
+                //         "TestText": testArr
+                //     }
+                // }).then((res) => {
+                //     //ol
+                // });
             }
             this.changeActiveCase(index, from);
         }else if (nameFrom[0] === "newCase" && from === "newCase") {
@@ -827,18 +836,20 @@ class App extends Component {
                             //     caseStore: caseStore
                             // })
                         }
-                        axios({
-                            url: "/surechange",
-                            method: "post",
-                            data: {
-                                "newData": caseList,
-                                "person": this.props.per
-                            }
-                        }).then((res) => {
-                            if (res) {
-                                //
-                            }
-                        });
+
+                        sureChangeTool(caseList, false, this.props.per);
+                        // axios({
+                        //     url: "/surechange",
+                        //     method: "post",
+                        //     data: {
+                        //         "newData": caseList,
+                        //         "person": this.props.per
+                        //     }
+                        // }).then((res) => {
+                        //     if (res) {
+                        //         //
+                        //     }
+                        // });
                         break
                     }
                 }
@@ -864,18 +875,19 @@ class App extends Component {
             if (index >= 0) {
                 this.changeActiveCase(index, from);
             }
-            axios({
-                url: "/surechange",
-                method: "post",
-                data: {
-                    "newData": newCaseList,
-                    "person": this.props.per
-                }
-            }).then((res) => {
-                if (res) {
-                    //
-                }
-            });
+            sureChangeTool(newCaseList, false, this.props.per);
+            // axios({
+            //     url: "/surechange",
+            //     method: "post",
+            //     data: {
+            //         "newData": newCaseList,
+            //         "person": this.props.per
+            //     }
+            // }).then((res) => {
+            //     if (res) {
+            //         //
+            //     }
+            // });
             this.setState({
                 caseStore: newList,
                 caseList: newCaseList
@@ -952,20 +964,21 @@ class App extends Component {
         };
         var caselist = this.state.caseList;
         caselist[fromName] = newCaseList;
-        axios({
-            url: "/surechange",
-            method: "post",
-            data: {
-                "newData": caselist,
-                "person": this.props.per,
-                "preS": this.state.preText || "",
-                "testS": this.state.testText || ""
-            }
-        }).then((res) => {
-            if (res) {
-                //
-            }
-        });
+        sureChangeTool(caselist, false, this.props.per, false, false, this.state.preText, this.state.testText);
+        // axios({
+        //     url: "/surechange",
+        //     method: "post",
+        //     data: {
+        //         "newData": caselist,
+        //         "person": this.props.per,
+        //         "preS": this.state.preText || "",
+        //         "testS": this.state.testText || ""
+        //     }
+        // }).then((res) => {
+        //     if (res) {
+        //         //
+        //     }
+        // });
         // activeCase 也被更改
         var activeCase = this.state.activeCase;
         var acIndex = this.state.activeIndex;
@@ -1026,18 +1039,19 @@ class App extends Component {
           };
           arrList[fromArr[0]] = newArr;
       }
-        axios({
-            url: "/surechange",
-            method: "post",
-            data: {
-                "newData": arrList,
-                "person": this.props.per
-            }
-        }).then((res) => {
-            if (res) {
-                //
-            }
-        });
+        sureChangeTool(arrList, false, this.props.per);
+        // axios({
+        //     url: "/surechange",
+        //     method: "post",
+        //     data: {
+        //         "newData": arrList,
+        //         "person": this.props.per
+        //     }
+        // }).then((res) => {
+        //     if (res) {
+        //         //
+        //     }
+        // });
         this.refresh(arrList);
         // this.setState({
         //     caseList: arrList,
@@ -1573,19 +1587,20 @@ class App extends Component {
         this.setState({
             caseList: caseList
         });
-        axios({
-            url: "/surechange",
-            method: "post",
-            data: {
-                "newData": caseList,
-                "person": this.props.per
-            }
-        }).then((res) => {
-            if (res) {
-
-                //
-            }
-        });
+        sureChangeTool(caseList, false, this.props.per);
+        // axios({
+        //     url: "/surechange",
+        //     method: "post",
+        //     data: {
+        //         "newData": caseList,
+        //         "person": this.props.per
+        //     }
+        // }).then((res) => {
+        //     if (res) {
+        //
+        //         //
+        //     }
+        // });
     }
     changeShowPeople(bool, auth, path) {
         this.setState({
@@ -1762,20 +1777,21 @@ class App extends Component {
             }
         }
         // 也更新caseStore
-        this.refresh(caseList)
-        axios({
-            url: "/surechange",
-            method: "post",
-            data: {
-                "newData": caseList,
-                "person": this.props.per
-            }
-        }).then((res) => {
-            if (res) {
-                //
-                return true
-            }
-        });
+        this.refresh(caseList);
+        sureChangeTool(caseList, false, this.props.per);
+        // axios({
+        //     url: "/surechange",
+        //     method: "post",
+        //     data: {
+        //         "newData": caseList,
+        //         "person": this.props.per
+        //     }
+        // }).then((res) => {
+        //     if (res) {
+        //         //
+        //         return true
+        //     }
+        // });
     }
     componentWillMount() {
       // console.log(per)
@@ -1788,6 +1804,7 @@ class App extends Component {
             contentType:"application/json",
         }).then((res)=> {
             // console.log(res.data)
+            // 合成person caseStore
             this.refresh(res.data);
             return true
         });
