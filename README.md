@@ -1,7 +1,7 @@
 # test 接口测试
 ## 启动命令
 ### 开发环境
-安装/卸载依赖包 *** npm install/uninstall ***
+安装/卸载依赖包 ***npm install/uninstall***
 启动： npm start/npm run start
 ### 生产环境
 npm run build
@@ -45,7 +45,7 @@ npm run build
 #### test-task
 测试报告
 ### scripts
-启动脚本，*** 生产，开发，测试***
+启动脚本，***生产，开发，测试***
 ### src                     
 源码资源
 #### css
