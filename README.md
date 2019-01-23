@@ -1,4 +1,12 @@
 # test 接口测试
+## 启动命令
+### 开发环境
+安装/卸载依赖包 *** npm install/uninstall ***
+启动： npm start/npm run start
+### 生产环境
+npm run build
+
+
 ## 项目目录解析
 ### build
 压缩编译后的文件
@@ -52,6 +60,9 @@
 用来声明项目的各种模块安装版本信息，脚本信息，执行命令等
 ### package-lock.json 文件。
 记录当前状态下实际安装的各个npm package的具体来源和版本号。
+
+
+
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
