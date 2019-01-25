@@ -91,6 +91,8 @@ class Case extends Component {
         this.insertTestText = this.insertTestText.bind(this);
         this.jumpToPanel = this.jumpToPanel.bind(this);
         this.jumpToTest = this.jumpToTest.bind(this);
+        this.jumpHelp = this.jumpHelp.bind(this);
+        this.addLineFn = this.addLineFn.bind(this);
     };
     jumpToTest (e) {
         e.preventDefault();
@@ -151,20 +153,6 @@ class Case extends Component {
                 // w
                 var obj = this.props.stateFarm(this.state);
                 sureChangeTool(obj, false, from, auth, this.props.k, this.state.text_val || "",this.state.textTest_val || "");
-                // axios({
-                //     url: "/surechange",
-                //     method: "post",
-                //     data: {
-                //         "newData": obj,
-                //         "person": from,
-                //         "tar": auth,
-                //         "path": this.props.k,
-                //         "preS": this.state.text_val || "",
-                //         "testS": this.state.textTest_val || ""
-                //     }
-                // }).then((res) => {
-                //     alert("保存成功~")
-                // });
             }
         }else {
             if (from !== "newCase") {
@@ -466,53 +454,40 @@ class Case extends Component {
         }
         this.props.changeUrl(this.props.k, url)
     }
-    jumpToHeaders (e) {
+    jumpHelp(e, k, val) {
         e.preventDefault();
         $(e.target).parent().parent().find(".active").removeClass("active");
         $(e.target).parent().addClass("active");
-        this.props.changeShowTable(this.props.k, "Headers")
+        this.props.changeShowTable(k, val)
+    }
+    jumpToHeaders (e) {
+        this.jumpHelp(e, this.props.k, "Headers")
     }
     jumpToBody (e) {
-        e.preventDefault();
-        $(e.target).parent().parent().find(".active").removeClass("active");
-        $(e.target).parent().addClass("active");
-            this.props.changeShowTable(this.props.k, "Body")
+        this.jumpHelp(e, this.props.k, "Body")
     }
     jumpToParam (e) {
-        e.preventDefault();
-        $(e.target).parent().parent().find(".active").removeClass("active");
-        $(e.target).parent().addClass("active");
-            this.props.changeShowTable(this.props.k, "Param")
+        this.jumpHelp(e, this.props.k, "Param")
     }
     jumpToPreScript (e) {
-        e.preventDefault();
-        $(e.target).parent().parent().find(".active").removeClass("active");
-        $(e.target).parent().addClass("active");
-        this.props.changeShowTable(this.props.k, "preScriptShow")
+        this.jumpHelp(e, this.props.k, "preScriptShow")
     }
     jumpToTestScript (e) {
-        e.preventDefault();
-        $(e.target).parent().parent().find(".active").removeClass("active");
-        $(e.target).parent().addClass("active");
-        this.props.changeShowTable(this.props.k, "testScriptShow")
+        this.jumpHelp(e, this.props.k, "testScriptShow")
+    }
+    addLineFn (type, k) {
+        var tarList = this.state[type];
+        tarList.push({key: "", value: ""});
+        this.props.changeContent(k, type, tarList);
     }
     addLine (e) {
         var type = e.target ? $(e.target).parent().parent().attr("class") : e;
         if (type === "header") {
-            var headersList = this.state.headersList;
-            headersList.push({key: "", value: ""});
-                 this.props.changeContent(this.props.k, "headersList", headersList);
-            // return;
+            this.addLineFn("headersList", this.props.k)
         }else if (type === "body") {
-            var bodyList = this.state.bodyList;
-            bodyList.push({key: "", value: ""});
-                 this.props.changeContent(this.props.k, "bodyList", bodyList);
-            // return;
+            this.addLineFn("bodyList", this.props.k)
         }else if (type === "param") {
-            var paramList = this.state.paramList;
-            paramList.push({key: "", value: ""});
-                this.props.changeContent(this.props.k, "paramList", paramList);
-            // return;
+            this.addLineFn("paramList", this.props.k)
         }
     }
     addHeaders (e) {
@@ -757,16 +732,6 @@ class Case extends Component {
         if(JSON.stringify(this.props.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
             this.props.caseRender.bodyList.push({key: "", value: ""})
         }
-        // 同步了App组件，不用再次请求
-        // axios({
-        //     method: "get",
-        //     url: "/new",
-        //     params: {
-        //         person: this.props.per
-        //     },
-        //     contentType:"application/json",
-        // }).then((res)=> {
-        //     var caseList = res.data;
             var caseList = this.props.caseList;
             var variable = caseList.variable;
             var len = variable.length;
@@ -789,7 +754,6 @@ class Case extends Component {
                 text_val: this.props.preText,
                 textTest_val: this.props.testText
             });
-        // });
     }
 
     render () {
@@ -813,9 +777,7 @@ class Case extends Component {
             caseNamearr.splice(caseNamearr.length - 1, 1);
             caseName = caseNamearr.join("/")
         }
-        // else {
-        //     caseName = this.props.caseName;
-        // }
+
         var method,url,raw,disparamList,paramsList,len,paramStr,headersShow,bodyShow,paramShow,preScriptShow, testScriptShow,headerFlag,disHeader,HeadersList,
             bodyFlag,disBody,BodyList,paramFlag,disParam,ParamList;
              method = this.props.caseRender.method;
