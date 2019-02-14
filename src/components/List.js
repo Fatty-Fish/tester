@@ -48,7 +48,6 @@ class List extends Component {
         this.showChildren = this.showChildren.bind(this);
         this.clickLi = this.clickLi.bind(this);
 
-
         this.deleteFn = this.deleteFn.bind(this);
         this.renameFn = this.renameFn.bind(this);
         this.inputName = this.inputName.bind(this);
@@ -79,11 +78,11 @@ class List extends Component {
                 });
                 itemArr.push($(e.target).parent().parent().attr("title"));
 
-                this.props.shareEye(itemArr, this.props.person);
+                this.props.shareEye(itemArr, "eye");
         }
         // 点击文件
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "li") {
-            this.props.shareEye($(e.target).parent().parent().attr("title"), this.props.person)
+            this.props.shareEye($(e.target).parent().parent().attr("title"), "eye")
         }
     }
     shareEdit (e) {
@@ -95,11 +94,11 @@ class List extends Component {
                     itemArr.push($(ele).attr("title"));
                 });
                 itemArr.push($(e.target).parent().parent().attr("title"));
-                this.props.shareEdit(itemArr , this.props.person);
+                this.props.shareEdit(itemArr , "edit");
         }
         // 点击文件
         if ($(e.target).parent().parent()[0].nodeName.toLowerCase() === "li") {
-            this.props.shareEdit($(e.target).parent().parent().attr("title"), this.props.person)
+            this.props.shareEdit($(e.target).parent().parent().attr("title"), "edit")
         }
     }
     findPath (oDiv, str) {
@@ -292,6 +291,7 @@ class List extends Component {
         // 每次点击li，请求服务器最新数据
         // 阻止冒泡泡
         if (e.target.nodeName.toLowerCase() !== "i") {
+            // console.log(e.target)
             var fromSave = this.props.fromSave;
             var fromShare = this.props.fromShare;
             if (!fromSave && !fromShare) {
@@ -305,11 +305,11 @@ class List extends Component {
                     contentType:"application/json",
                 }).then((res)=> {
                     // this.props.refresh(JSON.parse(res.data));
-                    this.props.refresh(res.data);
+                    // this.props.refresh(res.data);
                     if (target.className === "outer") {
-                        this.props.acName($(target).attr("unique"), $(target).attr("title"));
+                        this.props.acName($(target).attr("unique"), $(target).attr("title"), res.data);
                     }else if (target.className === "content") {
-                        this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("title"));
+                        this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("title"), res.data);
                     }
                 });
             }
@@ -363,11 +363,15 @@ class List extends Component {
         var list = this.props.caseList;
         var caseList = [];
         for (var prop in list){
-            if (prop !== "share" && prop !== "shared") {
+            // if (prop !== "share" && prop !== "shared") {
                 caseList.push(this.renderListFn(list[prop], prop));
-            }else if (prop === "shared" && !this.props.fromShare) {
-                caseList.push(this.renderShareFn(list[prop], prop));
-            }
+            // }else if (prop === "shared" && !this.props.fromShare) {
+            //     caseList.push(this.renderShareFn(list[prop], prop));
+            // }
+        }
+        if (!this.props.fromShare && this.props.shared) {
+            // console.log(this.props);
+            caseList.push(this.renderShareFn(this.props.shared, "shared"));
         }
         return (
             <div className="list">

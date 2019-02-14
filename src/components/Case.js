@@ -4,6 +4,8 @@ import  VarSet from "./VarSet";
 import axios from "axios";
 import mocha from "mocha"
 import chai from 'chai';
+import Immutable from "seamless-immutable";
+import pureRender from 'pure-render-decorator';
 import sureChangeTool from "./sureChangeTool"
 import "mocha/mocha.css"
 import 'bootstrap/dist/css/bootstrap.css';
@@ -52,11 +54,25 @@ import "../css/Case.css"
         }
     })
 })($);
+@pureRender
 class Case extends Component {
     constructor(props) {
         super(props);
+        var mutableCaseRender = this.props.caseRender;
+        var plen = mutableCaseRender.paramList.length - 1;
+        var hlen = mutableCaseRender.headersList.length - 1;
+        var blen = mutableCaseRender.bodyList.length - 1;
+        if(JSON.stringify(mutableCaseRender.paramList[plen]) !== JSON.stringify({key: "", value: ""})) {
+            mutableCaseRender.paramList.push({key: "", value: ""})
+        }
+        if(JSON.stringify(mutableCaseRender.headersList[hlen]) !== JSON.stringify({key: "", value: ""})) {
+            mutableCaseRender.headersList.push({key: "", value: ""})
+        }
+        if(JSON.stringify(mutableCaseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
+            mutableCaseRender.bodyList.push({key: "", value: ""})
+        }
         this.state = {
-            ...props.caseRender
+            ...Immutable(mutableCaseRender)
         };
         this.submitProxy = this.submitProxy.bind(this);
         this.changeMethod = this.changeMethod.bind(this);
@@ -120,10 +136,10 @@ class Case extends Component {
                 this.props.changeSelfVar(this.props.k, i);
                 this.setState({
                     valSelect: i,
-                    varContent: [
+                    varContent: Immutable([
                         ...varList[i].values,
                         ...varList[global].values
-                    ]
+                    ])
                 });
                 break;
             }
@@ -151,7 +167,7 @@ class Case extends Component {
                 alert("你没有权限保存更改")
             }else {
                 // w
-                var obj = this.props.stateFarm(this.state);
+                var obj = this.props.stateFarm(this.toDeepMutabale(this.state));
                 sureChangeTool(obj, false, from, auth, this.props.k, this.state.text_val || "",this.state.textTest_val || "");
             }
         }else {
@@ -187,15 +203,13 @@ class Case extends Component {
             varContents["{{" + ele.key + "}}"] =  ele.value
         });
         // 不希望{{}}被改变
-        var newObj = [];
         newArr.forEach((ele, index)=> {
             if (varContents.hasOwnProperty(ele.value)) {
-                newObj.push({key: ele.key, value: varContents[ele.value]});
+                newArr[index] = {key: ele.key, value: varContents[ele.value]};
             }
         });
-        // console.log(newArr)
         var obj = {};
-        newObj.forEach((ele)=> {
+        newArr.forEach((ele)=> {
             obj[ele.key] = ele.value;
         });
         return obj;
@@ -239,16 +253,16 @@ class Case extends Component {
         var method = this.state.method;
         var url = this.state.url;
         // header this.state.headersList 指向同一个引用，一改都改。
-        var headerlist = this.state.headersList;
-        var paramlist = this.state.paramList;
-        var bodylist = this.state.bodyList;
+        var headerlist = this.toDeepMutabale(this.state.headersList);
+        var paramlist = this.toDeepMutabale(this.state.paramList);
+        var bodylist = this.toDeepMutabale(this.state.bodyList);
         var head = this.clearRequest(headerlist, this.state.disableList.header);
         var param = this.clearRequest(paramlist,this.state.disableList.param);
         var body = this.clearRequest(bodylist, this.state.disableList.body);
         this.setState({
             result: "Waiting...."
         });
-        var varContent = this.state.varContent;
+        var varContent = this.toDeepMutabale(this.state.varContent);
         // 修改 url
         if (url.indexOf("{{") >= 0) {
             var len = varContent.length;
@@ -291,7 +305,7 @@ class Case extends Component {
                     thisList.push({key: var_key, value: var_val, enable: true});
                     varList[this.state.valSelect].values = thisList;
                     this.setState({
-                        varList: varList
+                        varList: Immutable(varList)
                     });
                 },
                 unset: (var_key) => {
@@ -305,7 +319,7 @@ class Case extends Component {
                     }
                     varList[this.state.valSelect].values = thisList;
                     this.setState({
-                        varList: varList
+                        varList: Immutable(varList)
                     });
                 }
             },
@@ -325,7 +339,7 @@ class Case extends Component {
                     gList.push({key: var_key, value: var_val, enable: true});
                     varList[this.state.global].values = gList;
                     this.setState({
-                        varList: varList
+                        varList: Immutable(varList)
                     });
                 },
                 unset: (var_key)=> {
@@ -339,7 +353,7 @@ class Case extends Component {
                     }
                     varList[this.state.global].values = gList;
                     this.setState({
-                        varList: varList
+                        varList: Immutable(varList)
                     });
                 }
             },
@@ -382,7 +396,6 @@ class Case extends Component {
                 var casename = this.props.k;
                 str = "mocha.setup('bdd');describe('测试报告', function() {it('" + casename + "', function() {" +  this.state.textTest_val + "})});mocha.run();";
                 var Runner = eval("mocha.setup('bdd');");
-                // console.log(Runner)
                 // 清除runner记录
                 Runner.suite.suites = [];
                 eval(str);
@@ -396,11 +409,8 @@ class Case extends Component {
             // console.log(this.state.textTest_val)
             return res.data;
         }).catch((error)=> {
-            this.setState({
-                result: JSON.stringify(error.data, null, 4)
-            });
+            this.props.changeResult(this.props.k, JSON.stringify(error.data, null, 4))
         }).then((res)=> {
-            // console.log(res)
             // 希望result 在没有新请求时，被记录。
             this.props.changeResult(this.props.k, JSON.stringify(res, null, 4))
         });
@@ -476,7 +486,7 @@ class Case extends Component {
         this.jumpHelp(e, this.props.k, "testScriptShow")
     }
     addLineFn (type, k) {
-        var tarList = this.state[type];
+        var tarList = this.toDeepMutabale(this.state[type]);
         tarList.push({key: "", value: ""});
         this.props.changeContent(k, type, tarList);
     }
@@ -491,17 +501,17 @@ class Case extends Component {
         }
     }
     addHeaders (e) {
-        var headersList = this.state.headersList;
+        var headersList = this.toDeepMutabale(this.state.headersList);
         headersList.push({key: "", value: ""});
         this.addLine("header");
     }
     addBody (e) {
-        var bodyList = this.state.bodyList;
+        var bodyList = this.toDeepMutabale(this.state.bodyList);
         bodyList.push({key: "", value: ""});
         this.addLine("body");
     }
     addParam (e) {
-        var paramList = this.state.paramList;
+        var paramList = this.toDeepMutabale(this.state.paramList);
         paramList.push({key: "", value: ""});
         this.addLine("param");
     }
@@ -518,15 +528,24 @@ class Case extends Component {
             index = $(e.target).parent().index();
             flag = "td";
         }
-        if (this.state.disableList[type].indexOf(index) >= 0) { //变为able
+        var disableList = this.toDeepMutabale(this.state.disableList);
+        if (disableList[type].indexOf(index) >= 0) { //变为able
             var num = this.state.disableList[type].indexOf(index);
-            this.state.disableList[type].splice(num, 1);
+            disableList[type].splice(num, 1);
             flag === "i" ? $(e.target).parent().css({color: "#fdfdfd", background: "#767676"}) : $(e.target).css({color: "#fdfdfd", background: "#767676"})
         }else {//变为disable
-            this.state.disableList[type].push(index);
+            disableList[type].push(index);
             flag === "i" ? $(e.target).parent().css({color: "#fff", background: "#d4d4d4"}) :  $(e.target).css({color: "#fff", background: "#d4d4d4"});
         }
-            this.props.changeAble(this.props.k, this.state.disableList)
+            this.props.changeAble(this.props.k, disableList)
+    }
+    delLineFn (dis, list, index) {
+        list.splice(index, 1);
+        var num = dis.indexOf(index);
+        if (num >=0) {
+            dis.splice(num, 1);
+        }
+        return dis;
     }
     delLine (e) {
         var type,
@@ -539,60 +558,47 @@ class Case extends Component {
             index = $(e.target).parent().index();
         }
         if (type === "header") {
-            var headersList = this.state.headersList;
-            var disHeader = this.state.disableList.header;
-            headersList.splice(index, 1);
-            //如果减去的是dis的，则消除dis
-            var num = disHeader.indexOf(index);
-            if (num >=0) {
-                disHeader.splice(num, 1);
-            }
-            var disablelist = this.state.disableList;
+            var headersList = this.toDeepMutabale(this.state.headersList);
+            var disHeader = this.toDeepMutabale(this.state.disableList.header);
+            disHeader = this.delLineFn(disHeader, headersList, index);
+            var disablelist = this.toDeepMutabale(this.state.disableList);
             disablelist.header = disHeader;
-                 this.props.delCaseLine(this.props.k,"headersList", headersList, disablelist);
-            // return;
+            this.props.delCaseLine(this.props.k,"headersList", headersList, disablelist);
         }else if (type === "body") {
-            var BodyList = this.state.bodyList;
-            var disBody = this.state.disableList.body;
-            BodyList.splice(index, 1);
-            num = disBody.indexOf(index);
-            if(num >= 0) {
-                disBody.splice(num, 1);
-            }
-            disablelist = this.state.disableList;
+            var BodyList = this.toDeepMutabale(this.state.bodyList);
+            var disBody = this.toDeepMutabale(this.state.disableList.body);
+            disBody = this.delLineFn(disBody, BodyList, index);
+            disablelist = this.toDeepMutabale(this.state.disableList);
             disablelist.body = disBody;
-                 this.props.delCaseLine(this.props.k,"bodyList", BodyList, disablelist);
-            // return;
+            this.props.delCaseLine(this.props.k,"bodyList", BodyList, disablelist);
         }else if (type === "param") {
-            var ParamList = this.state.paramList;
-            var disParam = this.state.disableList.param;
-            ParamList.splice(index, 1);
-            num = disParam.indexOf(index);
-            if (num >= 0) {
-                disParam.splice(num, 1);
-            }
-            disablelist = this.state.disableList;
+            var ParamList = this.toDeepMutabale(this.state.paramList);
+            var disParam = this.toDeepMutabale(this.state.disableList.param);
+            disParam = this.delLineFn(disParam, ParamList, index);
+            disablelist = this.toDeepMutabale(this.state.disableList);
             disablelist.param = disParam;
-                this.props.delCaseLine(this.props.k,"paramList", ParamList, disablelist);
-            // return;
+            this.props.delCaseLine(this.props.k,"paramList", ParamList, disablelist);
         }
+    }
+    toDeepMutabale (obj) {
+        return Immutable.asMutable(obj, {deep: true});
     }
     changeFn (e, name) {
         var type = $(e.target).parent().parent().attr("class");
         var index = $(e.target).parent().parent().index();
         var val = e.target.value;
         if (type === "header") {
-            var headerList = this.state.headersList;
+            var headerList = this.toDeepMutabale(this.state.headersList);
             headerList[index][name] = val;
-                 this.props.changeContent(this.props.k, "headersList", headerList);
+            this.props.changeContent(this.props.k, "headersList", headerList);
             // return;
         }else if (type === "body") {
-            var bodyList = this.state.bodyList;
+            var bodyList = this.toDeepMutabale(this.state.bodyList);
             bodyList[index][name] = val;
                 this.props.changeContent(this.props.k, "bodyList", bodyList);
             // return
         }else if (type === "param") {
-            var paramList = this.state.paramList;
+            var paramList = this.toDeepMutabale(this.state.paramList);
             paramList[index][name] = val;
                 this.props.changeContent(this.props.k, "paramList", paramList);
             // return;
@@ -614,10 +620,10 @@ class Case extends Component {
         }
     }
     removeVar (index) {
-        var varList = this.state.varList;
+        var varList = this.toDeepMutabale(this.state.varList);
         varList.splice(index, 1);
         this.setState({
-            varList: varList
+            varList: Immutable(varList)
         });
         axios({
             url: "/changeSelfVar",
@@ -631,7 +637,7 @@ class Case extends Component {
         })
     };
     importVar (newVar) {
-        var varList = this.state.varList;
+        var varList = this.toDeepMutabale(this.state.varList);
         var index = this.findVarIndex(newVar.name);
         newVar.from = "self-import";
         if (index >= 0) {
@@ -639,7 +645,7 @@ class Case extends Component {
             if (sure) {
                 varList[index] = newVar;
                 this.setState({
-                    varList: varList
+                    varList: Immutable(varList)
                 });
                 axios({
                     url: "/changeSelfVar",
@@ -655,7 +661,7 @@ class Case extends Component {
         }else {
             varList.push(newVar);
             this.setState({
-                varList: varList
+                varList: Immutable(varList)
             });
             axios({
                 url: "/changeSelfVar",
@@ -671,7 +677,7 @@ class Case extends Component {
     };
     changeVarName (varlist) {
         this.setState({
-            varList: varlist
+            varList: Immutable(varlist)
         });
         axios({
             url: "/changeSelfVar",
@@ -694,46 +700,35 @@ class Case extends Component {
             ...newList[index].values
         ];
         this.setState({
-            varList: newList,
-            varContent: cont
+            varList: Immutable(newList),
+            varContent: Immutable(cont)
         });
     }
     componentWillReceiveProps(nextProps) {
-        var plen = nextProps.caseRender.paramList.length - 1;
-        var hlen = nextProps.caseRender.headersList.length - 1;
-        var blen = nextProps.caseRender.bodyList.length - 1;
-        if(JSON.stringify(nextProps.caseRender.paramList[plen]) !== JSON.stringify({key: "", value: ""})) {
-            nextProps.caseRender.paramList.push({key: "", value: ""})
+        var mutableCaseRender = this.toDeepMutabale(nextProps.caseRender);
+        var plen = mutableCaseRender.paramList.length - 1;
+        var hlen = mutableCaseRender.headersList.length - 1;
+        var blen = mutableCaseRender.bodyList.length - 1;
+        if(JSON.stringify(mutableCaseRender.paramList[plen]) !== JSON.stringify({key: "", value: ""})) {
+            mutableCaseRender.paramList.push({key: "", value: ""})
         }
-        if(JSON.stringify(nextProps.caseRender.headersList[hlen]) !== JSON.stringify({key: "", value: ""})) {
-            nextProps.caseRender.headersList.push({key: "", value: ""})
+        if(JSON.stringify(mutableCaseRender.headersList[hlen]) !== JSON.stringify({key: "", value: ""})) {
+            mutableCaseRender.headersList.push({key: "", value: ""})
         }
-        if(JSON.stringify(nextProps.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
-            nextProps.caseRender.bodyList.push({key: "", value: ""})
+        if(JSON.stringify(mutableCaseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
+            mutableCaseRender.bodyList.push({key: "", value: ""})
         }
         this.setState({
             show: "panel",
-            ...nextProps.caseRender,
-            text_val: nextProps.preText,
-            textTest_val: nextProps.testText
+            ...Immutable(mutableCaseRender),
+            text_val: mutableCaseRender.preText,
+            textTest_val: mutableCaseRender.testText
         });
     };
     componentWillMount() {
-        var varSelect = this.props.caseRender.valSelect;
-        var plen = this.props.caseRender.paramList.length - 1;
-        var hlen = this.props.caseRender.headersList.length - 1;
-        var blen = this.props.caseRender.bodyList.length - 1;
-        if(JSON.stringify(this.props.caseRender.paramList[plen]) !== JSON.stringify({key: "", value: ""})) {
-            this.props.caseRender.paramList.push({key: "", value: ""})
-        }
-        if(JSON.stringify(this.props.caseRender.headersList[hlen]) !== JSON.stringify({key: "", value: ""})) {
-            this.props.caseRender.headersList.push({key: "", value: ""})
-        }
-        if(JSON.stringify(this.props.caseRender.bodyList[blen]) !== JSON.stringify({key: "", value: ""})) {
-            this.props.caseRender.bodyList.push({key: "", value: ""})
-        }
-            var caseList = this.props.caseList;
-            var variable = caseList.variable;
+        var caseRender = this.toDeepMutabale(this.props.caseRender);
+            var varSelect = this.props.valSelect;
+            var variable = this.props.variable;
             var len = variable.length;
             var index;
             for (var i = 0; i < len; i ++) {
@@ -744,20 +739,20 @@ class Case extends Component {
             }
             this.setState({
                 show: "panel",
-                varList: variable,
+                varList: Immutable(variable),
                 valSelect: varSelect || 0,
                 global: index,
-                varContent: [
+                varContent: Immutable([
                     ...variable[0].values,
                     ...variable[index].values
-                ],
-                text_val: this.props.preText,
-                textTest_val: this.props.testText
+                ]),
+                text_val: caseRender.preText,
+                textTest_val: caseRender.testText,
+                result: caseRender.result
             });
     }
 
     render () {
-        // console.log("Case");
         var text_val = this.state.text_val;
         var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;

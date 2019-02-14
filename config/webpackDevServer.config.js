@@ -103,9 +103,10 @@ App.post("/task/:uuid", (req, ress)=>{
                     axios.all(taskFnArr).then(axios.spread((...resp)=> {
                         var outerPm = "var configObj, pm;";
                         resp.forEach((ele, index) => {
-                            console.log(ele.data); // 返回数据
+                            // console.log(ele.data); // 返回数据
                             var configObj = configArr[index];
-                            var pm = `{
+                            var pm =
+                                `{
                             varList:  () => {
                                 return configObj.variable // 当前的所有环境变量集合
                             },
@@ -436,7 +437,6 @@ module.exports = function(proxy, allowedHost) {
         });
         app.post("/sureShare", (req, res)=> {
             console.log("sureshare");
-            console.log(req.body.host);
             fs.readFile("public/storage/" + req.body.shareTo + ".json", "utf8", (err, data)=> {
                 if(err) throw err;
                 var dataobj = JSON.parse(data);
@@ -563,7 +563,6 @@ module.exports = function(proxy, allowedHost) {
         app.get("/new", (req,res)=> {
             // console.log(getIPAddress()); 10.12.28.36
             // 每次遍历人数，及时增加share列表
-            console.log("new222");
             var person = req.query.person;
             console.log(person);
 
@@ -602,7 +601,6 @@ module.exports = function(proxy, allowedHost) {
                                 stateData.share.push(shareObj);
                             }
                         }
-                        // console.log(stateData)
 
                         if (JSON.stringify(stateData) === "{}" || stateData === undefined) {
                             fs.writeFile("public/storage/" + person + ".json", data, "utf8", (err)=> {
@@ -634,7 +632,6 @@ module.exports = function(proxy, allowedHost) {
               fs.readFile("public/storage/task_uuid.json", "utf8", (err, data)=> {
                   if (err) throw err;
                   var task_uuid = JSON.parse(data);
-                  console.log(uuid);
                   task_uuid[uuid] = {
                       "path": [],
                       "name": name,

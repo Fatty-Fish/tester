@@ -4,7 +4,7 @@ function sureChangeTool(arr, runner, person, tar, path, preText, testText) {
         url: "/surechange",
         method: "post",
         data: {
-            "newData": arr, // 新的caseList
+            "newData": arr, // 新的caseList 引入caseList后，没有share，runner，
             "runner": runner, // 记录任务
             "person": person, // 目标
             "tar": tar, // 修改权限， 分享时用到
@@ -13,6 +13,7 @@ function sureChangeTool(arr, runner, person, tar, path, preText, testText) {
             "testText": testText // 后置脚本
         }
     }).then((res) => {
+        // 全部被复写
         if (res) {
             //
             return true

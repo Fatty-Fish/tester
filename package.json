@@ -48,14 +48,19 @@
     "postcss-loader": "3.0.0",
     "postcss-preset-env": "6.0.6",
     "postcss-safe-parser": "4.0.1",
+    "pure-render-decorator": "^1.2.1",
     "react": "^16.6.3",
     "react-app-polyfill": "^0.1.3",
     "react-bootstrap": "^0.32.4",
     "react-dev-utils": "^6.1.1",
-    "react-dom": "^16.6.3",
+    "react-dom": "^16.7.0",
+    "react-redux": "^6.0.0",
+    "react-thunk": "^1.0.0",
     "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "resolve": "1.8.1",
     "sass-loader": "7.1.0",
+    "seamless-immutable": "^7.1.4",
     "shineout": "^1.1.5",
     "style-loader": "0.23.0",
     "terser-webpack-plugin": "1.1.0",
@@ -126,6 +131,14 @@
   "babel": {
     "presets": [
       "react-app"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ]
     ]
   },
   "homepage": "http://Fatty-Fish.github.io/myapp",

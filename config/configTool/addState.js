@@ -94,7 +94,7 @@ function addState (data, person, path, caseState, pre, test) {
     var state = arr[1];
     var newArr = arr.slice(2, arr.length - 1);
     var caseobj = caseFn(caseState);
-    obj[state].item = findState(obj[state].item, newArr, caseobj,  pre, test);
+    obj[state].item = findState(obj[state].item, newArr, caseobj,  caseState.preText, caseState.testText);
     obj = {
         ...obj,
         variable: [

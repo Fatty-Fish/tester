@@ -12,7 +12,7 @@ function taskManager (runner, per) {
            person: per
        }
    }
-   fs.writeFile("storage/task_uuid.json",JSON.stringify(task_runner) ,"utf8", (err)=> {
+   fs.writeFile("public/storage/task_uuid.json",JSON.stringify(task_runner) ,"utf8", (err)=> {
        if (err) throw err;
    })
 }

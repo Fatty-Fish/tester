@@ -31,7 +31,6 @@ class Tool extends Component {
         this.newTask = this.newTask.bind(this);
         this.removeTask = this.removeTask.bind(this);
         this.taskPlay = this.taskPlay.bind(this);
-        this.showTaskList = this.showTaskList.bind(this);
         this.checkAPI = this.checkAPI.bind(this);
         this.showPeople = this.showPeople.bind(this);
         this.changeAuth = this.changeAuth.bind(this);
@@ -117,26 +116,19 @@ class Tool extends Component {
         });
     }
     changeAuth(val,checked) {
-        console.log(val,checked)
         this.setState({
             valchecked: val
         })
     }
-    shareEye (from, person, dis) {
-        var flag = this.state.showPeople;
-        if (flag) {
-            this.props.changeShowPeople(false, "","");
-        }else {
-            this.props.changeShowPeople(true, "eye", from);
-        }
+    shareEye (from, auth) {
+        var flag = this.props.shares.showPeople;
+        this.props.ifEnable(!flag, auth, from);
+
     }
-    shareEdit (from, person, dis) {
-        var flag = this.state.showPeople;
-        if (flag) {
-            this.props.changeShowPeople(false, "","");
-        }else {
-            this.props.changeShowPeople(true, "edit", from);
-        }
+    shareEdit (from, auth) {
+        var flag = this.props.shares.showPeople;
+        this.props.ifEnable(!flag, auth, from);
+
     }
     reader () {
         var Files = document.getElementById("myFile").files;
@@ -170,6 +162,7 @@ class Tool extends Component {
                 item: ele.item
             })
         });
+        // console.log(this.props)
         this.props.importCase(caseObjArr, from);
         this.setState({
             saveFrame: false
@@ -218,12 +211,8 @@ class Tool extends Component {
         }
     }
     showPeople(pathArr, auth) {
-        var flag = this.state.showPeople;
-        if (flag) {
-            this.props.changeShowPeople(false, "","");
-        }else {
-            this.props.changeShowPeople(true, auth,pathArr);
-        }
+        var flag = this.props.shares.showPeople;
+        this.props.ifEnable(!flag, auth, pathArr);
     }
     addTaskItem(e) {
         var itemName, addedItem, index;
@@ -274,17 +263,18 @@ class Tool extends Component {
     newTask (e) {
         // 新建任务
         //发送请求，生成独特的UUID
-        // 同样的任务名称会覆盖
+        // 同样的任务名称
         var addedItem = this.state.addedItem;
         if (addedItem) {
             var taskName = window.prompt("新任务的名称：", "");
             var taskN = this.state.taskName || [];
-            if (taskName) {
+            if (taskN.indexOf(taskName) === -1 && taskName) {
+                // 有名字且没有重复
                 taskN.push(taskName);
-            }else {
+            } else {
+                alert("重新取个名字吧");
                 return;
             }
-            // console.log(this.props.per)
             axios({
                 method: "post",
                 url: "/createUuid",
@@ -324,21 +314,6 @@ class Tool extends Component {
             taskContFlag: false
         });
         this.props.taskRunnerChange(task_runner);
-    }
-    showTaskList (e) {
-        var width = $(".path-list").width();
-        var height = $(".path-list").height();
-        if (this.state.width) {
-            this.setState({
-                height: null,
-                width:null
-            })
-        }else {
-            this.setState({
-                height: height,
-                width: width
-            })
-        }
     }
     showTask(e) {
         var tar = $(e.target).attr("class");
@@ -387,7 +362,6 @@ class Tool extends Component {
             // show
             var title = $(e.target).attr("title");
             var task_runner = this.state.task_runner;
-            console.log(title, task_runner);
             var tarTask = task_runner[title];
             var uuid = tarTask.taskUuid;
             this.setState({
@@ -406,35 +380,31 @@ class Tool extends Component {
     }
     componentWillMount() {
         var obj = {};
-        this.props.caseList.share.map((ele, index)=> {
+        this.props.share.map((ele, index)=> {
             obj[ele.name] = ele.item[0].r || [];
             obj[ele.name + "edit"] = ele.item[1].w || [];
         });
-        var task_runner = this.props.caseList.task_runner;
+        var task_runner = this.props.task_runner;
         var taskName = [];
         for (var prop in task_runner) {
             taskName.push(prop);
         }
-        var width = $(".path-list").width();
-        var height = $(".path-list").height();
         this.setState({
             ...obj,
             task_runner: task_runner,
             taskPathArr: this.props.taskPathArr,
             taskName: taskName,
-            width: width,
-            height: height,
             taskFlag:false
         })
     }
     componentWillReceiveProps(nextProps, nextContext) {
         var obj = {};
         // share out
-        nextProps.caseList.share.map((ele, index)=> {
+        nextProps.share.map((ele, index)=> {
             obj[ele.name] = ele.item[0].r || [];
             obj[ele.name + "edit"] = ele.item[1].w || [];
         });
-        var task_runner = nextProps.caseList.task_runner;
+        var task_runner = nextProps.task_runner;
         var taskName = [];
         for (var prop in task_runner) {
             taskName.push(prop);
@@ -448,7 +418,8 @@ class Tool extends Component {
     }
     render () {
         // console.log("Tool")
-        var task_runner = this.state.task_runner;
+        // console.log(this.state.taskPathArr)
+        var task_runner = this.props.task_runner;
         var taskN = this.state.taskName; // []
         var taskPathArr = this.state.taskPathArr;
         var taskArr = taskN.map((ele, index)=> {
@@ -457,12 +428,12 @@ class Tool extends Component {
             return <ul className="task-name" key={ele}>
                        <li className={ele}><span className="taskname-span">{ele}</span><i style={{color: "black"}} className="glyphicon glyphicon-remove-sign" onClick={this.removeTask}></i><i style={{color: "black"}} className="glyphicon glyphicon-play" onClick={this.taskPlay}></i></li>
                 <li className="uuidName" title={ele} onClick={this.checkTask}>{uuid}</li>
-
             </ul>
         });
         var pathList = taskPathArr.map((ele, index)=> {
             var eleArr = ele.split("/");
             eleArr.splice(0, 1);
+            // console.log(eleArr)
             var api = eleArr.join("/");
             return <li title={ele} className="title" key={index} onClick={this.addTaskItem}><i className="glyphicon glyphicon-ok-sign"></i>{api}</li>
         });
