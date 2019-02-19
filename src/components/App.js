@@ -1194,8 +1194,8 @@ class App extends Component {
       this.changeHelp(k, value, type);
 
     }
-    changeAcName(name, from) {
-        var caseStore = this.caseStoreFn(this.props.caseList);
+    changeAcName(name, from, caseStore) {
+        caseStore = caseStore || this.caseStoreFn(this.props.caseList);
       var newActiveCase = this.state.activeCase;
       var acSet = new Set(newActiveCase);
       // 增加case ，case会再次请求
@@ -1356,17 +1356,14 @@ class App extends Component {
             auth: auth
         };
         // 存入storeCase
-        var caseObj = this.state.caseStore;
+        var caseObj = Immutable.asMutable(this.state.caseStore, {deep: true});
         if (caseObj.hasOwnProperty(per)) {
             caseObj[per][per + "/" + path + "/" + auth] = newObj
         }else {
             caseObj[per] = {};
             caseObj[per][per + "/" + path + "/" + auth] = newObj
         }
-        this.changeAcName(per, per + "/" + path + "/" + auth);
-        this.setState({
-            caseStore: Immutable(caseObj)
-        })
+        this.changeAcName(per, per + "/" + path + "/" + auth, caseObj);
     }
     sharechange (caseList, shareTo) {
         // this.setState({
@@ -1563,13 +1560,16 @@ class App extends Component {
     }
 
     render() {
+      console.log("app render");
         var taskPathArr = [];
         var caseStore = this.state.caseStore;
         for (var prop in caseStore) {
             if (prop !== "newCase") {
                 for (var pro in caseStore[prop]) {
-                    var join = this.props.caseList[prop].info.name;
-                    pro = pro.replace(prop, join);
+                    var join = this.props.caseList[prop];
+                    if (join) {
+                        pro = pro.replace(prop, join.info.name);
+                    }
                     taskPathArr.push(this.props.per + "/" + pro) // 不同人
                 }
             }
@@ -1589,8 +1589,11 @@ class App extends Component {
                 var caseListRender = this.state.activeCase.map((ele, index) => {
                 var arr = ele.split("/");
                 var prop = arr[0]; // newCase
-                    var casedata = this.state.caseStore[prop][ele];
-                    var caseRender = Immutable.asMutable(casedata, {deep: true});
+                    console.log(this.state.caseStore)
+                    console.log(prop);
+                    console.log(ele)
+                    var caseData = this.state.caseStore[prop][ele];
+                    var caseRender = Immutable.asMutable(caseData, {deep: true});
                     return acIndex === index ? (
                     <Case changeSelfVar={this.changeSelfVar} mochaFlag={this.state.mochaFlag} changeResult={this.changeResult} TestChange={this.TestChange} changeShow={this.changeShow} PreChange={this.PreChange} stateFarm={this.stateFarm} caseSave={this.caseSave} savechange={this.whetherSave} changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={caseRender} key={index} k = {ele} caseName={ele} style={true}>
                     </Case>) : (<Case changeContent={this.changeContent} delCaseLine={this.delCaseLine} changeAble={this.changeAble} changeShowTable={this.changeShowTable} changeUrl={this.changeUrl} changeMethod={this.changeMethod} caseRender={this.state.caseStore[prop][ele]} key={index} k = {ele} caseName={ele}>

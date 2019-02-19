@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import List from "./List"
+import List from "../containers/list.container";
 
 import 'bootstrap/dist/js/bootstrap.js';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -67,7 +67,7 @@ class WillSave extends Component {
                     </div>
                     <div className="folder">
                         <span className="folder-desc">Choose a folder to save to:</span>
-                        <List per={this.props.per} activeDir={this.activeDir} fromSave="fromSave" caseList={this.props.caseList}></List>
+                        <List per={this.props.per} activeDir={this.activeDir} fromSave="fromSave" ></List>
                     </div>
                     <div className="button">
                         <button className="btn" onClick={this.cancelSave}>取消</button>

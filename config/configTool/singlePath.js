@@ -38,6 +38,13 @@ function singlePath (cont, varContent) {
             querys[ele.key] = ele.value;
         })
     }
+    console.log({
+        method: method,
+        url: url,
+        headers: headers,
+        data: bodys,
+        params: querys,
+    });
     return axios({
         method: method,
         url: url,

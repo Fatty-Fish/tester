@@ -14,6 +14,8 @@ function clearArr (varContent, newArr) {
     newArr.forEach((ele, index)=> {
         if (varContents.hasOwnProperty(ele.value)) {
             newObj.push({key: ele.key, value: varContents[ele.value]});
+        }else {
+            newObj.push({key: ele.key, value: ele.value});
         }
     });
     return newObj

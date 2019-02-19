@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import $ from "jquery";
-import List from "./List";
+import List from "../containers/list.container";
 import axios from "axios";
 
 import 'bootstrap/dist/js/bootstrap.js';
@@ -123,7 +123,6 @@ class Tool extends Component {
     shareEye (from, auth) {
         var flag = this.props.shares.showPeople;
         this.props.ifEnable(!flag, auth, from);
-
     }
     shareEdit (from, auth) {
         var flag = this.props.shares.showPeople;
@@ -374,7 +373,8 @@ class Tool extends Component {
     hideTask(e) {
         if ($(e.target).attr("class") === "pathPanel") {
             this.setState({
-                taskFlag: false
+                taskFlag: false,
+                addedItem:""
             })
         }
     }
@@ -446,7 +446,7 @@ class Tool extends Component {
                 <div className="tool">
                     <div className="btn shareBtn" onClick={this.showShareList}>分享
                         <div className="sharePanel" style={{display: this.state.share ? "block" : "none"}}>
-                            <List showPeople={this.showPeople} per={this.props.per} shareEdit={this.shareEdit} shareEye={this.shareEye} fromShare="fromShare" caseList={this.props.caseList}></List>
+                            <List showPeople={this.showPeople} per={this.props.per} shareEdit={this.shareEdit} shareEye={this.shareEye} fromShare="fromShare" ></List>
                         </div>
                     </div>
                     <div className="btn taskBtn" onClick={this.showTask}>

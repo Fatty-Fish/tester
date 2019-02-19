@@ -305,11 +305,11 @@ class List extends Component {
                     contentType:"application/json",
                 }).then((res)=> {
                     // this.props.refresh(JSON.parse(res.data));
-                    // this.props.refresh(res.data);
+                    var caseStore = this.props.refresh(res.data);
                     if (target.className === "outer") {
-                        this.props.acName($(target).attr("unique"), $(target).attr("title"), res.data);
+                        this.props.acName($(target).attr("unique"), $(target).attr("title"), caseStore);
                     }else if (target.className === "content") {
-                        this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("title"), res.data);
+                        this.props.acName($(target).parent().attr("unique"), $(target).parent().attr("title"), caseStore);
                     }
                 });
             }
@@ -332,6 +332,7 @@ class List extends Component {
                 contentType:"application/json",
             }).then((res)=> {
                 // 传回给APP 带上auth
+                console.log(res.data)
                 this.props.receiveShare(res.data, auth, per, path);
             });
         }

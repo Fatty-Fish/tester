@@ -22,8 +22,6 @@ function findPath (arr, data) {
     }else {
         var forth = arr[0];
         arr.shift();
-        // console.log(forth)
-        // console.log(state[forth])
         if (state[forth] === undefined) return false;
         return queryPath(arr, state[forth].item);
     }

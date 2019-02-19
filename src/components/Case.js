@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import $ from "jquery";
-import  VarSet from "./VarSet";
+import VarSet from "./VarSet";
 import axios from "axios";
 import mocha from "mocha"
 import chai from 'chai';
@@ -369,6 +369,13 @@ class Case extends Component {
                 }
             }
         };
+        console.log({
+            "method": method,
+            "url": url,
+            "headers": head,
+            "body": body,
+            "param": param
+        })
         axios({
             method: "post",
             url: "/",
