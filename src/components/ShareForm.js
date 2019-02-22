@@ -35,7 +35,7 @@ class ShareForm extends Component {
             // 分享
             //  "item":[{"r":[]},{"w":[]}] 自己
             for (var i = 0; i < shareLen; i++) {
-                if (share[i].name === val) {
+                if (share[i].account === val) {
                     if (auth === "eye") {
                         var eyeAuth = share[i].item[0].r;
                         eyeAuth = [...new Set(eyeAuth.concat(pathArr))];
@@ -56,7 +56,7 @@ class ShareForm extends Component {
             // 取消分享
             // console.log(checked)
             for (i = 0; i < shareLen; i++) {
-                if (share[i].name === val) {
+                if (share[i].account === val) {
                     if (auth === "eye") {
                         eyeAuth = share[i].item[0].r;
                         var nowAuth = eyeAuth.filter((ele, index)=> {
@@ -127,7 +127,9 @@ class ShareForm extends Component {
         var renderList=this.props.share;
         var auth = this.props.shares.auth;
         var pathArr=this.props.shares.pathArr;
+        console.log(renderList)
         var peopleList = renderList.map((ele, index)=>{
+            console.log(ele)
             // ele.item[0].r   []
             var wrlen, len;
             if (auth === "eye") {
@@ -141,12 +143,12 @@ class ShareForm extends Component {
             if (len === wrlen) {
                 // 存在里面
                 return <label key={index}>
-                    <input type="checkbox" checked={true} onChange={this.van} value={ele.name || ""}/>{ele.name}
+                    <input type="checkbox" checked={true} onChange={this.van} value={ele.account || ""}/>{ele.name}
                 </label>
             }else {
 
                 return <label key={index}>
-                    <input type="checkbox" checked={false} onChange={this.van} value={ele.name || ""}/>{ele.name}
+                    <input type="checkbox" checked={false} onChange={this.van} value={ele.account || ""}/>{ele.name}
                 </label>
             }
         });

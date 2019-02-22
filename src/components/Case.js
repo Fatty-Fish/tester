@@ -378,7 +378,7 @@ class Case extends Component {
         })
         axios({
             method: "post",
-            url: "/",
+            url: "/ip",
             contentType:"application/json",
             timeout: 3000,
             data: {
@@ -429,10 +429,11 @@ class Case extends Component {
     }
     changeUrl (e) {
         var url = e.target.value;
+        var query;
         if (url.indexOf("?") >= 0) {
                 var reg = /(\w+):\/\/([^/:]+)?([^# ]*)/;
                 var path = url.match(reg)[3];
-                var query = [];
+                query = [];
                 if (path.indexOf("&")) {// 如果需要增加param line
                     var paramarr = path.split("?")[1].split("&");
                     paramarr.forEach((ele)=> {
@@ -467,9 +468,9 @@ class Case extends Component {
                 "key": "",
                 "value" : ""
             });
-            this.props.changeContent(this.props.k, "paramList", query);
+            // this.props.changeContent(this.props.k, "paramList", query);
         }
-        this.props.changeUrl(this.props.k, url)
+        this.props.changeUrl(this.props.k, url, "paramList", query)
     }
     jumpHelp(e, k, val) {
         e.preventDefault();
@@ -632,6 +633,7 @@ class Case extends Component {
         this.setState({
             varList: Immutable(varList)
         });
+        this.props.newVariable(varList)
         axios({
             url: "/changeSelfVar",
             method: "post",
@@ -654,6 +656,8 @@ class Case extends Component {
                 this.setState({
                     varList: Immutable(varList)
                 });
+                this.props.newVariable(varList);
+
                 axios({
                     url: "/changeSelfVar",
                     method: "post",
@@ -670,6 +674,8 @@ class Case extends Component {
             this.setState({
                 varList: Immutable(varList)
             });
+            this.props.newVariable(varList)
+
             axios({
                 url: "/changeSelfVar",
                 method: "post",
@@ -686,6 +692,8 @@ class Case extends Component {
         this.setState({
             varList: Immutable(varlist)
         });
+        this.props.newVariable(varlist);
+
         axios({
             url: "/changeSelfVar",
             method: "post",
@@ -706,6 +714,7 @@ class Case extends Component {
             ...newList[global].values,
             ...newList[index].values
         ];
+        this.props.newVariable(newList);
         this.setState({
             varList: Immutable(newList),
             varContent: Immutable(cont)
@@ -713,6 +722,17 @@ class Case extends Component {
     }
     componentWillReceiveProps(nextProps) {
         var mutableCaseRender = this.toDeepMutabale(nextProps.caseRender);
+        var varSelect = nextProps.valSelect;
+        var variable = nextProps.variable;
+        var len = variable.length;
+
+        var index;
+        for (var i = 0; i < len; i ++) {
+            if (variable[i].name === "Global") {
+                index = i;
+                break;
+            }
+        }
         var plen = mutableCaseRender.paramList.length - 1;
         var hlen = mutableCaseRender.headersList.length - 1;
         var blen = mutableCaseRender.bodyList.length - 1;
@@ -727,9 +747,16 @@ class Case extends Component {
         }
         this.setState({
             show: "panel",
+            varList: Immutable(variable),
+            valSelect: varSelect || 0,
+            varContent: Immutable([
+                ...variable[varSelect || 0].values,
+                ...variable[index].values
+            ]),
             ...Immutable(mutableCaseRender),
             text_val: mutableCaseRender.preText,
-            textTest_val: mutableCaseRender.testText
+            textTest_val: mutableCaseRender.testText,
+            result: mutableCaseRender.result
         });
     };
     componentWillMount() {
@@ -750,8 +777,8 @@ class Case extends Component {
                 valSelect: varSelect || 0,
                 global: index,
                 varContent: Immutable([
-                    ...variable[0].values,
-                    ...variable[index].values
+                    ...variable[varSelect || 0].values,
+                    ...variable[index].values // global
                 ]),
                 text_val: caseRender.preText,
                 textTest_val: caseRender.testText,
@@ -764,6 +791,7 @@ class Case extends Component {
         var textTest_val = this.state.textTest_val;
         var varSelect = this.state.varList;
         if (varSelect) {
+            console.log(this.state.valSelect)
             var selectVar = varSelect[this.state.valSelect].name;
             var varOptions = varSelect.map((ele, index)=> {
                 return (<option key={index} value={ele.name}>{ele.name}</option>)

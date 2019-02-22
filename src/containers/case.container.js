@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import Case from "../components/Case"
+import {newVariable} from "../actions"
 
 // toProps:
 const mapStateToProps = (state, ownProps) => {
@@ -8,7 +9,9 @@ const mapStateToProps = (state, ownProps) => {
         ...ownProps
     });};
 const mapDispatchToProps = dispatch => ({
-
+    newVariable: (variable)=> {
+        dispatch(newVariable(variable));
+    }
 });
 
 export default connect(

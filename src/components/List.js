@@ -5,6 +5,8 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import "../css/List.css";
+import sureChangeTool from "./sureChangeTool"
+
 // 延伸jq 拖拽窗口函数
 (function ($) {
     $.fn.extend({
@@ -305,6 +307,10 @@ class List extends Component {
                     contentType:"application/json",
                 }).then((res)=> {
                     // this.props.refresh(JSON.parse(res.data));
+                    //  dispatch
+                    console.log(res.data.variable)
+                    this.props.newVariable(res.data.variable);
+
                     var caseStore = this.props.refresh(res.data);
                     if (target.className === "outer") {
                         this.props.acName($(target).attr("unique"), $(target).attr("title"), caseStore);

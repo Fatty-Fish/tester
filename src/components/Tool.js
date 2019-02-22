@@ -198,9 +198,10 @@ class Tool extends Component {
                     alert("测试全部通过")
                 }else if (res.data.testURL) {
                     // 测试有失败
-                    var hrefA = "http://" + this.props.IPAddress + ":3002/" + res.data.testURL;
+                    var hrefA = "http://10.12.28.36:3002/" + res.data.testURL;
                     alert("有部分测试未通过，通过链接：" + hrefA + " 查看详细报告")
                 }else if (res.data) {
+
                     alert("参数错误，去保存配置再试试" + JSON.stringify(res.data,null, 4))
                 }else {
                     alert("该任务已经失效了。")

@@ -32,6 +32,12 @@ export const newCaseList = (caseList)=>{
         caseList
     }
 };
+export const newVariable = (variable)=> {
+    return {
+        type: "VAR_CHANGE",
+        variable
+    }
+}
 // export const addTodo = text => {
 //     return {
 //         type: "ADD_TODO",

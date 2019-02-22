@@ -9,24 +9,28 @@ const paths = require('./paths');
 const findPath = require('./configTool/findState');
 const addState = require('./configTool/addState');
 const fs = require('fs');
+const os = require("os");
 const Path = require("path");
 const execFile = require("child_process").exec;
 const axios = require("axios");
+const qs = require("qs");
 const taskManager = require("./configTool/taskManager");
 const singlePath = require("./configTool/singlePath");
+const getAccount = require("./configTool/getAccount");
 const bodyParser = require('body-parser');
 const BASE_URL = Path.join(__dirname, "../");
-
+const serverADDRESS = os.networkInterfaces()['本地连接'][1].address;
+const serverIp = "http://" + serverADDRESS + ":3000";
 const uuidv1 = require("uuid/v1");
-
-const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
-const host = process.env.HOST || '0.0.0.0';
 // DEBUG LOG
 const log4js = require('log4js');
 const log4js_config = require("../logConf.json");
 log4js.configure(log4js_config);
 const log = log4js.getLogger('record_log');
 //
+
+const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+const host = process.env.HOST || '0.0.0.0';
 
 const express = require("express");
 var App = express();
@@ -377,7 +381,14 @@ module.exports = function(proxy, allowedHost) {
       // ],
       after(app) {
         app.use(bodyParser());
-        app.post("/", (req, result)=> {
+        app.get("/ip", (req, res)=> {
+            var per = req.query.person;
+            return res.json({
+                person: per,
+                IPAddress: per
+            })
+        });
+        app.post("/ip", (req, result)=> {
             // 想在此获取页面post过来的data参---------使用body-parser
             axios({
                 method: req.body.method,
@@ -600,7 +611,7 @@ module.exports = function(proxy, allowedHost) {
                     var slen = shareArr.length;
                     var shareArrName = [];
                     for (var k = 0; k < slen; k++) {
-                        shareArrName.push(shareArr[k].name);
+                        shareArrName.push(shareArr[k].account);
                     }
                     // console.log(666)
                     fs.readFile("public/storage/ip_address.json", "utf8", (err, ipdata)=> {
@@ -611,9 +622,12 @@ module.exports = function(proxy, allowedHost) {
                         // console.log(stateData.share)
                         for (var s = 0; s < iplen; s++) {
                             // 现有ipname不是本身，且本身shareList不包含ipname
-                            if (person !== ipAdd.ip[s].name && shareArrName.indexOf(ipAdd.ip[s].name) === -1 )  {
+                            log.info(shareArrName);
+                            log.info(ipAdd.ip[s].ip);
+                            if (person !== ipAdd.ip[s].ip && shareArrName.indexOf(ipAdd.ip[s].ip) === -1 )  {
                                 // 增加
                                 var shareObj = {
+                                    account: ipAdd.ip[s].ip,
                                     name: ipAdd.ip[s].name,
                                     item: [{
                                         "r": []
@@ -625,7 +639,6 @@ module.exports = function(proxy, allowedHost) {
                                 stateData.share.push(shareObj);
                             }
                         }
-
                         if (JSON.stringify(stateData) === "{}" || stateData === undefined) {
                             fs.writeFile("public/storage/" + person + ".json", data, "utf8", (err)=> {
                                 if (err) throw err;
@@ -705,135 +718,133 @@ module.exports = function(proxy, allowedHost) {
       // This lets us open files from the runtime error overlay.
       app.use(errorOverlayMiddleware());
         app.get("/myLogin", (req, resp)=> {
-                       // console.log(3434);
-            // console.log(req.query.oauthtoken);
+            let getClientIp = function (req) {
+                return req.headers['x-forwarded-for'] ||
+                    req.connection.remoteAddress ||
+                    req.socket.remoteAddress ||
+                    req.connection.socket.remoteAddress || '';
+            };
+            let ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/);
+            ip = ip ? ip.join('.') : null;
+            var data = {
+                oauthtoken: req.query.oauthtoken,
+                address: decodeURIComponent(ip)
+            };
+            getAccount(data).then(({name, account, deptShortName})=> {
+                fs.readFile("public/storage/ip_address.json", "utf8", (err, data)=> {
+                    // return resp.json({
+                    //     name,
+                    //     deptShortName,
+                    //     account
+                    // });
+                    if (err) throw err;
+                    var ipData = JSON.parse(data);
+                    var ipArr = ipData.ip;
+                    var len = ipArr.length;
+                    var person;
+                    for (var i = 0; i < len; i++) {
+                        if (ipArr[i].ip === account) { // quanjing
+                            person = ipArr[i].ip;
+                            break;
+                        }
+                    }
+                    if (!person) {
+                        // 新入
+                        ipData.ip[len] = {
+                            ip: account,
+                            name: deptShortName + ":" + name,
+                            token: req.query.oauthtoken
+                        };
+                        // 创建新
+                        var shareArr = [];
+                        for (var j = 0; j < len; j++) {
+                            if(ipData.ip[j].ip !== account) {
+                                console.log(ipData.ip[j].ip)
+                                console.log(account)
+                                var obj = {
+                                    // "name": "person" + j,
+                                    account: ipData.ip[j].ip,
+                                    name: ipData.ip[j].name,
+                                    "item": [{
+                                        "r": []
+                                    },
+                                        {
+                                            "w": []
+                                        }]
+                                };
+                                shareArr.push(obj)
+                            }
+                        }
+                        // person = "person" + len;
+                        person = account;
+                        var newPerson = {
+                            variable: [{
+                                "name": "Global",
+                                "values": [{
+                                    "key": "userType",
+                                    "value": "changyou",
+                                    "enabled": true
+                                }],
+                                "from": "raw"
+                            }],
+                            shared:[],
+                            share: shareArr,
+                            task_runner: {}
+                        };
+                        // 新增数据
+                        fs.writeFile("public/storage/" + person + ".json", JSON.stringify(newPerson), "utf8", (err)=> {
+                            if (err) throw err;
+                            if (JSON.stringify(ipData) === "{}" || ipData === undefined) {
+                                fs.writeFile("public/storage/ip_address.json", data, "utf8", (err)=> {
+                                    if (err) throw  err;
+                                });
+                                // return resp.json(null); // 创建失败，重新刷新, 覆盖创建失败的person
+                                console.log(null)
+                                // 永久重定向到统一的登陆接口
+                                resp.writeHead(301, {
+                                    "Location": encodeURI("http://xxx:8088/oauth/oauth.html?redirectUrl=" + serverIp +"/myLogin") ,
+                                    "Content-Type":"text/html"
+                                });
+                                resp.end();
+                            }else {
+                                // 新增id标识
+                                fs.writeFile("public/storage/ip_address.json", JSON.stringify(ipData), "utf8", (err) => {
+                                    if (err) throw  err;
+                                });
+                                console.log(person, 1);
+                                resp.writeHead(301, {
+                                    "Location": encodeURI( serverIp + "/ip?person=" + person) ,
+                                    "Content-Type":"text/html"
+                                });
+                                resp.end()
+                                // return resp.json({
+                                //     person: person,
+                                //     IPAddress: account,
+                                //     token: req.query.oauthtoken
+                                // });
+                            }
+                        })
+                    }else {
+                        // 不是新入，刷新share
+                        console.log(person)
 
-            // let getClientIp = function (req) {
-            //     return req.headers['x-forwarded-for'] ||
-            //         req.connection.remoteAddress ||
-            //         req.socket.remoteAddress ||
-            //         req.connection.socket.remoteAddress || '';
-            // };
-            // let ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/);
-            // ip = ip ? ip.join('.') : null;
-            log.info(req.query)
-            axios({
-                method: "post",
-                url: "url3", // 验证合法
-                param: {
-                    oauthtoken: req.query.oauthtoken,
-                    address: encodeURI("10.1.9.89:8090")
-                },
-            }).then((res)=>{
-                // return
-                // 做处理，页面逻辑 10.12.28.36 账号返回对应json数据
-                return resp.json(res.data)
-            })
+                        resp.writeHead(301, {
+                            "Location": encodeURI(serverIp +  "/ip?person=" + person) ,
+                            "Content-Type":"text/html"
+                        });
+                        resp.end()
+
+                    }
+                    // console.log(person)
+                });
+
+            }, err=> {
+                log.error(err);
+                return resp.json({})
+            });
 
         });
-        // app.use(bodyParser());
-        // app.get("/ip", (req,resp)=> {
-        //     let getClientIp = function (req) {
-        //         return req.headers['x-forwarded-for'] ||
-        //             req.connection.remoteAddress ||
-        //             req.socket.remoteAddress ||
-        //             req.connection.socket.remoteAddress || '';
-        //     };
-        //     let ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/);
-        //     ip = ip ? ip.join('.') : null;
-        //     var IPAddress = ip;
-            // fs.readFile("public/storage/ip_address.json", "utf8", (err, data)=> {
-            //     if (err) throw err;
-            //     var ipData = JSON.parse(data);
-            //     var ipArr = ipData.ip;
-            //     var len = ipArr.length;
-            //     var person;
-            //     for (var i = 0; i < len; i++) {
-            //         if (ipArr[i].ip === IPAddress) {
-            //             person = ipArr[i].name;
-            //             break;
-            //         }
-            //     }
-            //     if (!person) {
-            //         // 新入
-            //         ipData.ip[len] = {
-            //             ip: IPAddress,
-            //             name: "ip" + IPAddress
-            //         };
-            //         // 创建新
-            //         var shareArr = [];
-            //         for (var j = 0; j < len; j++) {
-            //             var obj = {
-            //                 // "name": "person" + j,
-            //                 name: ipData.ip[j].name,
-            //                 "item": [{
-            //                     "r": []
-            //                 },
-            //                     {
-            //                         "w": []
-            //                     }]
-            //             };
-            //             shareArr.push(obj)
-            //         }
-            //         // person = "person" + len;
-            //         person = "ip" + IPAddress;
-            //         var newPerson = {
-            //             variable: [{
-            //                 "name": "Global",
-            //                 "values": [{
-            //                     "key": "userType",
-            //                     "value": "changyou",
-            //                     "enabled": true
-            //                 }],
-            //                 "from": "raw"
-            //             }],
-            //             shared:[],
-            //             share: shareArr,
-            //             task_runner: {}
-            //         };
-            //         // 新增数据
-            //         fs.writeFile("public/storage/" + person + ".json", JSON.stringify(newPerson), "utf8", (err)=> {
-            //             if (err) throw err;
-            //             if (JSON.stringify(ipData) === "{}" || ipData === undefined) {
-            //                 fs.writeFile("public/storage/ip_address.json", data, "utf8", (err)=> {
-            //                     if (err) throw  err;
-            //                 });
-            //                 return res.json(null); // 创建失败，重新刷新, 覆盖创建失败的person
-            //             }else {
-            //                 // 新增id标识
-            //                 fs.writeFile("public/storage/ip_address.json", JSON.stringify(ipData), "utf8", (err) => {
-            //                     if (err) throw  err;
-            //                 });
-            //                 return res.json({
-            //                     person: person,
-            //                     IPAddress: IPAddress
-            //                 });
-            //             }
-            //         })
-            //     }else {
-            //         // 不是新入，刷新share
-            //         return res.json({
-            //             person: person,
-            //             IPAddress: IPAddress
-            //         });
-            //     }
-            //     // console.log(person)
-            // });
-        //   resp.header("Content-Type", "text/html; charset=UTF-8");
-        //   axios({
-        //         method: "get",
-        //         url:"http://oauth.cyou-inc.com:8088/oauth/oauth.html?redirectUrl=http://myHost:myPort/myLogin",
-        //     }).then((res)=> {
-        //         return resp.send(res.data)
-        //     })
-        // });
-        // app.get("/ip", (req, res)=>{
-        //     console.log(3434)
-            // axios({
-            //     method: "get",
-            //     url: "http://oauth.cyou-inc.com:8088/oauth/oauth.html?redirectUrl=http://localhost:3000/myLogin"
-            // })
-        // });
+
       // This service worker file is effectively a 'no-op' that will reset any
       // previous service worker registered for the same host:port combination.
       // We do this in development to avoid hitting the production cache if

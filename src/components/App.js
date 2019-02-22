@@ -172,12 +172,14 @@ class App extends Component {
     saveAsRoot (from, name, saveflag) {
       // console.log(from, name)
         if (!from) {
+            console.log(23)
             var caseList = this.props.caseList;
             var caseStore = Immutable.asMutable(this.state.caseStore, {deep: true});
             var data = caseStore.newCase[this.state.activeCase[this.state.activeIndex]];
             var chData = this.stateFarm(data);
             var testScript = data.testText ? data.testText : "";
             var textScript = data.preText ? data.preText : "";
+            console.log(chData)
             var obj = {
                 name: name,
                 request: {
@@ -188,7 +190,8 @@ class App extends Component {
                         raw: chData.bodyList
                     },
                     url: {
-                        raw: chData.url
+                        raw: chData.url,
+                        query: chData.paramList
                     }
                 },
                 response: [],
@@ -301,6 +304,7 @@ class App extends Component {
                         // caseStore
                         this.refresh(caseList);
                         var dataList = this.fixCaseList(caseList);
+                        console.log(dataList)
                         this.props.newCaseList(caseList);
                         sureChangeTool(dataList, false, this.props.per);
                         return;
@@ -1153,12 +1157,15 @@ class App extends Component {
     changeHelp (k, value, tar, val, reVal) {
         var name = k.split("/")[0];
         var store = Immutable.asMutable(this.state.caseStore, {deep: true});
+        console.log(store)
+        store[name][k][tar] = value;
         var newList = store[name];
-        newList[k][tar] = value;
-        if (val) {
+        if (val && reVal) {
+            // console.log("val")
             newList[k][val] = reVal;
         }
-        store[name] = newList;
+        // store[name] = newList;
+        // console.log(store)
         this.setState({
             caseStore: Immutable(store)
         })
@@ -1169,8 +1176,8 @@ class App extends Component {
     changeSelfVar (k, index) {
       this.changeHelp(k, index, "valSelect")
     }
-    changeUrl(k, value) {
-      this.changeHelp(k, value, "url");
+    changeUrl(k, value, param, query) {
+      this.changeHelp(k, value, "url", param, query);
     }
     changeShowTable(k, value) {
       this.changeHelp(k, value, "showTable");
@@ -1589,9 +1596,6 @@ class App extends Component {
                 var caseListRender = this.state.activeCase.map((ele, index) => {
                 var arr = ele.split("/");
                 var prop = arr[0]; // newCase
-                    console.log(this.state.caseStore)
-                    console.log(prop);
-                    console.log(ele)
                     var caseData = this.state.caseStore[prop][ele];
                     var caseRender = Immutable.asMutable(caseData, {deep: true});
                     return acIndex === index ? (

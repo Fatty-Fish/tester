@@ -61,7 +61,8 @@ class VarSet extends Component {
             }
         }).then((res)=> {
             //
-        })
+        });
+
     }
     saveVar (e) {
         e.stopPropagation();
